@@ -8,6 +8,7 @@ outOfIndependence=function(data,Gvec,labs,nolabs=FALSE,fixmarg=TRUE,firstfew=0,m
   data=dummy.data.frame(data, dummy.classes = "ALL")
   #data = data.matrix(data)
   K=max(Gvec)
+
   C=matrix(0,nrow(data),max(Gvec))
   
   for(j in 1:max(Gvec)){
@@ -26,7 +27,7 @@ outOfIndependence=function(data,Gvec,labs,nolabs=FALSE,fixmarg=TRUE,firstfew=0,m
   
   invsqDc=diag(as.vector(1/sqrt(c)))
   invsqDr=diag(as.vector(1/sqrt(r)))
-  eP= r%*% t(c)
+  eP = r%*% t(c)
   devP=invsqDr %*% (P-eP) %*% invsqDc
   
   

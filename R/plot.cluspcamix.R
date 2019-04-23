@@ -1,4 +1,4 @@
-plot.cluspca<-function(x, dims = c(1,2), cludesc = FALSE, what = c(TRUE,TRUE), attlabs, ...){
+plot.cluspcamix<-function(x, dims = c(1,2), cludesc = FALSE, topstdres = 20, attlabs = NULL, subplot = FALSE, what = c(TRUE,TRUE), ...){
   
   d1 = NULL
   d2 = NULL
@@ -17,8 +17,9 @@ plot.cluspca<-function(x, dims = c(1,2), cludesc = FALSE, what = c(TRUE,TRUE), a
   K=max(x$cluster)
   
   if (missing(attlabs)) {
-    attlabs=colnames(x$odata) #row.names(x$attcoord)
+    attlabs=rownames(x$attcoord)#colnames(x$odata) #row.names(x$attcoord)
   }
+  
   #do not show obs labels if more than 30
   if (dim(x$obscoord)[1] < 30) {
     obslabs = row.names(x$odata)
@@ -65,7 +66,6 @@ plot.cluspca<-function(x, dims = c(1,2), cludesc = FALSE, what = c(TRUE,TRUE), a
     group_df= data.frame(d1=x$centroid[,dim1],d2=x$centroid[,dim2],glab=glab,gr=levels(factor(x$cluster)))
   }
   obs_df=data.frame(d1=x$obscoord[,dim1],d2=x$obscoord[,dim2],gr=factor(x$cluster),olab=obslabs)
-  
   xact=union(which(att_df$d1> .5),which(att_df$d1< -.5))
   yact=union(which(att_df$d2>.5), which(att_df$d2< -.5))
   xyact=union(xact,yact)
@@ -135,7 +135,6 @@ plot.cluspca<-function(x, dims = c(1,2), cludesc = FALSE, what = c(TRUE,TRUE), a
     #  }
   }
   if(what[1]==TRUE && what[2]==TRUE ){
-    
     if(nrow(att_df)>=25){
       decr=(nrow(att_df)-25)*(1/250)
       mysize=5 * (1-decr)
@@ -168,15 +167,13 @@ plot.cluspca<-function(x, dims = c(1,2), cludesc = FALSE, what = c(TRUE,TRUE), a
       marg_df[neg_val,j]=marg_mat[j,1]
       marg_df[-neg_val,j]=marg_mat[j,2]
     }
-    
     who_marg=apply(marg_df,1,function(x)which.min(abs(x)))
     
-    arrow_df=marg_df
+    arrow_df=data.frame(marg_df)
     for(i in 1:length(who_marg)){
       arrow_df$rd2[i]=arrow_df$d1[i]*(att_df$slp[i])
       arrow_df$rd1[i]=arrow_df$d2[i]*(1/att_df$slp[i])
     }
-    
     sel_arrow_x=apply(arrow_df[,c(2,4)],1,function(x) which.min(abs(x)))
     
     myarrow_df=arrow_df[,1:2]
@@ -205,17 +202,69 @@ plot.cluspca<-function(x, dims = c(1,2), cludesc = FALSE, what = c(TRUE,TRUE), a
     }
     
     a=a+xlab(paste("Dim.",dims[1])) + ylab(paste("Dim.",dims[2]))  
-    
     out$map = a
     
   }
   print(a)
   if(cludesc==TRUE){
-    cdsc = clu_means(x$odata, x$cluster, center=x$center, scale=x$scale)
+    #if the user gives custom attlabs, they won't be used
+    #in cludesc=TRUE
+    
+    data <- as.data.frame(x$odata)
+    data <- droplevels(data)
+    numAct <- which(sapply(data, is.numeric))
+    facAct <- which(!sapply(data, is.numeric))
+    
+    #FOR QUANTITATIVE
+    QuantiAct <- as.matrix(data[, numAct, drop = FALSE])
+    numobs = nrow(data)
+    #standardize continuous
+    QuantiAct <- t(t(QuantiAct) - as.vector(crossprod(rep(1,numobs)/numobs, as.matrix(QuantiAct))))
+    QuantiAct <- t(t(QuantiAct)/sqrt(as.vector(crossprod(rep(1,numobs)/numobs, 
+                                                         as.matrix(QuantiAct^2)))))
+    X = QuantiAct
+    cdsc = clu_means(X, x$cluster, center=FALSE, scale=FALSE)
     
     # out$map = a
     print(cdsc)
     out$parcoord = cdsc
+    
+    ### FOR CATEGORICAL
+    
+    csize = round((table(x$cluster)/sum(table(x$cluster)))*100,digits=1)
+    cnames=paste("C",1:K,sep="")
+    cnm=paste(cnames,": ",csize,"%",sep="")
+    
+    #QualiAct <-  tab.disjonctif(data[, facAct, drop = FALSE])
+    
+    lab1a=names(data[, facAct, drop = FALSE])
+    lab1b=lapply(data[, facAct, drop = FALSE],function(z) levels(z))
+    lab1=rep(lab1a,times=unlist(lapply(lab1b,length)))
+    lab2=unlist(lab1b)
+    qualilabs=paste(lab1,lab2,sep=".")
+    
+    attlabs=qualilabs #colnames(QualiAct)
+    
+    if (topstdres > length(attlabs)) {
+      topstdres = length(attlabs)
+    }
+    ffew = topstdres 
+    
+    myminx = -10
+    mymaxx = 10
+    TopplotGroups=outOfIndependence(data[, facAct, drop = FALSE],x$cluster,attlabs,firstfew=ffew,textSize=4,segSize=4,minx=myminx,maxx=mymaxx)
+    plotGroups=outOfIndependence(data[, facAct, drop = FALSE],x$cluster,nolabs=T,attlabs,fixmarg=F,textSize=1.5,segSize=1.5,minx=-2.5,maxx=2.5)
+    
+    for(jjj in 1:K){
+      TopplotGroups$G[[jjj]]=TopplotGroups$G[[jjj]]+theme_bw()+ggtitle(cnm[jjj])
+      
+      if (subplot == TRUE) {
+        out$stdres = TopplotGroups$G
+        print(TopplotGroups$G[[jjj]])
+        print(plotGroups$G[[jjj]], vp=viewport(.15, .18, .3, .35))
+      }else{print(TopplotGroups$G[[jjj]])}
+      # print(TopplotGroups$G[[jjj]])
+    }
   }
   invisible(out)
 }

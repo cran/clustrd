@@ -15,7 +15,7 @@ This function implements MCA K-means (Hwang, Dillon and Takane, 2006), i-FCB (Io
 \usage{
 clusmca(data, nclus, ndim, method=c("clusCA","iFCB","MCAk"),
 alphak = .5, nstart = 100, smartStart = NULL, gamma = TRUE, 
-seed = 1234)
+binary = FALSE, seed = NULL)
 
 \method{print}{clusmca}(x, \dots)
 
@@ -33,7 +33,8 @@ seed = 1234)
   \item{nstart}{Number of random starts (default = 100)}
   \item{smartStart}{If \code{NULL} then a random cluster membership vector is generated. Alternatively, a cluster membership vector can be provided as a starting solution}
   \item{gamma}{Scaling parameter that leads to similar spread in the object and variable scores (default = \code{TRUE})}
-  \item{seed}{An integer that is used as argument by \code{set.seed()} for offsetting the random number generator when \code{smartStart = NULL}. The default value is 1234}
+  \item{seed}{An integer that is used as argument by \code{set.seed()} for offsetting the random number generator when \code{smartStart = NULL}. The default value is NULL.}
+  \item{binary}{If \code{TRUE} then all categorical variables are 0-1 (dummy) variables.}
   \item{x}{For the \code{print} method, a class of \code{clusmca}}
   \item{object}{For the \code{summary} method, a class of \code{clusmca}}
   \item{mth}{For the \code{fitted} method, a character string that specifies the type of fitted value to return: \code{"centers"} for the observations center vector, or \code{"class"} for the observations cluster membership value}
@@ -47,7 +48,7 @@ The hidden \code{print} and \code{summary} methods print out some key components
 
 The hidden \code{fitted} method returns cluster fitted values. If method is \code{"classes"}, this is a vector of cluster membership (the cluster component of the "clusmca" object). If method is \code{"centers"}, this is a matrix where each row is the cluster center for the observation. The rownames of the matrix are the cluster membership values.
 
-When \code{nclus} = 1 the function returns the MCA solution with objects in principal and variables in standard coordinates (\code{plot(object)} shows the corresponding asymmetric biplot).
+When \code{nclus} = 1 the function returns the MCA solution with objects in principal and variables in standard coordinates. \code{plot(object)} shows the corresponding asymmetric biplot.
 }
 
 \value{
@@ -69,7 +70,7 @@ van de Velden M., Iodice D' Enza, A., and Palumbo, F. (2017).  Cluster correspon
 }
 
 \seealso{
-\code{\link{cluspca}}, \code{\link{tuneclus}}
+\code{\link{cluspca}}, \code{\link{cluspcamix}}, \code{\link{tuneclus}}
 }
 \examples{
 data(cmc)
@@ -82,13 +83,13 @@ levels(cmc$NCHILD) = c("0","1-4","5 and above")
 
 #Cluster Correspondence Analysis solution with 3 clusters in 2 dimensions 
 #after 10 random starts
-outclusCA = clusmca(cmc, 3, 2, method = "clusCA", nstart = 10)
+outclusCA = clusmca(cmc, 3, 2, method = "clusCA", nstart = 10, seed = 1234)
 outclusCA
 #Scatterplot (dimensions 1 and 2)
 plot(outclusCA)
 
 #MCA K-means solution with 3 clusters in 2 dimensions after 10 random starts
-outMCAk = clusmca(cmc, 3, 2, method = "MCAk", nstart = 10)
+outMCAk = clusmca(cmc, 3, 2, method = "MCAk", nstart = 10, seed = 1234)
 outMCAk
 #Scatterplot (dimensions 1 and 2)
 plot(outMCAk)

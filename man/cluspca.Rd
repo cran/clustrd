@@ -13,7 +13,7 @@ This function implements Factorial K-means (Vichi and Kiers, 2001) and Reduced K
 \usage{
 cluspca(data, nclus, ndim, alpha = NULL, method = c("RKM","FKM"), 
 center = TRUE, scale = TRUE, rotation = "none", nstart = 100, 
-smartStart = NULL, seed = 1234)
+smartStart = NULL, seed = NULL)
 
 \method{print}{cluspca}(x, \dots)
 
@@ -27,13 +27,13 @@ smartStart = NULL, seed = 1234)
   \item{nclus}{Number of clusters (nclus = 1 returns the PCA solution; see Details)}
   \item{ndim}{Dimensionality of the solution}
   \item{method}{Specifies the method. Options are RKM for reduced K-means and FKM for factorial K-means (default = \code{"RKM"})}
-  \item{alpha}{Adjusts for the relative importance of RKM and FKM in the objective function; \code{alpha} = 0.5 leads to reduced K-means, \code{alpha} = 0 to factorial K-means, and \code{alpha} = 1 reduces to the tandem approach}
+  \item{alpha}{Adjusts for the relative importance of RKM and FKM in the objective function; \code{alpha} = 0.5 leads to reduced K-means, \code{alpha} = 0 to factorial K-means, and \code{alpha} = 1 reduces to the tandem approach (PCA followed by K-means)}
   \item{center}{A logical value indicating whether the variables should be shifted to be zero centered (default = \code{TRUE)}}
   \item{scale}{A logical value indicating whether the variables should be scaled to have unit variance before the analysis takes place (default = \code{TRUE)}}
   \item{rotation}{Specifies the method used to rotate the factors. Options are \code{none} for no rotation, \code{varimax} for varimax rotation with Kaiser normalization and \code{promax} for promax rotation (default = \code{"none"})}
   \item{nstart}{Number of starts (default = 100)}
   \item{smartStart}{If \code{NULL} then a random cluster membership vector is generated. Alternatively, a cluster membership vector can be provided as a starting solution}
-  \item{seed}{An integer that is used as argument by \code{set.seed()} for offsetting the random number generator when smartStart = NULL. The default value is 1234}
+  \item{seed}{An integer that is used as argument by \code{set.seed()} for offsetting the random number generator when smartStart = NULL. The default value is NULL.}
   \item{x}{For the \code{print} method, a class of \code{clusmca}}
   \item{object}{For the \code{summary} method, a class of \code{clusmca}}
   \item{mth}{For the \code{fitted} method, a character string that specifies the type of fitted value to return: \code{"centers"} for the observations center vector, or \code{"class"} for the observations cluster membership value}
@@ -45,7 +45,10 @@ For the K-means part, the algorithm of Hartigan-Wong is used by default.
 
 The hidden \code{print} and \code{summary} methods print out some key components of an object of class \code{cluspca}. 
 
-The hidden \code{fitted} method returns cluster fitted values. If method is \code{"classes"}, this is a vector of cluster membership (the cluster component of the "cluspca" object). If method is \code{"centers"}, this is a matrix where each row is the cluster center for the observation. The rownames of the matrix are the cluster membership values.}
+The hidden \code{fitted} method returns cluster fitted values. If method is \code{"classes"}, this is a vector of cluster membership (the cluster component of the "cluspca" object). If method is \code{"centers"}, this is a matrix where each row is the cluster center for the observation. The rownames of the matrix are the cluster membership values.
+
+When \code{nclus} = 1 the function returns the PCA solution. and \code{plot(object)} shows the corresponding biplot.
+}
 
 \value{
 \item{obscoord}{Object scores}
@@ -66,7 +69,7 @@ Vichi, M., and Kiers, H.A.L. (2001). Factorial K-means analysis for two-way data
 }
 
 \seealso{
-\code{\link{clusmca}}, \code{\link{tuneclus}}
+\code{\link{clusmca}}, \code{\link{cluspcamix}}, \code{\link{tuneclus}}
 }
 \examples{
 #Reduced K-means with 3 clusters in 2 dimensions after 10 random starts
@@ -86,12 +89,12 @@ outFKM
 plot(outFKM, cludesc = TRUE)
 
 #To get the Tandem approach (PCA(SVD) + K-means)
-outTandem = cluspca(macro, 3, 2, alpha = 1)
+outTandem = cluspca(macro, 3, 2, alpha = 1, seed = 1234)
 plot(outTandem)
 
 #nclus = 1 just gives the PCA solution 
 #outPCA = cluspca(macro, 1, 2)
 #outPCA
-#Scatterplot (dimensions 1 and 2) with scaling gamma = TRUE
+#Scatterplot (dimensions 1 and 2) 
 #plot(outPCA)
 }

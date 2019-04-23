@@ -1,4 +1,4 @@
-clusmca <- function(data,nclus,ndim,method=c("clusCA","iFCB","MCAk"),alphak = .5,nstart=100,smartStart=NULL,gamma = TRUE,seed=1234){
+clusmca <- function(data,nclus,ndim,method=c("clusCA","iFCB","MCAk"),alphak = .5,nstart=100,smartStart=NULL,gamma = TRUE,binary=FALSE,seed=NULL){
 
   #### A single cluster gives the MCA solution
   if (nclus == 1) { 
@@ -33,16 +33,19 @@ clusmca <- function(data,nclus,ndim,method=c("clusCA","iFCB","MCAk"),alphak = .5
       ndim = nclus - 1
     }
     
-     if (ndim >= nclus) {
-        stop('The number of clusters should be larger than the number of dimensions.')
-      }
+    if (ndim > nclus) {
+      stop('The number of clusters should be larger than the number of dimensions.')
+    }
     
+    if (ncol(data) < ndim) {
+      stop('The number of dimensions should be less than the number of variables.')
+    }
     
     method <- match.arg(method, c("clusCA", "clusca","CLUSCA","CLUSca", "ifcb","iFCB","IFCB","mcak", "MCAk", "MCAK","mcaK"), several.ok = T)[1]
     method <- tolower(method)
     
     if(method=="clusca"){
-      out=clusCA(data=data,nclus=nclus,ndim=ndim,nstart=nstart,smartStart=smartStart, gamma = gamma,seed=seed)
+      out=clusCA(data=data,nclus=nclus,ndim=ndim,nstart=nstart,smartStart=smartStart, gamma = gamma,seed=seed,binary=binary)
     }
     if(method=="ifcb"){
       out=iFCB(data=data,nclus=nclus,ndim=ndim,nstart=nstart,smartStart=smartStart, gamma = gamma,seed=seed)
@@ -53,6 +56,4 @@ clusmca <- function(data,nclus,ndim,method=c("clusCA","iFCB","MCAk"),alphak = .5
     return(out)
   }
 }
-
-
 

@@ -153,7 +153,7 @@ plot.clusmca<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, t
     a=a+xlab(paste("Dim.",dims[1])) + ylab(paste("Dim.",dims[2]))  
     out = list()
     out$map = a
-     # print(a)
+    # print(a)
   }
   print(a)
   if(cludesc==TRUE){
@@ -177,12 +177,12 @@ plot.clusmca<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, t
       
       if (subplot == TRUE) {
         out$stdres = TopplotGroups$G
-         print(TopplotGroups$G[[jjj]])
-         print(plotGroups$G[[jjj]], vp=viewport(.15, .18, .3, .35))
+        print(TopplotGroups$G[[jjj]])
+        print(plotGroups$G[[jjj]], vp=viewport(.15, .18, .3, .35))
       }else{print(TopplotGroups$G[[jjj]])}
       # print(TopplotGroups$G[[jjj]])
     }
-   
+    
   }  
   
   invisible(out)

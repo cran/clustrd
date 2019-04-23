@@ -1,4 +1,4 @@
-clusCA <- function(data,nclus,ndim,nstart=100,smartStart=NULL,gamma = FALSE, seed=1234){
+clusCA <- function(data,nclus,ndim,nstart=100,smartStart=NULL,gamma = FALSE, seed=NULL, binary = FALSE){
   K = nclus
   k = ndim
   nrs = nstart
@@ -6,22 +6,35 @@ clusCA <- function(data,nclus,ndim,nstart=100,smartStart=NULL,gamma = FALSE, see
   maxiter = 100
   maxinert=-1
   data=data.frame(data)
-  Z=dummy.data.frame(data, dummy.classes = "ALL") # The original super indicator
+  if (binary == FALSE)
+    Z=dummy.data.frame(data, dummy.classes = "ALL") # The original super indicator
+  else
+    Z = data
   n=nrow(Z)
   Q=ncol(Z)
   
   Dzh=diag(as.vector(colSums(Z)^(.5))) 
-  #Dzhi=pseudoinverse(Dzh)
-  Dzhi= chol2inv(chol(Dzh))
+  Dzhi=pseudoinverse(Dzh)
+  #Dzhi= chol2inv(chol(Dzh))
   MZ=scale(Z,scale=FALSE)
   MZD = MZ %*% Dzhi
+  if(!is.null(seed)) set.seed(seed)
+  seed <- round(2^31 * runif(nstart, -1, 1))
   
+  pb <- txtProgressBar(style = 3)
+  prog = 1
   # Do nrs random starts
   fvec=c()
   for (rs in 1:nrs){
+    if (rs > (prog * (nrs/10))) {
+      prog <- prog + 1
+    }
+    setTxtProgressBar(pb, prog * 0.1)
+    
     if(is.null(smartStart)){
-      myseed=seed+rs
-      set.seed(myseed)
+      # myseed=seed+rs
+      #  set.seed(myseed)
+      set.seed(seed[rs])
       randVec= matrix(ceiling(runif(n)*nclus),n,1)
     }else{
       randVec=smartStart
@@ -34,9 +47,15 @@ clusCA <- function(data,nclus,ndim,nstart=100,smartStart=NULL,gamma = FALSE, see
     Dksi= chol2inv(chol(Dks))
     DZkZD= sqrt(n/q)*Dksi%*% t(Zki) %*% MZD     # equation 6 on the paper
     svdDZkZD=svd(DZkZD)
-    Lk=diag(svdDZkZD$d[1:k])
+    #this is for ndim = 1 to work
+    if (k != 1) {
+      Lk=diag(svdDZkZD$d[1:k])
+    } else {
+      Lk = data.matrix(svdDZkZD$d[1])
+    }
     G = svdDZkZD$u
     Gi = G[,1:k]
+    
     Gi=Dksi%*%Gi%*%Lk # CA row coordinates (section 2 in the paper right below formula (1))
     
     Bstar=svdDZkZD$v
@@ -61,13 +80,13 @@ clusCA <- function(data,nclus,ndim,nstart=100,smartStart=NULL,gamma = FALSE, see
     iter=0   
     
     objective=sum(diag((t(Yi)%*%Zki%*%chol2inv(chol(t(Zki)%*%Zki))%*%t(Zki)%*%Yi)))
-    while ((improv > 0.0001) && (iter<maxiter)){
+    while ((improv > 0.0001) && (iter<=maxiter)){
       iter = iter + 1
       outK = try(kmeans(Yi,centers=Gi,nstart=100),silent=T)
       #empty clusters
       if(is.list(outK) == F){
         outK=EmptyKmeans(Yi,centers=Gi) 
-      #  break 
+        #  break 
       }
       Zki=outK$cluster
       Gi=outK$centers
@@ -83,14 +102,19 @@ clusCA <- function(data,nclus,ndim,nstart=100,smartStart=NULL,gamma = FALSE, see
       
       outDkZkZD=svd(DkZkZD)       # New SVD, CA analysis
       
-      Lk=diag(outDkZkZD$d[1:k])
       G=outDkZkZD$u
       Gi=G[,1:k]
+      # this is for ndim = 1 to work
+      if (k != 1) {
+        Lk=diag(outDkZkZD$d[1:k])
+      } else {
+        Lk = data.matrix(outDkZkZD$d[1])
+      }
+      
       Gi = Dksi %*% Gi %*% Lk
       Bstar=outDkZkZD$v
       Bi=Bstar[,1:k]
       B=sqrt(n*q)*Dzhi%*%Bi
-      
       Bns=B[,1:k]
       #Attribute quantifications
       Yi= sqrt((n/q)) * MZD %*% Bi # Subject coordinates
@@ -100,14 +124,16 @@ clusCA <- function(data,nclus,ndim,nstart=100,smartStart=NULL,gamma = FALSE, see
       # B rescaled in such a way that B'DzB=nqI.
       improv=sum(diag(t(Gi)%*% t(Zki)%*%Zki%*%Gi))-objbef
       objbef=sum(diag(t(Gi) %*% t(Zki) %*% Zki %*% Gi))
-      
-      #varsi=sum(diag(t(Gi)%*% Dk %*% Gi)) #no need to calc inside the loop
+      #    print(improv)
+      varsi=sum(diag(t(Gi)%*% Dk %*% Gi)) #no need to calc inside the loop
       
     }
     #FIX: 16/09/2016, calculated outside the loop
-    varsi=sum(diag(t(Gi)%*% Dk %*% Gi))
+    # varsi=sum(diag(t(Gi)%*% Dk %*% Gi))
     
-    fvec = c(fvec, objbef)
+    # fvec = c(fvec, objbef)
+    #  print(fvec)
+    #  print(rs)
     if (varsi > maxinert){ #gamma
       if (gamma == TRUE) { 
         distB = sum(diag(t(Bns)%*%  Bns))
@@ -139,7 +165,7 @@ clusCA <- function(data,nclus,ndim,nstart=100,smartStart=NULL,gamma = FALSE, see
   cluster = mapvalues(cluster, from = as.integer(names(aa)), to = as.integer(names(table(cluster))))
   #reorder centroids
   Gsol = Gsol[as.integer(names(aa)),]
-  
+  setTxtProgressBar(pb, 1)
   out=list()
   out$obscoord=Ysol # observations coordinates
   out$attcoord=Bsol # attributes coordinates
@@ -154,4 +180,94 @@ clusCA <- function(data,nclus,ndim,nstart=100,smartStart=NULL,gamma = FALSE, see
   out$nstart = nstart
   class(out)="clusmca"
   return(out)
+}
+
+txtProgressBar <- function(min = 0, max = 1, initial = 0, char = "=", width = NA, 
+                           title, label, style = 1, file = "") 
+{
+  if (!identical(file, "") && !(inherits(file, "connection") && 
+                                isOpen(file))) 
+    stop("'file' must be \"\" or an open connection object")
+  if (!style %in% 1L:3L) 
+    style <- 1
+  .val <- initial
+  .killed <- FALSE
+  .nb <- 0L
+  .pc <- -1L
+  nw <- nchar(char, "w")
+  if (is.na(width)) {
+    width <- getOption("width")
+    if (style == 3L) 
+      width <- width - 10L
+    width <- trunc(width/nw)
+  }
+  if (max <= min) 
+    stop("must have 'max' > 'min'")
+  up1 <- function(value) {
+    if (!is.finite(value) || value < min || value > max) 
+      return()
+    .val <<- value
+    nb <- round(width * (value - min)/(max - min))
+    if (.nb < nb) {
+      cat(strrep(char, nb - .nb), file = file)
+      flush.console()
+    }
+    else if (.nb > nb) {
+      cat("\r", strrep(" ", .nb * nw), "\r", strrep(char, 
+                                                    nb), sep = "", file = file)
+      flush.console()
+    }
+    .nb <<- nb
+  }
+  up2 <- function(value) {
+    if (!is.finite(value) || value < min || value > max) 
+      return()
+    .val <<- value
+    nb <- round(width * (value - min)/(max - min))
+    if (.nb <= nb) {
+      cat("\r", strrep(char, nb), sep = "", file = file)
+      flush.console()
+    }
+    else {
+      cat("\r", strrep(" ", .nb * nw), "\r", strrep(char, 
+                                                    nb), sep = "", file = file)
+      flush.console()
+    }
+    .nb <<- nb
+  }
+  up3 <- function(value) {
+    if (!is.finite(value) || value < min || value > max) 
+      return()
+    .val <<- value
+    nb <- round(width * (value - min)/(max - min))
+    pc <- round(100 * (value - min)/(max - min))
+    if (nb == .nb && pc == .pc) 
+      return()
+    cat(paste0("\r  |", strrep(" ", nw * width + 6)), file = file)
+    cat(paste(c("\r  |", rep.int(char, nb), rep.int(" ", 
+                                                    nw * (width - nb)), sprintf("| %3d%%", pc)), collapse = ""), 
+        file = file)
+    flush.console()
+    .nb <<- nb
+    .pc <<- pc
+  }
+  getVal <- function() .val
+  kill <- function() if (!.killed) {
+    cat("\n", file = file)
+    flush.console()
+    .killed <<- TRUE
+  }
+  up <- switch(style, up1, up2, up3)
+  up(initial)
+  structure(list(getVal = getVal, up = up, kill = kill), class = "txtProgressBar")
+}
+
+setTxtProgressBar <- function (pb, value, title = NULL, label = NULL) 
+{
+  if (!inherits(pb, "txtProgressBar")) 
+    stop(gettextf("'pb' is not from class %s", dQuote("txtProgressBar")), 
+         domain = NA)
+  oldval <- pb$getVal()
+  pb$up(value)
+  invisible(oldval)
 }

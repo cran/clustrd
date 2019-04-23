@@ -4,6 +4,10 @@ plot.tuneclus<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, 
   if (class(x$clusobjbest) == "cluspca") {
     out = plot.cluspca(x$clusobjbest, dims = dims, what = what, cludesc = cludesc, ...)
   }
+
+  if (class(x$clusobjbest) == "cluspcamix") {
+    out = plot.cluspcamix(x$clusobjbest, dims = dims, what = what, cludesc = cludesc, ...)
+  }
   
   if (class(x$clusobjbest) == "clusmca") {
     out = plot.clusmca(x$clusobjbest,dims = dims, what = what, cludesc = cludesc, topstdres = topstdres, attlabs = attlabs, binary = binary, subplot = subplot, ...)

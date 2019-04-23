@@ -1,4 +1,4 @@
-iFCB<- function(data,nclus=3,ndim=2,nstart=100,smartStart=NULL,gamma = TRUE,seed=1234){
+iFCB<- function(data,nclus=3,ndim=2,nstart=100,smartStart=NULL,gamma = TRUE,seed=NULL){
   
   minobs = min(sapply(apply(data,2,unique),length))
   maxobs = max(sapply(apply(data,2,unique),length))
@@ -9,14 +9,23 @@ iFCB<- function(data,nclus=3,ndim=2,nstart=100,smartStart=NULL,gamma = TRUE,seed
   dZ = as.matrix(dummy.data.frame(data, dummy.classes = "ALL")) #as.matrix(dummy.data.frame(data,dummy.classes = "ALL"))
   ndZ = ncol(dZ)
   
+  if(!is.null(seed)) set.seed(seed)
+  seed <- round(2^31 * runif(nstart, -1, 1))
+
   best_f=1000000
-  fvec=c()
+  pb <- txtProgressBar(style = 3)
+  prog = 1
+#  fvec=c()
   for(b in 1:nstart){
-    
+    if (b > (prog * (nstart/10))) {
+      prog <- prog + 1
+    }
+    setTxtProgressBar(pb, prog * 0.1)
     # Starting method
     if(is.null(smartStart)){
-      myseed=seed+b
-      set.seed(myseed)
+      #  myseed=seed+b
+      #  set.seed(myseed)
+      set.seed(seed[b])
       randVec= matrix(ceiling(runif(n)*nclus),n,1)
     }else{
       randVec=smartStart
@@ -82,11 +91,11 @@ iFCB<- function(data,nclus=3,ndim=2,nstart=100,smartStart=NULL,gamma = TRUE,seed
       flossB=sum(diag(t(Y - Cstar %*% G) %*% (Y - Cstar %*% G)))    
       f=flossA+flossB 
       imp=f0-f
-      fvec=c(fvec,f)
+#      fvec=c(fvec,f)
       f0=f
     }
     
-    if(f<=best_f){
+    if(f<best_f){
       
       #####gamma scaling
       if (gamma == TRUE) {
@@ -100,7 +109,7 @@ iFCB<- function(data,nclus=3,ndim=2,nstart=100,smartStart=NULL,gamma = TRUE,seed
       }
       #########################
       
-      
+
       #   best_lam=lambda
       best_f=f
       best_ngvec=ngvec	
@@ -154,7 +163,7 @@ iFCB<- function(data,nclus=3,ndim=2,nstart=100,smartStart=NULL,gamma = TRUE,seed
   cluster = mapvalues(cluster, from = as.integer(names(aa)), to = as.integer(names(table(cluster))))
   #reorder centroids
   G = G[as.integer(names(aa)),]
-  
+  setTxtProgressBar(pb, 1)
   out=list() 
   out$obscoord=Y
   out$attcoord=B
@@ -174,3 +183,94 @@ iFCB<- function(data,nclus=3,ndim=2,nstart=100,smartStart=NULL,gamma = TRUE,seed
   class(out)="clusmca"
   return(out)
 }
+
+txtProgressBar <- function(min = 0, max = 1, initial = 0, char = "=", width = NA, 
+                           title, label, style = 1, file = "") 
+{
+  if (!identical(file, "") && !(inherits(file, "connection") && 
+                                isOpen(file))) 
+    stop("'file' must be \"\" or an open connection object")
+  if (!style %in% 1L:3L) 
+    style <- 1
+  .val <- initial
+  .killed <- FALSE
+  .nb <- 0L
+  .pc <- -1L
+  nw <- nchar(char, "w")
+  if (is.na(width)) {
+    width <- getOption("width")
+    if (style == 3L) 
+      width <- width - 10L
+    width <- trunc(width/nw)
+  }
+  if (max <= min) 
+    stop("must have 'max' > 'min'")
+  up1 <- function(value) {
+    if (!is.finite(value) || value < min || value > max) 
+      return()
+    .val <<- value
+    nb <- round(width * (value - min)/(max - min))
+    if (.nb < nb) {
+      cat(strrep(char, nb - .nb), file = file)
+      flush.console()
+    }
+    else if (.nb > nb) {
+      cat("\r", strrep(" ", .nb * nw), "\r", strrep(char, 
+                                                    nb), sep = "", file = file)
+      flush.console()
+    }
+    .nb <<- nb
+  }
+  up2 <- function(value) {
+    if (!is.finite(value) || value < min || value > max) 
+      return()
+    .val <<- value
+    nb <- round(width * (value - min)/(max - min))
+    if (.nb <= nb) {
+      cat("\r", strrep(char, nb), sep = "", file = file)
+      flush.console()
+    }
+    else {
+      cat("\r", strrep(" ", .nb * nw), "\r", strrep(char, 
+                                                    nb), sep = "", file = file)
+      flush.console()
+    }
+    .nb <<- nb
+  }
+  up3 <- function(value) {
+    if (!is.finite(value) || value < min || value > max) 
+      return()
+    .val <<- value
+    nb <- round(width * (value - min)/(max - min))
+    pc <- round(100 * (value - min)/(max - min))
+    if (nb == .nb && pc == .pc) 
+      return()
+    cat(paste0("\r  |", strrep(" ", nw * width + 6)), file = file)
+    cat(paste(c("\r  |", rep.int(char, nb), rep.int(" ", 
+                                                    nw * (width - nb)), sprintf("| %3d%%", pc)), collapse = ""), 
+        file = file)
+    flush.console()
+    .nb <<- nb
+    .pc <<- pc
+  }
+  getVal <- function() .val
+  kill <- function() if (!.killed) {
+    cat("\n", file = file)
+    flush.console()
+    .killed <<- TRUE
+  }
+  up <- switch(style, up1, up2, up3)
+  up(initial)
+  structure(list(getVal = getVal, up = up, kill = kill), class = "txtProgressBar")
+}
+
+setTxtProgressBar <- function (pb, value, title = NULL, label = NULL) 
+{
+  if (!inherits(pb, "txtProgressBar")) 
+    stop(gettextf("'pb' is not from class %s", dQuote("txtProgressBar")), 
+         domain = NA)
+  oldval <- pb$getVal()
+  pb$up(value)
+  invisible(oldval)
+}
+

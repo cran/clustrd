@@ -1,6 +1,6 @@
 ## Define a print method that will be automatically dispatched when print()
-## is called on an object of class "clusmca"
-print.clusmca <- function(x, ...) {
+## is called on an object of class "cluspcamix"
+print.cluspcamix <- function(x, ...) {
   
   k = length(x$size)
   if (k == 1)
@@ -11,7 +11,7 @@ print.clusmca <- function(x, ...) {
     tt = paste('(',csize,'%)',sep="")
     cs = paste(size, tt, sep = " ", collapse = ", ")
     
-    cat(paste("MCA Solution ","in ",d ," dimensions. ","\n", sep = ""))
+    cat(paste("PCAMIX Solution ","in ",d ," dimensions. ","\n", sep = ""))
     
     # cat("\nCluster centroids:\n")
     #  xcent = data.frame(round(x$centroid,4))
@@ -39,17 +39,25 @@ print.clusmca <- function(x, ...) {
     invisible(x)
     
   }  else {
-    x$centroid = data.frame(x$centroid)
     d = dim(x$centroid)[2]
     size = x$size
     csize = round((table(x$cluster)/sum(table(x$cluster)))*100,digits=1)
+    #print(csize)
+  #  if (x$center == TRUE) {
+  #    centering = "mean centered" } else {
+  #      centering = "not centered"
+  #    }
+  #  if (x$scale == TRUE) {
+  #    scaling = "standardized" } else {
+  #      scaling = "unstandardized"
+  #    }
     tt = paste('(',csize,'%)',sep="")
     cs = paste(size, tt, sep = " ", collapse = ", ")
-    
-    cat(paste("Solution with ",k ," clusters of sizes ", paste(cs, collapse = ", ")," in ",d ," dimensions. ","\n", sep = ""))
+    cat(paste("Solution with ",k ," clusters of sizes ", paste(cs, collapse = ", ")," in ",d ," dimensions. ", "\n", sep = ""))
     
     cat("\nCluster centroids:\n")
     xcent = data.frame(round(x$centroid,4))
+    
     for (i in 1:k) {
       rownames(xcent)[i] = paste("Cluster",i)
     }
@@ -57,20 +65,18 @@ print.clusmca <- function(x, ...) {
       colnames(xcent)[i] = paste0("Dim.",i)
     }
     print(xcent)
-    # attc = data.frame(round(x$attcoord,4))
-    # cat("\nAttribute scores:\n")
-    # for (i in 1:ncol(attc)) {
-    #   colnames(attc)[i] = paste0("Dim.",i)
-    # }
-    # print(attc)
-    
-    # cat("\nClustering vector:\n")
-    #  print(x$cluster)
+    attc = data.frame(round(x$attcoord,4))
+    cat("\nVariable scores:\n")
+    for (i in 1:ncol(attc)) {
+     colnames(attc)[i] = paste0("Dim.",i)
+    }
+    print(attc)
     
     cat("\nWithin cluster sum of squares by cluster:\n")
     #resid <- x$obscoord - fitted(x) 
     #tot.withinss <- ss(resid)
     #print(tot.withinss)
+    x$centroid = as.matrix(x$centroid)
     betweenss <- ss(x$centroid[x$cluster,]) # or 
     #betweenss <- ss(fitted(x))
     withinss <- sapply(split(as.data.frame(x$obscoord), x$cluster), ss)

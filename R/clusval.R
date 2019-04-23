@@ -1,6 +1,6 @@
 clusval<-function(obj,dst="full"){
   if(dst=="full"){
-    if(class(obj)=="cluspca"){
+    if(class(obj)=="cluspca") {
       data = scale(obj$odata, center = obj$center, scale = obj$scale)
       oDist = daisy(data,metric="euclidean")
     }else{

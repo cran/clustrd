@@ -1,4 +1,4 @@
-tune_cluspca <- function(data, nclusrange = 2:7, ndimrange = 2:4, criterion = "asw", dst = "full", alpha = NULL, method = "RKM", center = TRUE, scale = TRUE, rotation = "none", nstart = 100, smartStart = NULL, seed = 1234){
+tune_cluspca <- function(data, nclusrange = 2:7, ndimrange = 2:4, criterion = "asw", dst = "full", alpha = NULL, method = "RKM", center = TRUE, scale = TRUE, rotation = "none", nstart = 100, smartStart = NULL, seed = NULL){
   
   criterion <- match.arg(criterion, c("asw", "ASW","ch","CH","crit","CRIT"), several.ok = T)[1]
   criterion <- tolower(criterion)
@@ -27,6 +27,7 @@ tune_cluspca <- function(data, nclusrange = 2:7, ndimrange = 2:4, criterion = "a
       if (k > d) {
         print(paste('Running for',k,'clusters and',d,'dimensions...'))
         outcluspca <- cluspca(data=data, nclus = k, ndim = d,alpha = alpha,method = method,  center = center, scale = scale, rotation=rotation, nstart = nstart, smartStart = smartStart, seed = seed)
+      #  outcluspca <- cluspcamix(data=data, nclus = k, ndim = d,alpha = alpha, center = center, scale = scale, rotation=rotation, nstart = nstart, smartStart = smartStart, seed = seed)
         
         if (criterion == "asw")
         {
@@ -63,6 +64,8 @@ tune_cluspca <- function(data, nclusrange = 2:7, ndimrange = 2:4, criterion = "a
   k.best <- nclusrange[indk.best]
   d.best <- ndimrange[indd.best]
   outcluspcabest = cluspca(data = data, nclus = k.best, ndim = d.best, alpha = alpha, method = method,  center = center, scale = scale, rotation = rotation, nstart = nstart, smartStart = smartStart, seed = seed)
+ # outcluspcabest = cluspcamix(data = data, nclus = k.best, ndim = d.best, alpha = alpha,  center = center, scale = scale, rotation = rotation, nstart = nstart, smartStart = smartStart, seed = seed)
+  
   rownames(critval) = c(nclusrange)
   colnames(critval) = c(ndimrange)
   

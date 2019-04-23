@@ -1,4 +1,4 @@
-tune_clusmca <- function(data, nclusrange = 2:5, ndimrange = 2:4, method = "clusCA", criterion = "asw", dst = "full", alphak = .5, nstart = 100, smartStart = NULL, seed = 1234){
+tune_clusmca <- function(data, nclusrange = 2:5, ndimrange = 2:4, method = "clusCA", criterion = "asw", dst = "full", alphak = .5, nstart = 100, smartStart = NULL, seed = NULL){
   
   criterion <- match.arg(criterion, c("asw", "ASW","ch","CH","crit","CRIT"), several.ok = T)[1]
   criterion <- tolower(criterion)

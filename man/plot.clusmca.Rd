@@ -35,7 +35,7 @@ Iodice D'Enza, A., and Palumbo, F. (2013). Iterative factor clustering of binary
 van de Velden M., Iodice D'Enza, A., and Palumbo, F. (2017).  Cluster correspondence analysis. \emph{Psychometrika}, \emph{82}(1), 158-185.
 }
 \seealso{
-\link{plot.cluspca}
+\code{\link{plot.cluspca}, \link{plot.cluspcamix}}
 }
 \examples{
 data("hsq")

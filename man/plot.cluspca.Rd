@@ -30,7 +30,7 @@ De Soete, G., and Carroll, J. D. (1994). K-means clustering in a low-dimensional
 Vichi, M., and Kiers, H.A.L. (2001). Factorial K-means analysis for two-way data. \emph{Computational Statistics and Data Analysis}, 37, 49-64.
 }
 \seealso{
-\code{\link{plot.clusmca}}
+\code{\link{plot.clusmca}, \link{plot.cluspcamix}}
 }
 \examples{
 data("macro")

@@ -1,4 +1,4 @@
-fitted.cluspca <- function(object, mth = c("centers", "classes"), ...) 
+fitted.cluspcamix <- function(object, mth = c("centers", "classes"), ...) 
 {
   mth <- match.arg(mth)
   

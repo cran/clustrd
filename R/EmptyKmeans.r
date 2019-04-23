@@ -1,14 +1,14 @@
 EmptyKmeans<-function(data,centers){
   out = list()
   n = nrow(data)
-
-  if(length(centers)==1){
-    
+  if(dim(centers)[1]==1){
     K=centers
+    print(K)
     start=ceiling(runif(K)*n)
     centers=data[start,]
   }else{
     K=nrow(centers)
+    
   }
   gvec=matrix(1,nrow=n,1)
   it=0
