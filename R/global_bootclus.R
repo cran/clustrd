@@ -8,12 +8,13 @@ global_bootclus <- function(data, nclusrange = 3:4, ndim = NULL, method = c("RKM
       stop('The number of dimensions must be smaller than the number of clusters.')
     }
   }
+
   if (method %in% c("rkm","fkm")) {
-    out = boot_cluspca(data, nclusrange, ndim, method = method, nboot = nboot,  alpha = alpha, center = center, scale = scale, nstart = nstart, smartStart = smartStart, seed = seed)
+    out = boot_cluspca(data, krange = nclusrange, nd = ndim, method = method, nboot = nboot,  alpha = alpha, center = center, scale = scale, nstart = nstart, smartStart = smartStart, seed = seed)
   } else if (method %in% c("clusca","ifcb","mcak")) {
-    out = boot_clusmca(data, nclusrange, ndim,  method = method, nboot = nboot,  alphak = alphak, nstart = nstart, smartStart = smartStart, seed = seed)
+    out = boot_clusmca(data, krange = nclusrange, nd = ndim,  method = method, nboot = nboot,  alphak = alphak, nstart = nstart, smartStart = smartStart, seed = seed)
   } else if (method %in% c("mixedrkm","mixedfkm")) {
-    out = boot_cluspcamix(data, nclusrange, ndim, nboot = nboot,  alpha = alpha, center = center, scale = scale,  nstart = nstart, smartStart = smartStart, seed = seed)
+    out = boot_cluspcamix(data, krange = nclusrange, nd = ndim, nboot = nboot,  alpha = alpha, center = center, scale = scale,  nstart = nstart, smartStart = smartStart, seed = seed)
   }
   class(out) = "genbootclus"
   out

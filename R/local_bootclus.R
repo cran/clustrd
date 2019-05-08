@@ -4,7 +4,7 @@ local_bootclus <- function(data, nclus, ndim = NULL, method=c("RKM","FKM","mixed
   if(!is.null(seed)) set.seed(seed)
   seed <- round(2^31 * runif(nboot, -1, 1))
   
-  x = data
+  x = data.frame(data)
   k = nclus
   nd = ndim
   nk <- length(k)

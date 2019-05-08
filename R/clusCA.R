@@ -5,9 +5,16 @@ clusCA <- function(data,nclus,ndim,nstart=100,smartStart=NULL,gamma = FALSE, see
   q = ncol(data)
   maxiter = 100
   maxinert=-1
-  data=data.frame(data)
-  if (binary == FALSE)
-    Z=dummy.data.frame(data, dummy.classes = "ALL") # The original super indicator
+  data = data.frame(data)
+  if (binary == FALSE) {
+    data=as.data.frame(lapply(data,as.factor))
+    Z = tab.disjonctif(data)#dummy.data.frame(data, dummy.classes = "ALL") # The original super indicator
+    lab1a=names(data)
+    lab1b=lapply(data,function(z) levels(as.factor(z)))
+    lab1=rep(lab1a,times=unlist(lapply(lab1b,length)))
+    lab2=unlist(lab1b)
+    colnames(Z) = paste(lab1,lab2,sep=".")
+  }
   else
     Z = data
   n=nrow(Z)
@@ -167,11 +174,14 @@ clusCA <- function(data,nclus,ndim,nstart=100,smartStart=NULL,gamma = FALSE, see
   Gsol = Gsol[as.integer(names(aa)),]
   setTxtProgressBar(pb, 1)
   out=list()
-  out$obscoord=Ysol # observations coordinates
-  out$attcoord=Bsol # attributes coordinates
-  out$centroid=Gsol # centroids
+  out$obscoord=data.frame(Ysol) # observations coordinates
+  out$attcoord=data.frame(Bsol) # attributes coordinates
+  out$centroid=data.frame(Gsol) # centroids
   cluster = as.integer(cluster)
   names(cluster) = rownames(data) 
+  rownames(out$obscoord) = rownames(data)
+  rownames(out$attcoord) = colnames(Z) 
+  
   out$cluster=cluster   # cluster membership
   out$criterion=maxinert # criterion
   #  out$iters=iters # number of iterations

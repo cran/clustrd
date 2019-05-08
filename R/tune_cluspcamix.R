@@ -74,7 +74,12 @@ tune_cluspcamix <- function(data, nclusrange = 2:7, ndimrange = 2:4, criterion =
   crit.grid[is.na(crit.grid)]=''
   crit.grid = as.data.frame(crit.grid)
   
-  out <- list(clusobjbest = outcluspcamixbest, nclusbest = k.best, ndimbest = d.best, critbest = crit.best, critgrid  = crit.grid)
+  if (criterion == "asw")
+    cluasw = clusval(outcluspcamixbest, dst = dst)$cluasw
+  else
+    cluasw = NULL
+  
+  out <- list(clusobjbest = outcluspcamixbest, nclusbest = k.best, ndimbest = d.best, critbest = crit.best, critgrid  = crit.grid, crit = criterion, cluasw = cluasw)
   class(out) = "tuneclus"
   out
 }

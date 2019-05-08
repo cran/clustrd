@@ -8,7 +8,6 @@ tune_clusmca <- function(data, nclusrange = 2:5, ndimrange = 2:4, method = "clus
   
   method <- match.arg(method, c("clusCA", "clusca","CLUSCA","CLUSca", "ifcb","iFCB","IFCB","mcak", "MCAk", "MCAK","mcaK"), several.ok = T)[1]
   method <- tolower(method)
-  
   if (is.null(alphak) == TRUE)
   { 
     alphak = 0.5
@@ -27,6 +26,7 @@ tune_clusmca <- function(data, nclusrange = 2:5, ndimrange = 2:4, method = "clus
         if (criterion == "asw")
         {
           critval[m,n] <- clusval(outclusmca, dst = dst)$asw
+                           
         }
         if (criterion == "ch")
         {
@@ -68,15 +68,21 @@ tune_clusmca <- function(data, nclusrange = 2:5, ndimrange = 2:4, method = "clus
   d.best <- ndimrange[indd.best]
   
   outclusmcabest = clusmca(data = data, nclus = k.best, ndim = d.best,method = method, alphak = alphak, nstart = nstart,smartStart = smartStart, seed = seed)
+  
   rownames(critval) = c(nclusrange)
   colnames(critval) = c(ndimrange)
   
   crit.best = round(critval[indk.best, indd.best],3) 
   crit.grid  = round(critval,3)
   
+  if (criterion == "asw")
+    cluasw = clusval(outclusmcabest, dst = dst)$cluasw
+  else
+    cluasw = NULL
+  
   crit.grid[is.na(crit.grid)]=''
   crit.grid = as.data.frame(crit.grid)
-  out <- list(clusobjbest = outclusmcabest, nclusbest = k.best, ndimbest = d.best, critbest = crit.best, critgrid  = crit.grid)
+  out <- list(clusobjbest = outclusmcabest, nclusbest = k.best, ndimbest = d.best, critbest = crit.best, critgrid  = crit.grid, crit = criterion, cluasw = cluasw)
   class(out) = "tuneclus"
   out
 }

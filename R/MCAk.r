@@ -1,8 +1,16 @@
-MCAk <- function(data, nclus = 3, ndim = 2, alphak = .5, nstart = 100, smartStart=NULL,gamma = TRUE, seed=NULL){
+MCAk <- function(data, nclus = 3, ndim = 2, alphak = .5, nstart = 100, smartStart=NULL,gamma = TRUE, seed=NULL, binary = FALSE){
   out=list()
   
   group={}
-  data=data.frame(data)
+  data = data.frame(data)
+  if (binary == FALSE) {
+    data=as.data.frame(lapply(data,as.factor))
+    lab1a=names(data)
+    lab1b=lapply(data,function(z) levels(as.factor(z)))
+    lab1=rep(lab1a,times=unlist(lapply(lab1b,length)))
+    lab2=unlist(lab1b)
+  }
+  
   if(!is.null(seed)) set.seed(seed)
   seed <- round(2^31 * runif(nstart, -1, 1))
   
@@ -53,8 +61,12 @@ MCAk <- function(data, nclus = 3, ndim = 2, alphak = .5, nstart = 100, smartStar
     cluster = mapvalues(cluster, from = as.integer(names(aa)), to = as.integer(names(table(cluster))))
     #reorder centroids
     center = center[as.integer(names(aa)),]
+    
+    
     out$obscoord=Fm # observations coordinates 
+    rownames(out$obscoord) = rownames(data)
     out$attcoord=A # attributes coordinates 
+    rownames(out$attcoord) = paste(lab1,lab2,sep=".") 
     out$centroid = center
     out$cluster = cluster
     out$criterion = 1 # criterion
@@ -65,9 +77,13 @@ MCAk <- function(data, nclus = 3, ndim = 2, alphak = .5, nstart = 100, smartStar
     return(out)
   } else {
     
-    zz = as.matrix(dummy.data.frame(data,dummy.classes = "ALL"))
+    if (binary == FALSE)
+      zz = as.matrix(tab.disjonctif(data))#as.matrix(dummy.data.frame(data,dummy.classes = "ALL"))
+    else
+      zz = data
     # data = data.matrix(data)
-    data=data.frame(data)
+    
+    #data=data.frame(data)
     n = nrow(data)
     zitem = ncol(data)            
     zncati = sapply(data.frame(data), function(x) length(unique(x))) #apply(data,2,max)
@@ -100,8 +116,8 @@ MCAk <- function(data, nclus = 3, ndim = 2, alphak = .5, nstart = 100, smartStar
       Fm = F0
       # Starting method
       if(is.null(smartStart)){
-       # myseed = seed+b
-      #  set.seed(myseed)
+        # myseed = seed+b
+        #  set.seed(myseed)
         set.seed(seed[b])
         randVec= matrix(ceiling(runif(n)*nclus),n,1)
       }else{
@@ -117,7 +133,7 @@ MCAk <- function(data, nclus = 3, ndim = 2, alphak = .5, nstart = 100, smartStar
       center=mydata%>%
         group_by(group) %>%
         summarise_all(mean) #%>%
-    #    select(-group)
+      #    select(-group)
       
       center = center[,-1]
       itmax = 100
@@ -227,6 +243,8 @@ MCAk <- function(data, nclus = 3, ndim = 2, alphak = .5, nstart = 100, smartStar
     
     out$obscoord = Fm # observations coordinates 
     out$attcoord = A # attributes coordinates 
+    rownames(out$obscoord) = rownames(data)
+    rownames(out$attcoord) = paste(lab1,lab2,sep=".") 
     out$centroid = center # centroids
     cluster = as.integer(cluster)
     names(cluster) = rownames(data) 

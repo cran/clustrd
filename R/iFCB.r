@@ -1,21 +1,32 @@
-iFCB<- function(data,nclus=3,ndim=2,nstart=100,smartStart=NULL,gamma = TRUE,seed=NULL){
+iFCB<- function(data,nclus=3,ndim=2,nstart=100,smartStart=NULL,gamma = TRUE,seed=NULL, binary = FALSE){
   
+  data = data.frame(data)
   minobs = min(sapply(apply(data,2,unique),length))
   maxobs = max(sapply(apply(data,2,unique),length))
-  data=data.frame(data)
+  #data=data.frame(data)
   q=ncol(data)
   n=nrow(data)
   
-  dZ = as.matrix(dummy.data.frame(data, dummy.classes = "ALL")) #as.matrix(dummy.data.frame(data,dummy.classes = "ALL"))
+  if (binary == FALSE) {
+    data=as.data.frame(lapply(data,as.factor))
+    lab1a=names(data)
+    lab1b=lapply(data,function(z) levels(as.factor(z)))
+    lab1=rep(lab1a,times=unlist(lapply(lab1b,length)))
+    lab2=unlist(lab1b)
+    dZ = as.matrix(tab.disjonctif(data))#as.matrix(dummy.data.frame(data, dummy.classes = "ALL")) #as.matrix(dummy.data.frame(data,dummy.classes = "ALL"))
+  }
+  else 
+    dZ = data
+  
   ndZ = ncol(dZ)
   
   if(!is.null(seed)) set.seed(seed)
   seed <- round(2^31 * runif(nstart, -1, 1))
-
+  
   best_f=1000000
   pb <- txtProgressBar(style = 3)
   prog = 1
-#  fvec=c()
+  #  fvec=c()
   for(b in 1:nstart){
     if (b > (prog * (nstart/10))) {
       prog <- prog + 1
@@ -91,7 +102,7 @@ iFCB<- function(data,nclus=3,ndim=2,nstart=100,smartStart=NULL,gamma = TRUE,seed
       flossB=sum(diag(t(Y - Cstar %*% G) %*% (Y - Cstar %*% G)))    
       f=flossA+flossB 
       imp=f0-f
-#      fvec=c(fvec,f)
+      #      fvec=c(fvec,f)
       f0=f
     }
     
@@ -109,7 +120,7 @@ iFCB<- function(data,nclus=3,ndim=2,nstart=100,smartStart=NULL,gamma = TRUE,seed
       }
       #########################
       
-
+      
       #   best_lam=lambda
       best_f=f
       best_ngvec=ngvec	
@@ -166,7 +177,9 @@ iFCB<- function(data,nclus=3,ndim=2,nstart=100,smartStart=NULL,gamma = TRUE,seed
   setTxtProgressBar(pb, 1)
   out=list() 
   out$obscoord=Y
+  rownames(out$obscoord) = rownames(data)
   out$attcoord=B
+  rownames(out$attcoord) = paste(lab1,lab2,sep=".")
   out$centroid=G
   cluster = as.integer(cluster)
   names(cluster) = rownames(data) 

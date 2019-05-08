@@ -9,11 +9,11 @@ Joint  dimension  reduction  and  clustering  of mixed-type data.
 }
 
 \description{
-This function implements clustering and dimension reduction for mixed-type variables, i.e., categorical and metric (see, Yamamoto & Hwang, 2014; van de Velden, Iodice D'Enza, & Markos 2019; Vichi, Vicari, & Kiers, 2019). This framework includes Mixed Reduced K-means and Mixed Factorial K-means, as well as a compromise of these two methods. The methods combine Principal Component Analysis for dimension reduction with K-means for clustering.
+This function implements clustering and dimension reduction for mixed-type variables, i.e., categorical and metric (see, Yamamoto & Hwang, 2014; van de Velden, Iodice D'Enza, & Markos 2019; Vichi, Vicari, & Kiers, 2019). This framework includes Mixed Reduced K-means and Mixed Factorial K-means, as well as a compromise of these two methods. The methods combine Principal Component Analysis of mixed-data for dimension reduction with K-means for clustering.
 }
 
 \usage{
-cluspcamix(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), 
+cluspcamix(data, nclus, ndim, method=c("mixedRKM", "mixedFKM"), 
 center = TRUE, scale = TRUE, alpha=NULL, rotation="none", 
 nstart = 100, smartStart=NULL, seed=NULL, binary = FALSE)
 
@@ -26,7 +26,7 @@ nstart = 100, smartStart=NULL, seed=NULL, binary = FALSE)
 
 \arguments{
   \item{data}{Dataset with categorical and metric variables}
-  \item{nclus}{Number of clusters (nclus = 1 returns the PCAMIX solution; see Details)}
+  \item{nclus}{Number of clusters (nclus = 1 returns the PCAMIX solution)}
   \item{ndim}{Dimensionality of the solution}
     \item{method}{Specifies the method. Options are mixedRKM for mixed reduced K-means and mixedFKM for mixed factorial K-means (default = \code{"mixedRKM"})}
  \item{center}{A logical value indicating whether the variables should be shifted to be zero centered (default = \code{TRUE)}}
@@ -50,7 +50,7 @@ The hidden \code{print} and \code{summary} methods print out some key components
 
 The hidden \code{fitted} method returns cluster fitted values. If method is \code{"classes"}, this is a vector of cluster membership (the cluster component of the "cluspcamix" object). If method is \code{"centers"}, this is a matrix where each row is the cluster center for the observation. The rownames of the matrix are the cluster membership values.
 
-When \code{nclus} = 1 the function returns the solution of PCAMIX (Kiers, 1991) and \code{plot(object)} shows the corresponding biplot.
+When \code{nclus} = 1 the function returns the solution of PCAMIX and \code{plot(object)} shows the corresponding biplot.
 }
 
 \value{

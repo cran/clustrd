@@ -2,7 +2,11 @@ boot_clusmca <- function(data, krange, nd=NULL, method = "clusCA", nstart=100, n
 {
   clu={}
   #bootstrapping on Z
-  x =  dummy.data.frame(data, dummy.classes = "ALL")
+  data = data.frame(data)
+  data=as.data.frame(lapply(data,as.factor))
+  x = data.frame(tab.disjonctif(data))
+  
+  #dummy.data.frame(data, dummy.classes = "ALL")
   if(!is.null(seed)) set.seed(seed)
   seed <- round(2^31 * runif(nboot, -1, 1))
   
@@ -30,137 +34,147 @@ boot_clusmca <- function(data, krange, nd=NULL, method = "clusCA", nstart=100, n
     for(l in 1:nk)
     {
       if(nk>1){
-        if (!is.null(nd))
-          ndim = nd
-        else
-          ndim = krange[l]-1
-        cat('\n')
-        print(paste0("Running for ",krange[l]," clusters and ",ndim," dimensions."))
-  
-        x1 = x[index1[,b],,drop=FALSE]
-        x2 = x[index2[,b],,drop=FALSE]
-        
-        cl1 <- clusmca(x[index1[,b],,drop=FALSE],nclus=krange[l],ndim=ndim,method = method,nstart=nstart, seed = seed, binary = TRUE)
-        cl2 <- clusmca(x[index2[,b],,drop=FALSE],nclus=krange[l],ndim=ndim,method = method,nstart=nstart, seed = seed, binary = TRUE)
-        
-      } else{
-        if (!is.null(nd))
-          ndim = nd
-        else
-          ndim = krange-1
-        
-        cat('\n')
-        print(paste0("Running for ",krange," clusters and ",ndim," dimensions."))
-        x1 = x[index1[,b],,drop=FALSE]
-        x2 = x[index2[,b],,drop=FALSE]
-        
-        cl1 <- clusmca(x1,nclus=krange,ndim=ndim,method = method,nstart=nstart, seed = seed, binary = TRUE)
-        cl2 <- clusmca(x2,nclus=krange,ndim=ndim,method = method,nstart=nstart, seed = seed, binary = TRUE)
+        if (!is.null(nd)) {
+          if ((length(nd) >1) & (l==1))  {
+            cat('\n')
+            print('Warning: the number of dimensions (nd) must be a single number. Automatically set to the first value in the range.')
+          }
+        ndim = nd[1]
       }
+      else
+        ndim = krange[l]-1
+      cat('\n')
+      print(paste0("Running for ",krange[l]," clusters and ",ndim[1]," dimensions."))
       
-      gm=apply(x1,2,mean)
-      x1$clu = cl1$cluster
-      clum=(x1 %>% group_by(clu) %>% summarise_all(funs(mean)))
-      bm = data.frame(rbind(clum[,-1],gm))
-      #rownames(bm) = c(paste("C",1:nrow(clum),sep=""),"all")
-      cl1$centers = as.matrix(bm[1:krange[l],])
-      x1 = x1[,-ncol(x1)]
+      x1 = x[index1[,b],,drop=FALSE]
+      x2 = x[index2[,b],,drop=FALSE]
       
-      closest.cluster1 <- function(x) {
-        cluster.dist <- apply(data.frame(cl1$centers), 1, function(y) sqrt(sum((x-y)^2)))
-        return(which.min(cluster.dist)[1])
+      cl1 <- clusmca(x[index1[,b],,drop=FALSE],nclus=krange[l],ndim=ndim,method = method,nstart=nstart, seed = seed, binary = TRUE)
+      cl2 <- clusmca(x[index2[,b],,drop=FALSE],nclus=krange[l],ndim=ndim,method = method,nstart=nstart, seed = seed, binary = TRUE)
+      
+    } else{
+      if (!is.null(nd)) {
+        if ((length(nd) >1) & (l==1))  {
+          cat('\n')
+          print('Warning: the number of dimensions must be a single number, not a range. Automatically set to the first value.')
+        }
+        ndim = nd[1]
       }
-      clust1[,l] <- apply(x, 1, closest.cluster1)
-      
-      #   x2 = dummy.data.frame(x1, dummy.classes = "ALL") # The original super indicator
-      gm=apply(x2,2,mean)
-      x2$clu = cl2$cluster
-      clum=(x2 %>% group_by(clu) %>% summarise_all(funs(mean)))
-      bm = data.frame(rbind(clum[,-1],gm))
-      cl2$centers = as.matrix(bm[1:krange[l],])
-      x2 = x2[,-ncol(x2)]
-      
-      closest.cluster2 <- function(x) {
-        cluster.dist <- apply(data.frame(cl2$centers), 1, function(y) sqrt(sum((x-y)^2)))
-        return(which.min(cluster.dist)[1])
+      else{
+        ndim = krange-1
       }
-      clust2[,l] <- apply(x, 1, closest.cluster2)
+      cat('\n')
+      print(paste0("Running for ",krange," clusters and ",ndim[1]," dimensions."))
+      x1 = x[index1[,b],,drop=FALSE]
+      x2 = x[index2[,b],,drop=FALSE]
       
-      #     if (measure == "ari") {
-      rand[l] <- randIndex(clust1[,l], clust2[,l])
-      #      }
-      #     if (measure =="conc") {
-      I = length(unique(clust1[,l]))
-      J = length(unique(clust2[,l]))
-      chisq = chisq.test(table(clust1[,l],clust2[,l]))$statistic
-      conc[l]<- chisq/(nx*(sqrt(I*J)-1))
-      
-      #      }
-      
-      #   if(nrow(cl1@centers) < k[l]) {
-      #      extra <- matrix(NA, 
-      #                     ncol=ncol(cl1@centers), 
-      #                      nrow=k[l]-nrow(cl1@centers))
-      #     cent1[[l]] <- rbind(cl1@centers, extra)
-      #    }
-      
-      #    if(nrow(cl2@centers) < k[l]) {
-      #      extra <- matrix(NA, 
-      #                      ncol=ncol(cl2@centers), 
-      #                     nrow=k[l]-nrow(cl2@centers))
-      #      cent2[[l]] <- rbind(cl2@centers, extra)
-      #    }
+      cl1 <- clusmca(x1,nclus=krange,ndim=ndim,method = method,nstart=nstart, seed = seed, binary = TRUE)
+      cl2 <- clusmca(x2,nclus=krange,ndim=ndim,method = method,nstart=nstart, seed = seed, binary = TRUE)
     }
-    list(clust1=clust1, clust2=clust2, rand=rand,conc=conc)
     
-    #  list(cent1=cent1, cent2=cent2, clust1=clust1, clust2=clust2,
-    #       rand=rand)
+    gm=apply(x1,2,mean)
+    x1$clu = cl1$cluster
+    clum=(x1 %>% group_by(clu) %>% summarise_all(list(mean)))
+    bm = data.frame(rbind(clum[,-1],gm))
+    #rownames(bm) = c(paste("C",1:nrow(clum),sep=""),"all")
+    cl1$centers = as.matrix(bm[1:krange[l],])
+    x1 = x1[,-ncol(x1)]
     
+    closest.cluster1 <- function(x) {
+      cluster.dist <- apply(data.frame(cl1$centers), 1, function(y) sqrt(sum((x-y)^2)))
+      return(which.min(cluster.dist)[1])
+    }
+    clust1[,l] <- apply(x, 1, closest.cluster1)
+    
+    #   x2 = dummy.data.frame(x1, dummy.classes = "ALL") # The original super indicator
+    gm=apply(x2,2,mean)
+    x2$clu = cl2$cluster
+    clum=(x2 %>% group_by(clu) %>% summarise_all(list(mean)))
+    bm = data.frame(rbind(clum[,-1],gm))
+    cl2$centers = as.matrix(bm[1:krange[l],])
+    x2 = x2[,-ncol(x2)]
+    
+    closest.cluster2 <- function(x) {
+      cluster.dist <- apply(data.frame(cl2$centers), 1, function(y) sqrt(sum((x-y)^2)))
+      return(which.min(cluster.dist)[1])
+    }
+    clust2[,l] <- apply(x, 1, closest.cluster2)
+    
+    #     if (measure == "ari") {
+    rand[l] <- randIndex(clust1[,l], clust2[,l])
+    #      }
+    #     if (measure =="conc") {
+    I = length(unique(clust1[,l]))
+    J = length(unique(clust2[,l]))
+    chisq = suppressWarnings(chisq.test(table(clust1[,l],clust2[,l]))$statistic)
+    conc[l]<- chisq/(nx*(sqrt(I*J)-1))
+    
+    #      }
+    
+    #   if(nrow(cl1@centers) < k[l]) {
+    #      extra <- matrix(NA, 
+    #                     ncol=ncol(cl1@centers), 
+    #                      nrow=k[l]-nrow(cl1@centers))
+    #     cent1[[l]] <- rbind(cl1@centers, extra)
+    #    }
+    
+    #    if(nrow(cl2@centers) < k[l]) {
+    #      extra <- matrix(NA, 
+    #                      ncol=ncol(cl2@centers), 
+    #                     nrow=k[l]-nrow(cl2@centers))
+    #      cent2[[l]] <- rbind(cl2@centers, extra)
+    #    }
   }
+  list(clust1=clust1, clust2=clust2, rand=rand,conc=conc)
   
-  ## empirical experiments show parallization does not pay for the 
-  ## following (element extraction from list is too fast)
-  #z <- MClapply(as.list(1:nboot), BFUN, multicore=multicore)
+  #  list(cent1=cent1, cent2=cent2, clust1=clust1, clust2=clust2,
+  #       rand=rand)
   
-  z <- lapply(as.list(1:nboot), BFUN)
-  
-  clust1 <- unlist(lapply(z, function(x) x$clust1))
-  clust2 <- unlist(lapply(z, function(x) x$clust2))
-  dim(clust1) <- dim(clust2) <- c(nx, nk, nboot)
-  
-  #  cent1 <- cent2 <- list()
-  #  for(l in 1:nk){
-  #    cent1[[l]] <- unlist(lapply(z, function(x) x$cent1[[l]]))
-  #    cent2[[l]] <- unlist(lapply(z, function(x) x$cent2[[l]]))
-  #    dim(cent1[[l]]) <- dim(cent2[[l]]) <- c(k[l], ncol(x), nboot)
-  #  }
-  
-  if(nk > 1) {
-    rand <- t(sapply(z, function(x) x$rand))
-    conc <- t(sapply(z, function(x) x$conc))
-  }
-  else {
-    rand <- as.matrix(sapply(z, function(x) x$rand))
-    conc <- as.matrix(sapply(z, function(x) x$conc))
-  }
-  colnames(rand) <- krange
-  colnames(conc) <- krange
-  
-  out=list()
-  out$nclusrange = krange
-  out$clust1 = clust1 
-  out$clust2 = clust2 
-  out$index1 = index1
-  out$index2 = index2
-  out$rand = rand
-  out$moc = conc
-  
-  return(out)
-  
-  
-  # new("bootFlexclust", k=as.integer(k), centers1=cent1, centers2=cent2,
-  #      cluster1=clust1, cluster2=clust2, index1=index1, index2=index2,
-  #      rand=rand, call=MYCALL)
+}
+
+## empirical experiments show parallization does not pay for the 
+## following (element extraction from list is too fast)
+#z <- MClapply(as.list(1:nboot), BFUN, multicore=multicore)
+
+z <- lapply(as.list(1:nboot), BFUN)
+
+clust1 <- unlist(lapply(z, function(x) x$clust1))
+clust2 <- unlist(lapply(z, function(x) x$clust2))
+dim(clust1) <- dim(clust2) <- c(nx, nk, nboot)
+
+#  cent1 <- cent2 <- list()
+#  for(l in 1:nk){
+#    cent1[[l]] <- unlist(lapply(z, function(x) x$cent1[[l]]))
+#    cent2[[l]] <- unlist(lapply(z, function(x) x$cent2[[l]]))
+#    dim(cent1[[l]]) <- dim(cent2[[l]]) <- c(k[l], ncol(x), nboot)
+#  }
+
+if(nk > 1) {
+  rand <- t(sapply(z, function(x) x$rand))
+  conc <- t(sapply(z, function(x) x$conc))
+}
+else {
+  rand <- as.matrix(sapply(z, function(x) x$rand))
+  conc <- as.matrix(sapply(z, function(x) x$conc))
+}
+colnames(rand) <- krange
+colnames(conc) <- krange
+
+out=list()
+out$nclusrange = krange
+out$clust1 = clust1 
+out$clust2 = clust2 
+out$index1 = index1
+out$index2 = index2
+out$rand = rand
+out$moc = conc
+
+return(out)
+
+
+# new("bootFlexclust", k=as.integer(k), centers1=cent1, centers2=cent2,
+#      cluster1=clust1, cluster2=clust2, index1=index1, index2=index2,
+#      rand=rand, call=MYCALL)
 }
 
 randIndex <- function (x, y) 

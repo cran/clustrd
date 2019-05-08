@@ -19,7 +19,7 @@ scale = TRUE, nstart = 100, smartStart = NULL, seed = NULL)
 \arguments{
   \item{data}{Continuous, Categorical ot Mixed data set}
   \item{nclusrange}{An integer or an integer vector with the number of clusters or a range of numbers of clusters (should be greater than one)}
-  \item{ndim}{Dimensionality of the solution; if NULL it is set to nclus - 1}
+  \item{ndim}{Dimensionality of the solution; if \code{NULL} it is set to nclus - 1}
   \item{method}{Specifies the method. Options are RKM for Reduced K-means, FKM for Factorial K-means, mixedRKM for Mixed Reduced K-means, mixedFKM for Mixed Factorial K-means, MCAk for MCA K-means, iFCB for Iterative Factorial Clustering of Binary variables and clusCA for Cluster Correspondence Analysis.}
   \item{nboot}{Number of bootstrap pairs of partitions}
   \item{alpha}{Adjusts for the relative importance of (mixed) RKM and FKM in the objective function; \code{alpha = 1} reduces to PCA/PCAMIX, \code{alpha = 0.5} to (mixed) reduced K-means, and \code{alpha = 0} to (mixed) factorial K-means}  
@@ -60,6 +60,8 @@ Note that the stability of a clustering solution is assessed, but stability is n
 
 \references{
 Hennig, C. (2007). Cluster-wise assessment of cluster stability. \emph{Computational Statistics and Data Analysis}, \emph{52}, 258-271.
+
+Pfitzner, D., Leibbrandt, R., & Powers, D. (2009). Characterization and evaluation of similarity measures for pairs of clusterings. \emph{Knowledge and Information Systems}, \emph{19}(3), 361-394.
 
 Dolnicar, S., & Leisch, F. (2010). Evaluation of structure and reproducibility of cluster solutions using the bootstrap. \emph{Marketing Letters}, \emph{21}(1), 83-101.
 }

@@ -215,55 +215,63 @@ plot.cluspcamix<-function(x, dims = c(1,2), cludesc = FALSE, topstdres = 20, att
     numAct <- which(sapply(data, is.numeric))
     facAct <- which(!sapply(data, is.numeric))
     
-    #FOR QUANTITATIVE
-    QuantiAct <- as.matrix(data[, numAct, drop = FALSE])
-    numobs = nrow(data)
-    #standardize continuous
-    QuantiAct <- t(t(QuantiAct) - as.vector(crossprod(rep(1,numobs)/numobs, as.matrix(QuantiAct))))
-    QuantiAct <- t(t(QuantiAct)/sqrt(as.vector(crossprod(rep(1,numobs)/numobs, 
-                                                         as.matrix(QuantiAct^2)))))
-    X = QuantiAct
-    cdsc = clu_means(X, x$cluster, center=FALSE, scale=FALSE)
+    anynum <- any(numAct)
+    anyfact <- any(facAct)
     
-    # out$map = a
-    print(cdsc)
-    out$parcoord = cdsc
-    
-    ### FOR CATEGORICAL
-    
-    csize = round((table(x$cluster)/sum(table(x$cluster)))*100,digits=1)
-    cnames=paste("C",1:K,sep="")
-    cnm=paste(cnames,": ",csize,"%",sep="")
-    
-    #QualiAct <-  tab.disjonctif(data[, facAct, drop = FALSE])
-    
-    lab1a=names(data[, facAct, drop = FALSE])
-    lab1b=lapply(data[, facAct, drop = FALSE],function(z) levels(z))
-    lab1=rep(lab1a,times=unlist(lapply(lab1b,length)))
-    lab2=unlist(lab1b)
-    qualilabs=paste(lab1,lab2,sep=".")
-    
-    attlabs=qualilabs #colnames(QualiAct)
-    
-    if (topstdres > length(attlabs)) {
-      topstdres = length(attlabs)
-    }
-    ffew = topstdres 
-    
-    myminx = -10
-    mymaxx = 10
-    TopplotGroups=outOfIndependence(data[, facAct, drop = FALSE],x$cluster,attlabs,firstfew=ffew,textSize=4,segSize=4,minx=myminx,maxx=mymaxx)
-    plotGroups=outOfIndependence(data[, facAct, drop = FALSE],x$cluster,nolabs=T,attlabs,fixmarg=F,textSize=1.5,segSize=1.5,minx=-2.5,maxx=2.5)
-    
-    for(jjj in 1:K){
-      TopplotGroups$G[[jjj]]=TopplotGroups$G[[jjj]]+theme_bw()+ggtitle(cnm[jjj])
+
+    if (anynum) {
+      #FOR QUANTITATIVE
+      QuantiAct <- as.matrix(data[, numAct, drop = FALSE])
+      numobs = nrow(data)
+      #standardize continuous
+      QuantiAct <- t(t(QuantiAct) - as.vector(crossprod(rep(1,numobs)/numobs, as.matrix(QuantiAct))))
+      QuantiAct <- t(t(QuantiAct)/sqrt(as.vector(crossprod(rep(1,numobs)/numobs, 
+                                                           as.matrix(QuantiAct^2)))))
+      X = QuantiAct
+      cdsc = clu_means(X, x$cluster, center=FALSE, scale=FALSE)
       
-      if (subplot == TRUE) {
-        out$stdres = TopplotGroups$G
-        print(TopplotGroups$G[[jjj]])
-        print(plotGroups$G[[jjj]], vp=viewport(.15, .18, .3, .35))
-      }else{print(TopplotGroups$G[[jjj]])}
-      # print(TopplotGroups$G[[jjj]])
+      # out$map = a
+      print(cdsc)
+      out$parcoord = cdsc
+    }
+    
+    if (anyfact){
+      ### FOR CATEGORICAL
+      
+      csize = round((table(x$cluster)/sum(table(x$cluster)))*100,digits=1)
+      cnames=paste("C",1:K,sep="")
+      cnm=paste(cnames,": ",csize,"%",sep="")
+      
+      #QualiAct <-  tab.disjonctif(data[, facAct, drop = FALSE])
+      
+      lab1a=names(data[, facAct, drop = FALSE])
+      lab1b=lapply(data[, facAct, drop = FALSE],function(z) levels(z))
+      lab1=rep(lab1a,times=unlist(lapply(lab1b,length)))
+      lab2=unlist(lab1b)
+      qualilabs=paste(lab1,lab2,sep=".")
+      
+      attlabs=qualilabs #colnames(QualiAct)
+      
+      if (topstdres > length(attlabs)) {
+        topstdres = length(attlabs)
+      }
+      ffew = topstdres 
+      
+      myminx = -10
+      mymaxx = 10
+      TopplotGroups=outOfIndependence(data[, facAct, drop = FALSE],x$cluster,attlabs,firstfew=ffew,textSize=4,segSize=4,minx=myminx,maxx=mymaxx)
+      plotGroups=outOfIndependence(data[, facAct, drop = FALSE],x$cluster,nolabs=T,attlabs,fixmarg=F,textSize=1.5,segSize=1.5,minx=-2.5,maxx=2.5)
+      
+      for(jjj in 1:K){
+        TopplotGroups$G[[jjj]]=TopplotGroups$G[[jjj]]+theme_bw()+ggtitle(cnm[jjj])
+        
+        if (subplot == TRUE) {
+          out$stdres = TopplotGroups$G
+          print(TopplotGroups$G[[jjj]])
+          print(plotGroups$G[[jjj]], vp=viewport(.15, .18, .3, .35))
+        }else{print(TopplotGroups$G[[jjj]])}
+        # print(TopplotGroups$G[[jjj]])
+      }
     }
   }
   invisible(out)

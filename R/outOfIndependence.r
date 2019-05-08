@@ -3,9 +3,10 @@ outOfIndependence=function(data,Gvec,labs,nolabs=FALSE,fixmarg=TRUE,firstfew=0,m
   value = NULL
   newplace = NULL
   lbls = NULL
-  
-  data=data.frame(data)
-  data=dummy.data.frame(data, dummy.classes = "ALL")
+
+  #data=data.frame(data)
+  data=as.data.frame(lapply(data,as.factor))
+  data= data.frame(tab.disjonctif(data))#dummy.data.frame(data, dummy.classes = "ALL")
   #data = data.matrix(data)
   K=max(Gvec)
 

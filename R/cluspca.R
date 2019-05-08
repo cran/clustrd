@@ -11,7 +11,7 @@ cluspca <- function(data, nclus, ndim, alpha=NULL, method=c("RKM","FKM"), center
       data = data.frame(data)
       n = nrow(data)
       #asymmetric map, biplot
-      outp = princomp(data, scale = scale, center = center)
+      outp = princomp(data)
       out=list()
       out$obscoord=outp$scores[,1:ndim] # observations coordinates
       out$attcoord=data.matrix(outp$loadings[,1:ndim]) # attributes coordinates
@@ -133,49 +133,32 @@ cluspca <- function(data, nclus, ndim, alpha=NULL, method=c("RKM","FKM"), center
           FF = G
           AA = A
           YY = Y
+          UU = U
+          PP = P
           uu = outK$cluster
         }
       }
       
-      ##reorder according to cluster size
-      UU = dummy(uu)
-      
-      #mi = which.min(func)
-      U = UU#UU[[mi]]
-      cluster = apply(U,1,which.max)
-      
-      #csize = round((table(cluster)/sum( table(cluster)))*100,digits=2)
-      size = table(cluster)
-      aa = sort(size,decreasing = TRUE)
-      cluster = mapvalues(cluster, from = as.integer(names(aa)), to = as.integer(names(table(cluster))))
-      #reorder centroids
-      centroid = YY #YY[[mi]]
-      centroid = centroid[as.integer(names(aa)),]
-      #######################
-      
-      ### rotation options ###
-      if ((rotation == "varimax") & (ndim != 1)) { #with Kaiser Normalization
-        AA = varimax(AA)$loadings[1:m,1:ndim]
-        FF = data%*%AA
-        #update center
-        centroid =  chol2inv(chol(crossprod(U)))%*%t(U)%*%FF
-        centroid = centroid[as.integer(names(aa)),]
-        
-      } else if ((rotation == "promax") & (ndim != 1)) {
-        AA = promax(AA)$loadings[1:m,1:ndim]
-        FF = data%*%AA
-        #update center
-        centroid =  chol2inv(chol(crossprod(U)))%*%t(U)%*%FF
-        centroid = centroid[as.integer(names(aa)),]
+      cluster = uu##apply(UU, 1, which.max)
+      #  size = table(cluster)
+      size = table(cluster) 
+      aa = sort(size, decreasing = TRUE)
+      cluster = mapvalues(cluster, from = as.integer(names(aa)), 
+                          to = as.integer(names(table(cluster))))
+      centroid = YY#[[mi]]
+      centroid = centroid[as.integer(names(aa)), ]
+      if (rotation == "varimax") {
+        AA = varimax(AA)$loadings[1:m, 1:ndim]
+        FF = data %*% AA
+        centroid = PP %*% FF
+        centroid = centroid[as.integer(names(aa)), ]
       }
-      
-      #  distB = sum(diag(t(AA[[mi]])%*% AA[[mi]]))
-      #  distG = sum(diag(t(centroid)%*% centroid))
-      #  gamma = ((nclus/m)* distB/distG)^.25
-      
-      #  AA[[mi]] = (1/gamma)*AA[[mi]]
-      #  centroid = gamma*centroid
-      #  FF[[mi]] = gamma*FF[[mi]]
+      else if (rotation == "promax") {
+        AA = promax(AA)$loadings[1:m, 1:ndim]
+        FF = data %*% AA
+        centroid = PP %*% FF
+        centroid = centroid[as.integer(names(aa)), ]
+      }
       
       ##########################
       setTxtProgressBar(pb, 1)
@@ -427,7 +410,6 @@ cluspca <- function(data, nclus, ndim, alpha=NULL, method=c("RKM","FKM"), center
         }
         
       }
-      
       
       ##reorder according to cluster size
       UU = dummy(uu)

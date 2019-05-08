@@ -7,7 +7,7 @@ The data set refers to a collection of 55 articles on Bribery cases from central
 
 \usage{data("bribery")}
 \format{
-   A data frame with 55 observations on 11 categorical variables).
+   A data frame with 55 observations on 11 categorical variables.
   \describe{
     \item{\code{Of}}{Type of Office}
     \item{\code{Cl}}{Level of Client}

@@ -60,14 +60,17 @@ The hidden \code{fitted} method returns cluster fitted values. If method is \cod
 \item{nclusbest}{The optimal number of clusters}
 \item{ndimbest}{The optimal number of dimensions}
 \item{critbest}{The optimal criterion value for \code{nclusbest} clusters and \code{ndimbest} dimensions}
-\item{critgrid}{Matrix of size \code{nclusrange x ndimrange} with the criterion values for the specified ranges of clusters and dimensions (values are calculated only when the number of clusters is greater than the number of dimensions; otherwise values in the grid are left blank)}}
+\item{critgrid}{Matrix of size \code{nclusrange x ndimrange} with the criterion values for the specified ranges of clusters and dimensions (values are calculated only when the number of clusters is greater than the number of dimensions; otherwise values in the grid are left blank)}
+\item{criterion}{"asw" for average Silhouette width or "ch" for "Calinski-Harabasz"}
+\item{cluasw}{Average Silhouette width values of each cluster, when criterion = "asw"}
+}
 
 \references{Calinski, R.B., and Harabasz, J., (1974). A dendrite method for cluster analysis. \emph{Communications in Statistics}, 3, 1-27.
 
 Kaufman, L., and Rousseeuw, P.J., (1990). \emph{Finding Groups in Data: An Introduction to Cluster Analysis}. Wiley, New York.}
 
 \seealso{
-\code{\link{cluspca}}, \code{\link{clusmca}}
+\code{\link{global_bootclus}}, \code{\link{local_bootclus}}
 }
 
 \examples{

@@ -28,33 +28,44 @@ boot_cluspca <- function(data, krange, nd = NULL, method = "RKM", alpha=NULL,sca
     print(paste0("nboot = ", b))
     clust1 <- clust2 <- matrix(integer(1), nrow=nx, ncol=nk)
     rand <- double(nk)
+    conc <- double(nk)
     for(l in 1:nk)
     {
       if(nk>1){
-        if (!is.null(nd))
-          ndim = nd
+        if (!is.null(nd)) {
+          if ((length(nd) >1) & (l==1))  {
+            cat('\n')
+            print('Warning: the number of dimensions (nd) must be a single number. Automatically set to the first value in the range.')
+          }
+          ndim = nd[1]
+        }
         else
           ndim = krange[l]-1
         cat('\n')
-        print(paste0("Running for ",krange[l]," clusters and ",ndim," dimensions."))
+        print(paste0("Running for ",krange[l]," clusters and ",ndim[1]," dimensions."))
         cl1 <- cluspca(x[index1[,b],,drop=FALSE],nclus=krange[l],ndim=ndim,method = method, nstart=nstart, alpha = alpha,scale = scale, center = center, seed = seed)
         cl2 <- cluspca(x[index2[,b],,drop=FALSE],nclus=krange[l],ndim=ndim,method = method,nstart=nstart, alpha = alpha, scale = scale, center = center, seed = seed)
       } else{
-        if (!is.null(nd))
-          ndim = nd
+        if (!is.null(nd)) {
+          if ((length(nd) >1) & (l==1))  {
+            cat('\n')
+            print('Warning: the number of dimensions (nd) must be a single number. Automatically set to the first value in the range.')
+          }
+          ndim = nd[1]
+        }
         else
           ndim = krange-1
         cat('\n')
-        print(paste0("Running for ",krange," clusters and ",ndim," dimensions."))
+        print(paste0("Running for ",krange," clusters and ",ndim[1]," dimensions."))
         cl1 <- cluspca(x[index1[,b],,drop=FALSE],nclus=krange,ndim=ndim,method = method,nstart=nstart, alpha = alpha, scale = scale, center = center, seed = seed)
         cl2 <- cluspca(x[index2[,b],,drop=FALSE],nclus=krange,ndim=ndim,method = method,nstart=nstart, alpha = alpha,scale = scale, center = center, seed = seed)
       }
-     # clall <- cluspca(x,nclus=krange[l],ndim=ndim, method = method, nstart=nstart, alpha = alpha, scale = scale, center = center, seed = seed)
+      # clall <- cluspca(x,nclus=krange[l],ndim=ndim, method = method, nstart=nstart, alpha = alpha, scale = scale, center = center, seed = seed)
       
       x1 = x[index1[,b],,drop=FALSE]
       gm=apply(x1,2,mean)
       x1$clu = cl1$cluster
-      clum=(x1 %>% group_by(clu) %>% summarise_all(funs(mean)))
+      clum=(x1 %>% group_by(clu) %>% summarise_all(list(mean)))
       
       am = rbind(clum[,-1],gm)
       bm = data.frame(am)
@@ -75,7 +86,7 @@ boot_cluspca <- function(data, krange, nd = NULL, method = "RKM", alpha=NULL,sca
       gm=apply(x2,2,mean)
       
       x2$clu = cl2$cluster
-      clum=(x2 %>% group_by(clu) %>% summarise_all(funs(mean)))
+      clum=(x2 %>% group_by(clu) %>% summarise_all(list(mean)))
       
       am = rbind(clum[,-1],gm)
       bm = data.frame(am)
@@ -93,8 +104,15 @@ boot_cluspca <- function(data, krange, nd = NULL, method = "RKM", alpha=NULL,sca
       #replace this
       
       rand[l] <- randIndex(clust1[,l], clust2[,l])
+      
+      I = length(unique(clust1[,l]))
+      J = length(unique(clust2[,l]))
+      chisq = chisq.test(table(clust1[,l],clust2[,l]))$statistic
+      conc[l]<- chisq/(nx*(sqrt(I*J)-1))
+      
+      
     }
-    list(clust1=clust1, clust2=clust2, rand=rand)
+    list(clust1=clust1, clust2=clust2, rand=rand, conc=conc)
     
   }
   
@@ -112,12 +130,17 @@ boot_cluspca <- function(data, krange, nd = NULL, method = "RKM", alpha=NULL,sca
   clust2 <- unlist(lapply(z, function(x) x$clust2))
   dim(clust1) <- dim(clust2) <- c(nx, nk, nboot)
   
-  if(nk > 1)
+  if(nk > 1) {
     rand <- t(sapply(z, function(x) x$rand))
-  else
+    conc <- t(sapply(z, function(x) x$conc))
+  }
+  else {
     rand <- as.matrix(sapply(z, function(x) x$rand))
-  
+    conc <- as.matrix(sapply(z, function(x) x$conc))
+  }
   colnames(rand) <- krange
+  colnames(conc) <- krange
+  
   
   out=list()
   out$nclusrange = krange
@@ -126,6 +149,7 @@ boot_cluspca <- function(data, krange, nd = NULL, method = "RKM", alpha=NULL,sca
   out$index1 = index1
   out$index2 = index2
   out$rand = rand
+  out$moc = conc
   
   return(out)
   

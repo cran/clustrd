@@ -2,6 +2,7 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
 {
   clu=group=trueOrd={}
   . = NULL
+  data = data.frame(data)
   odata = data
   #define X case kapws alliws
   if (binary == FALSE) {
@@ -22,39 +23,52 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
     numAct <- which(sapply(data, is.numeric))
     facAct <- which(!sapply(data, is.numeric))
     
-    QuantiAct <- as.matrix(data[, numAct, drop = FALSE])
     numobs = nrow(data)
     
-    #standardize continuous
-    # data = scale(data center = center, scale = scale)
-    if (center == TRUE) {
-      QuantiAct <- t(t(QuantiAct) - as.vector(crossprod(rep(1,numobs)/numobs, as.matrix(QuantiAct))))
+    if (anynum) {
+      QuantiAct <- as.matrix(data[, numAct, drop = FALSE])
+      
+      #standardize continuous
+      # data = scale(data center = center, scale = scale)
+      if (center == TRUE) {
+        QuantiAct <- t(t(QuantiAct) - as.vector(crossprod(rep(1,numobs)/numobs, as.matrix(QuantiAct))))
+      }
+      
+      if (scale == TRUE) {
+        QuantiAct <- t(t(QuantiAct)/sqrt(as.vector(crossprod(rep(1,numobs)/numobs, 
+                                                             as.matrix(QuantiAct^2)))))
+      }
     }
+    else QuantiAct={}
     
-    if (scale == TRUE) {
-      QuantiAct <- t(t(QuantiAct)/sqrt(as.vector(crossprod(rep(1,numobs)/numobs, 
-                                                           as.matrix(QuantiAct^2)))))
+    if (anyfact) {
+      
+      lab1a=names(data[, facAct, drop = FALSE])
+      lab1b=lapply(data[, facAct, drop = FALSE],function(z) levels(z))
+      lab1=rep(lab1a,times=unlist(lapply(lab1b,length)))
+      lab2=unlist(lab1b)
+      qualilabs=paste(lab1,lab2,sep=".")
+      
+      QualiAct <-  tab.disjonctif(data[, facAct, drop = FALSE])
+      
+      #standardize categorical
+      prop <- colSums(QualiAct * (rep(1,numobs)/numobs))
+      # print(as.vector(crossprod(rep(1,numobs)/numobs, as.matrix(QualiAct))))
+      
+      QualiAct <- t(t(QualiAct) - as.vector(crossprod(rep(1,numobs)/numobs, as.matrix(QualiAct)))) #this is centering MZ
+      QualiAct <- t(t(QualiAct)/sqrt(prop))
     }
-    lab1a=names(data[, facAct, drop = FALSE])
-    lab1b=lapply(data[, facAct, drop = FALSE],function(z) levels(z))
-    lab1=rep(lab1a,times=unlist(lapply(lab1b,length)))
-    lab2=unlist(lab1b)
-    qualilabs=paste(lab1,lab2,sep=".")
-    
-    QualiAct <-  tab.disjonctif(data[, facAct, drop = FALSE])
+    else 
+    {
+      QualiAct = {}
+      qualilabs = {}
+    }
     
     
     attlabs = c(colnames(QuantiAct),qualilabs)
     
+    X <- cbind(QuantiAct, QualiAct) 
     
-    #standardize categorical
-    prop <- colSums(QualiAct * (rep(1,numobs)/numobs))
-    # print(as.vector(crossprod(rep(1,numobs)/numobs, as.matrix(QualiAct))))
-    
-    QualiAct <- t(t(QualiAct) - as.vector(crossprod(rep(1,numobs)/numobs, as.matrix(QualiAct)))) #this is centering MZ
-    QualiAct <- t(t(QualiAct)/sqrt(prop))
-    
-    X <- cbind(QuantiAct, QualiAct)   
   }
   else { #binary = TRUE
     #  numvars <- sapply(data, is.numeric)
@@ -105,8 +119,8 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
   
   if(!is.null(seed)) set.seed(seed)
   seed <- round(2^31 * runif(nstart, -1, 1))
-  pb <- txtProgressBar(style = 3)
-  prog = 1
+  # pb <- txtProgressBar(style = 3)
+  #  prog = 1
   
   data = X
   
@@ -130,8 +144,8 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
       out$criterion = 1 # criterion
       out$size=n #as.integer(aa)  #round((table(cluster)/sum( table(cluster)))*100,digits=1)
       out$odata = odata #data.frame(data) #data.frame(lapply(data.frame(data),factor))
-      #   out$scale = FALSE
-      #    out$center = FALSE
+      out$scale = scale
+      out$center = center
       out$nstart = nstart
       class(out) = "cluspcamix"
       return(out)
@@ -172,12 +186,11 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
       pb <- txtProgressBar(style = 3)
       prog = 1
       for (run in c(1:nstart)) {
-        if (run > (prog * (run/9))) {
+        if (run > (prog * (nstart/10))) {
           prog <- prog + 1
         }
         setTxtProgressBar(pb, prog * 0.1)
-        
-        
+
         if (is.null(smartStart)) {
           #  myseed = seed + run
           #  set.seed(myseed)
@@ -189,14 +202,17 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
           randVec = smartStart
         }
         #U = dummy(randVec)
-        U = data.matrix(fac2disj(randVec))
+        U = tab.disjonctif(randVec)
+        pseudoinvU = chol2inv(chol(t(U)%*%U))
+        P = U%*%pseudoinvU%*%t(U)
         
-        P = U %*% pseudoinverse(t(U) %*% U) %*% t(U)
+        #P = U %*% pseudoinverse(t(U) %*% U) %*% t(U)
         A = eigen(t(data) %*% ((1 - alpha) * P - (1 - 2 * 
                                                     alpha) * diag(n)) %*% data)$vectors
         A = A[, 1:ndim]
         G = data %*% A
-        Y = pseudoinverse(t(U) %*% U) %*% t(U) %*% G
+        #  Y = pseudoinverse(t(U) %*% U) %*% t(U) %*% G
+        Y = pseudoinvU%*%t(U)%*%G
         f = alpha * ssq(data - G %*% t(A)) + (1 - alpha) * 
           ssq(data %*% A - U %*% Y)
         f = as.numeric(f)
@@ -211,33 +227,38 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
             outK = EmptyKmeans(G, centers = Y)
           }
           v = as.factor(outK$cluster)
-          U = diag(nlevels(v))[v, ]
-          P = U %*% pseudoinverse(t(U) %*% U) %*% t(U)
-          A = eigen(t(data) %*% ((1 - alpha) * P - (1 - 
-                                                      2 * alpha) * diag(n)) %*% data)$vectors
-          A = A[, 1:ndim]
+          U = diag(nlevels(v))[v,] #dummy cluster membership
+          pseudoinvU = chol2inv(chol(t(U)%*%U))
+          # update A
+          P = U%*%pseudoinvU%*%t(U)
+          #R = t(data)%*%((1-alpha)*P-(1-2*alpha)*diag(n))%*%data
+          #A = suppressWarnings(eigs_sym(R,ndim)$vectors)
+          A = eigen(t(data)%*%((1-alpha)*P-(1-2*alpha)*diag(n))%*%data)$vectors
+          A = A[,1:ndim]
           G = data %*% A
-          Y = pseudoinverse(t(U) %*% U) %*% t(U) %*% G
-          f = alpha * ssq(data - G %*% t(A)) + (1 - alpha) * 
-            ssq(data %*% A - U %*% Y)
+          #update Y
+          Y = pseudoinvU%*%t(U)%*%G
+          # criterion
+          f = alpha*ssq(data - G%*%t(A))+(1-alpha)*ssq(data%*%A-U%*%Y)
           f = as.numeric(f)
+          
+          
         }
         if (f < bestf) {
           bestf = f
           FF = G
           AA = A
           YY = Y
+          UU = U
+          PP = P
           uu = outK$cluster
         }
         
       }
-      #  mi = which.min(func)
-      ##reorder according to cluster size
-      UU = dummy(uu)
       
-      U = UU#[[mi]]
-      cluster = apply(U, 1, which.max)
-      size = table(cluster)
+      cluster = uu##apply(UU, 1, which.max)
+      #  size = table(cluster)
+      size = table(cluster) 
       aa = sort(size, decreasing = TRUE)
       cluster = mapvalues(cluster, from = as.integer(names(aa)), 
                           to = as.integer(names(table(cluster))))
@@ -246,15 +267,13 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
       if (rotation == "varimax") {
         AA = varimax(AA)$loadings[1:m, 1:ndim]
         FF = data %*% AA
-        centroid = pseudoinverse(t(U) %*% U) %*% t(U) %*% 
-          FF
+        centroid = PP %*% FF
         centroid = centroid[as.integer(names(aa)), ]
       }
       else if (rotation == "promax") {
         AA = promax(AA)$loadings[1:m, 1:ndim]
         FF = data %*% AA
-        centroid = pseudoinverse(t(U) %*% U) %*% t(U) %*% 
-          FF
+        centroid = PP %*% FF
         centroid = centroid[as.integer(names(aa)), ]
       }
       setTxtProgressBar(pb, 1)
@@ -271,8 +290,6 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
       out$criterion = bestf #func[mi]
       out$size = as.integer(aa)
       out$odata = odata #data.frame(data) #check what's needed for tunecluspcamix
-      # colnames(out$odata) = #rownames(out$attcoord)
-      #print(colnames(out$odata))
       out$scale = scale
       out$center = center
       out$nstart = nstart
@@ -299,8 +316,8 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
       out$criterion = 1 # criterion
       out$size=n #as.integer(aa)  #round((table(cluster)/sum( table(cluster)))*100,digits=1)
       out$odata = odata #data.frame(data) #data.frame(lapply(data.frame(data),factor))
-      #   out$scale = FALSE
-      #    out$center = FALSE
+      out$scale = scale
+      out$center = center
       out$nstart = nstart
       class(out) = "cluspcamix"
       return(out)
@@ -341,10 +358,6 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
       pb <- txtProgressBar(style = 3)
       prog = 1
       for (run in c(1:nstart)) {
-        if (run > (prog * (run/9))) {
-          prog <- prog + 1
-        }
-        setTxtProgressBar(pb, prog * 0.1)
         
         
         if (is.null(smartStart)) {
@@ -357,7 +370,7 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
         else {
           randVec = smartStart
         }
-       
+        
         mydata = as_tibble(cbind(data,group = as.factor(randVec)))
         all_groups=tibble(group=mydata$group,trueOrd=1:nrow(mydata))
         # mydata=as_tibble(mydata)
@@ -396,7 +409,6 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
           group_by(group) %>%
           summarise_all(mean) #%>%
         
-        
         UY = Y %>%
           full_join(all_groups,Y,by="group")%>%
           arrange(trueOrd)%>%
@@ -411,23 +423,70 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
         fold = f + 2 * conv * f
         iter = 0
         while (f < fold - conv * f) {
-          fold = f
-          iter = iter + 1
-          outK = try(kmeans(G, centers = Y, nstart = 100), 
-                     silent = T)
-          if (is.list(outK) == FALSE) {
-            outK = EmptyKmeans(G, centers = Y)
+          fold=f
+          iter=iter+1
+          outK = try(kmeans(G,centers=Y,nstart=100),silent=T)
+          
+          if(is.list(outK)==FALSE){
+            outK = EmptyKmeans(G,centers=Y)
+            #  break
           }
-          v = as.factor(outK$cluster)
-          U = diag(nlevels(v))[v, ]
-          P = U %*% pseudoinverse(t(U) %*% U) %*% t(U)
-          A = eigen(t(data) %*% ((1 - alpha) * P - (1 - 
-                                                      2 * alpha) * diag(n)) %*% data)$vectors
-          A = A[, 1:ndim]
+          
+          #  v = as.factor(outK$cluster)
+          #  U = diag(nlevels(v))[v,] #dummy cluster membership
+          
+          #        pseudoinvU = chol2inv(chol(crossprod(U)))
+          #  pseudoinvU = chol2inv(chol(t(U)%*%U))
+          
+          # update A
+          mydata = as_tibble(cbind(data,group = as.factor(outK$cluster)))
+          all_groups=tibble(group=mydata$group,trueOrd=1:nrow(mydata))
+          # mydata=as_tibble(mydata)
+          
+          gmeans=mydata%>%
+            group_by(group) %>%
+            summarise_all(mean)%>%
+            full_join(all_groups,gmeans,by="group")%>%
+            arrange(trueOrd)%>%
+            select(-group,-trueOrd)%>%
+            t(.)
+          R = (1-alpha)*(gmeans)%*%as.matrix(data)
+          
+          if (alpha != 0.5) {
+            R2 = (1-2*alpha)*crossprod(data)
+            R = R - R2
+          }
+          
+          #  A = suppressWarnings(eigs(R,ncol(data))$vectors)
+          if (ncol(R) > 2) 
+            A = eigs_sym(R,nd)$vectors
+          else
+            A =  eigen(R)$vectors
+          
+          #     A = eigen(R,symmetric = TRUE)$vectors
+          A = A[,1:ndim]
           G = data %*% A
-          Y = pseudoinverse(t(U) %*% U) %*% t(U) %*% G
-          f = alpha * ssq(data - G %*% t(A)) + (1 - alpha) * 
-            ssq(data %*% A - U %*% Y)
+          #update Y
+          # Y = pseudoinvU%*%t(U)%*%G
+          
+          #      all_groups=tibble(group=mydata$group,trueOrd=1:nrow(mydata))
+          
+          G = as_tibble(cbind(G,group = as.factor(outK$cluster)))
+          Y = G%>%
+            group_by(group) %>%
+            summarise_all(mean) #%>%
+          
+          
+          UY = Y %>%
+            full_join(all_groups,Y,by="group")%>%
+            arrange(trueOrd)%>%
+            select(-group,-trueOrd) #%>%
+          
+          G = as.matrix(select(G,-group))
+          Y = as.matrix(select(Y,-group))
+          
+          # criterion
+          f = alpha*ssq(data - G%*%t(A))+(1-alpha)*ssq(G-UY)
           f = as.numeric(f)
         }
         if (f < bestf) {
@@ -437,38 +496,48 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
           YY = Y
           uu = outK$cluster
         }
+        if (run > (prog * (nstart/10))) {
+          prog <- prog + 1
+        }
+        setTxtProgressBar(pb, prog * 0.1)
         
       }
-      #  mi = which.min(func)
       ##reorder according to cluster size
-      UU = dummy(uu)
+    #  UU = tab.disjonctif(uu)#dummy(uu)
+      UU = tab.disjonctif(uu)#diag(nlevels(uu))[uu,]
+      #mi = which.min(func)
+      U= UU#UU[[mi]]
+      cluster = apply(U,1,which.max)
       
-      U = UU#[[mi]]
-      cluster = apply(U, 1, which.max)
+      #csize = round((table(cluster)/sum( table(cluster)))*100,digits=2)
       size = table(cluster)
-      aa = sort(size, decreasing = TRUE)
-      cluster = mapvalues(cluster, from = as.integer(names(aa)), 
-                          to = as.integer(names(table(cluster))))
-      centroid = YY#[[mi]]
-      centroid = centroid[as.integer(names(aa)), ]
-      if (rotation == "varimax") {
-        AA = varimax(AA)$loadings[1:m, 1:ndim]
-        FF = data %*% AA
-        centroid = pseudoinverse(t(U) %*% U) %*% t(U) %*% 
-          FF
-        centroid = centroid[as.integer(names(aa)), ]
+      aa = sort(size,decreasing = TRUE)
+      cluster = mapvalues(cluster, from = as.integer(names(aa)), to = as.integer(names(table(cluster))))
+      #reorder centroids
+      centroid = YY #YY[[mi]]
+      centroid = centroid[as.integer(names(aa)),]
+      #######################
+      
+      ### rotation options ###
+      if (rotation == "varimax") { #with Kaiser Normalization
+        AA = varimax(AA)$loadings[1:m,1:ndim]
+        FF = data%*%AA
+        #update center
+        centroid =  chol2inv(chol(crossprod(U)))%*%t(U)%*%FF
+        centroid = centroid[as.integer(names(aa)),]
+        
+      } else if (rotation == "promax") {
+        AA = promax(AA)$loadings[1:m,1:ndim]
+        FF = data%*%AA
+        #update center
+        centroid =  chol2inv(chol(crossprod(U)))%*%t(U)%*%FF
+        centroid = centroid[as.integer(names(aa)),]
       }
-      else if (rotation == "promax") {
-        AA = promax(AA)$loadings[1:m, 1:ndim]
-        FF = data %*% AA
-        centroid = pseudoinverse(t(U) %*% U) %*% t(U) %*% 
-          FF
-        centroid = centroid[as.integer(names(aa)), ]
-      }
+      
       setTxtProgressBar(pb, 1)
       
       out = list()
-      #  mi = which.min(func)
+      
       out$obscoord = FF
       rownames(out$obscoord) = rownames(data)
       out$attcoord = data.matrix(AA)
@@ -479,8 +548,6 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
       out$criterion = bestf #func[mi]
       out$size = as.integer(aa)
       out$odata = odata #data.frame(data) #check what's needed for tunecluspcamix
-      # colnames(out$odata) = #rownames(out$attcoord)
-      #print(colnames(out$odata))
       out$scale = scale
       out$center = center
       out$nstart = nstart
@@ -514,39 +581,6 @@ fac2disj<- function(fac, drop = FALSE) {
   dimnames(x) <- list(names(fac), as.character(levels(fac)))
   return(data.frame(x, check.names = FALSE))
 }
-
-tab.disjonctif.NA <-
-  function (tab,rename.level=FALSE) {
-    tab <- as.data.frame(tab)
-    modalite.disjonctif <- function(i) {
-      moda <- tab[, i]
-      nom <- names(tab)[i]
-      n <- length(moda)
-      moda <- as.factor(moda)
-      x <- matrix(0, n, length(levels(moda)))
-      ind<-(1:n) + n * (unclass(moda) - 1)
-      indNA<-which(is.na(ind))
-      
-      x[(1:n) + n * (unclass(moda) - 1)] <- 1
-      x[indNA,]<-NA 
-      if (rename.level==TRUE){
-        dimnames(x) <- list(row.names(tab), paste(nom, levels(moda), 
-                                                  sep = "="))
-      }    else{
-        dimnames(x) <- list(row.names(tab), levels(moda))
-      }
-      
-      
-      return(x)
-    }
-    if (ncol(tab) == 1) 
-      res <- modalite.disjonctif(1)
-    else {
-      res <- lapply(1:ncol(tab), modalite.disjonctif)
-      res <- as.matrix(data.frame(res, check.names = FALSE))
-    }
-    return(res)
-  }
 
 ssq = function(a) {
   t(as.vector(c(as.matrix(a))))%*%as.vector(c(as.matrix(a)))
@@ -643,34 +677,3 @@ setTxtProgressBar <- function (pb, value, title = NULL, label = NULL)
   invisible(oldval)
 }
 
-tab.disjonctif <- function(tab) {
-  tab <- as.data.frame(tab)
-  modalite.disjonctif <- function(i) {
-    moda <- as.factor(tab[, i])
-    n <- length(moda)
-    x <- matrix(0L, n, nlevels(moda))
-    x[(1:n) + n * (unclass(moda) - 1L)] <- 1L
-    return(x)
-  }
-  if (ncol(tab) == 1) {
-    res <- modalite.disjonctif(1)
-    dimnames(res) <- list(attributes(tab)$row.names, levels(tab[, 
-                                                                1]))
-  }
-  else {
-    variable <- rep(attributes(tab)$names, lapply(tab, nlevels))
-    listModa <- unlist(lapply(tab, levels))
-    wlistModa <- which((listModa) %in% c("y", "n", "Y", "N"))
-    if (!is.null(wlistModa)) 
-      listModa[wlistModa] <- paste(variable[wlistModa], 
-                                   listModa[wlistModa], sep = ".")
-    numlistModa <- which(unlist(lapply(listModa, is.numeric)))
-    if (!is.null(numlistModa)) 
-      listModa[numlistModa] <- paste(variable[numlistModa], 
-                                     listModa[numlistModa], sep = ".")
-    res <- lapply(1:ncol(tab), modalite.disjonctif)
-    res <- as.matrix(data.frame(res, check.names = FALSE))
-    dimnames(res) <- list(attributes(tab)$row.names, listModa)
-  }
-  return(res)
-}

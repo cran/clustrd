@@ -5,7 +5,7 @@ print.tuneclus <- function(x, ...) {
   d = x$ndimbest
   x$clusobjbest$centroid = data.frame(x$clusobjbest$centroid)
   cluspca = FALSE
-  try(if (x$clusobjbest$center) { cluspca = TRUE }, silent = TRUE)
+  try(if (class(x$clusobjbest)=="cluspca") { cluspca = TRUE }, silent = TRUE)
   
   if (cluspca == TRUE) {  
     if (x$clusobjbest$center == TRUE) {
@@ -19,16 +19,34 @@ print.tuneclus <- function(x, ...) {
     
     tt = paste('(',csize,'%)',sep="")
     cs = paste(size, tt, sep = " ", collapse = ", ")
-    cat(paste("\nThe best solution was obtained for ",k ," clusters of sizes ", paste(cs, collapse = ", ")," in ",d ," dimensions, for a cluster quality criterion value of ",round(x$critbest,3), ". Variables were ", centering, " and ", scaling,".", "\n", sep = ""))
+    if (x$crit== "asw") 
+      cat(paste("\nThe best solution was obtained for ",k ," clusters of sizes ", paste(cs, collapse = ", ")," in ",d ," dimensions, for an average Silhouette width value of ",round(x$critbest,3), ". Variables were ", centering, " and ", scaling,".", "\n", sep = ""))
+    else if (x$crit== "ch") 
+      cat(paste("\nThe best solution was obtained for ",k ," clusters of sizes ", paste(cs, collapse = ", ")," in ",d ," dimensions, for a Calinski-Harabasz value of ",round(x$critbest,3), ". Variables were ", centering, " and ", scaling,".", "\n", sep = ""))
+    else
+      cat(paste("\nThe best solution was obtained for ",k ," clusters of sizes ", paste(cs, collapse = ", ")," in ",d ," dimensions, for an objective criterion value of ",round(x$critbest,3), ". Variables were ", centering, " and ", scaling,".", "\n", sep = ""))
+    
   } else {
     
     tt = paste('(',csize,'%)',sep="")
     cs = paste(size, tt, sep = " ", collapse = ", ")
-    cat(paste("\nThe best solution was obtained for ",k ," clusters of sizes ", paste(cs, collapse = ", ")," in ",d ," dimensions, for a cluster quality criterion value of ",round(x$critbest,3), ".", "\n", sep = ""))
+    if (x$crit== "asw")
+      cat(paste("\nThe best solution was obtained for ",k ," clusters of sizes ", paste(cs, collapse = ", ")," in ",d ," dimensions, for an average Silhouette width value of ",round(x$critbest,3), ".", "\n", sep = ""))
+    else if (x$crit== "ch")
+      cat(paste("\nThe best solution was obtained for ",k ," clusters of sizes ", paste(cs, collapse = ", ")," in ",d ," dimensions, for a Calinski-Harabasz value of ",round(x$critbest,3), ".", "\n", sep = ""))
+    else
+      cat(paste("\nThe best solution was obtained for ",k ," clusters of sizes ", paste(cs, collapse = ", ")," in ",d ," dimensions, for an objective criterion value of ",round(x$critbest,3), ".", "\n", sep = ""))
+    
   }
   
   cat("\nCluster quality criterion values across the specified range of clusters (rows) and dimensions (columns):\n")
   print(x$critgrid)
+  
+  if (x$crit== "asw") {
+    cat("\nThe average Silhouette width values of each cluster are:\n")
+    print(as.vector(round(x$cluasw,2)))
+  }
+    
   
   cat("\nCluster centroids:\n")
   xcent = data.frame(round(x$clusobjbest$centroid,4))
@@ -39,12 +57,12 @@ print.tuneclus <- function(x, ...) {
     colnames(xcent)[i] = paste0("Dim.",i)
   }
   print(xcent)
- # attc = data.frame(round(x$clusobjbest$attcoord,4))
-#  cat("\nVariable scores:\n")
- # for (i in 1:ncol(attc)) {
-#    colnames(attc)[i] = paste0("Dim.",i)
-#  }
-#  print(attc)
+  # attc = data.frame(round(x$clusobjbest$attcoord,4))
+  #  cat("\nVariable scores:\n")
+  # for (i in 1:ncol(attc)) {
+  #    colnames(attc)[i] = paste0("Dim.",i)
+  #  }
+  #  print(attc)
   
   cat("\nWithin cluster sum of squares by cluster:\n")
   #resid <- x$obscoord - fitted(x) 

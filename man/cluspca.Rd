@@ -24,7 +24,7 @@ smartStart = NULL, seed = NULL)
 
 \arguments{
   \item{data}{Dataset with metric variables}
-  \item{nclus}{Number of clusters (nclus = 1 returns the PCA solution; see Details)}
+  \item{nclus}{Number of clusters (nclus = 1 returns the PCA solution}
   \item{ndim}{Dimensionality of the solution}
   \item{method}{Specifies the method. Options are RKM for reduced K-means and FKM for factorial K-means (default = \code{"RKM"})}
   \item{alpha}{Adjusts for the relative importance of RKM and FKM in the objective function; \code{alpha} = 0.5 leads to reduced K-means, \code{alpha} = 0 to factorial K-means, and \code{alpha} = 1 reduces to the tandem approach (PCA followed by K-means)}
@@ -47,7 +47,7 @@ The hidden \code{print} and \code{summary} methods print out some key components
 
 The hidden \code{fitted} method returns cluster fitted values. If method is \code{"classes"}, this is a vector of cluster membership (the cluster component of the "cluspca" object). If method is \code{"centers"}, this is a matrix where each row is the cluster center for the observation. The rownames of the matrix are the cluster membership values.
 
-When \code{nclus} = 1 the function returns the PCA solution. and \code{plot(object)} shows the corresponding biplot.
+When \code{nclus} = 1 the function returns the PCA solution and \code{plot(object)} shows the corresponding biplot.
 }
 
 \value{

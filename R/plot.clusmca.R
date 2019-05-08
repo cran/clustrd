@@ -169,7 +169,6 @@ plot.clusmca<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, t
     myminx = -10
     mymaxx = 10
     TopplotGroups=outOfIndependence(x$odata,x$cluster,attlabs,firstfew=ffew,textSize=4,segSize=4,minx=myminx,maxx=mymaxx)
-    
     plotGroups=outOfIndependence(x$odata,x$cluster,nolabs=T,attlabs,fixmarg=F,textSize=1.5,segSize=1.5,minx=-2.5,maxx=2.5)
     
     for(jjj in 1:K){

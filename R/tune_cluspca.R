@@ -25,7 +25,7 @@ tune_cluspca <- function(data, nclusrange = 2:7, ndimrange = 2:4, criterion = "a
   for (k in nclusrange) {
     for (d in ndimrange) {
       if (k > d) {
-        print(paste('Running for',k,'clusters and',d,'dimensions...'))
+        print(paste("Running for",k,'clusters and',d,'dimensions...'))
         outcluspca <- cluspca(data=data, nclus = k, ndim = d,alpha = alpha,method = method,  center = center, scale = scale, rotation=rotation, nstart = nstart, smartStart = smartStart, seed = seed)
       #  outcluspca <- cluspcamix(data=data, nclus = k, ndim = d,alpha = alpha, center = center, scale = scale, rotation=rotation, nstart = nstart, smartStart = smartStart, seed = seed)
         
@@ -75,7 +75,12 @@ tune_cluspca <- function(data, nclusrange = 2:7, ndimrange = 2:4, criterion = "a
   crit.grid[is.na(crit.grid)]=''
   crit.grid = as.data.frame(crit.grid)
   
-  out <- list(clusobjbest = outcluspcabest, nclusbest = k.best, ndimbest = d.best, critbest = crit.best, critgrid  = crit.grid)
+  if (criterion == "asw")
+    cluasw = clusval(outcluspcabest, dst = dst)$cluasw
+  else
+    cluasw = NULL
+  
+  out <- list(clusobjbest = outcluspcabest, nclusbest = k.best, ndimbest = d.best, critbest = crit.best, critgrid  = crit.grid, crit = criterion, cluasw = cluasw)
   class(out) = "tuneclus"
   out
 }

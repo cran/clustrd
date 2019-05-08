@@ -32,7 +32,7 @@ nboot=10, alphak = .5, seed = NULL)
 
 
 \details{
-The algorithm for assessing global cluster stability is similar to that in Hennig (2007) and can be summarized in three steps:
+The algorithm for assessing local cluster stability is similar to that in Hennig (2007) and can be summarized in three steps:
 
 \emph{Step 1. Resampling:} Draw bootstrap samples S_i and T_i of size n from the data and use the original data as evaluation set E_i = X. Apply a joint dimension reduction and clustering method to S_i and T_i and obtain C^{S_i} and C^{T_i}.
 

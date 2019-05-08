@@ -4,6 +4,7 @@
 boot_cluspcamix <- function(data, krange, nd = NULL,alpha=NULL, scale = TRUE, center= TRUE,nstart=100, nboot=10, seed=NULL, ...)
 {
   clu={}
+  data = data.frame(data)
   numvars <- sapply(data, is.numeric)
   anynum <- any(numvars)
   catvars <- sapply(data, is.factor)
@@ -66,21 +67,31 @@ boot_cluspcamix <- function(data, krange, nd = NULL,alpha=NULL, scale = TRUE, ce
     for(l in 1:nk)
     {
       if(nk>1){
-        if (!is.null(nd))
-          ndim = nd
+        if (!is.null(nd)) {
+          if ((length(nd) >1) & (l==1))  {
+            cat('\n')
+            print('Warning: the number of dimensions (nd) must be a single number. Automatically set to the first value in the range.')
+          }
+          ndim = nd[1]
+        }
         else
           ndim = krange[l]-1
         cat('\n')
-        print(paste0("Running for ",krange[l]," clusters and ",ndim," dimensions."))
+        print(paste0("Running for ",krange[l]," clusters and ",ndim[1]," dimensions."))
         cl1 <- cluspcamix(x[index1[,b],,drop=FALSE],nclus=krange[l],ndim=ndim,nstart=nstart, scale = scale, center = center, seed = seed, binary = TRUE)
         cl2 <- cluspcamix(x[index2[,b],,drop=FALSE],nclus=krange[l],ndim=ndim,nstart=nstart, scale = scale, center = center, seed = seed, binary = TRUE)
       } else{
-        if (!is.null(nd))
-          ndim = nd
+        if (!is.null(nd)) {
+          if ((length(nd) >1) & (l==1))  {
+            cat('\n')
+            print('Warning: the number of dimensions (nd) must be a single number. Automatically set to the first value in the range.')
+          }
+          ndim = nd[1]
+        }
         else
           ndim = krange-1
         cat('\n')
-        print(paste0("Running for ",krange," clusters and ",ndim," dimensions."))
+        print(paste0("Running for ",krange," clusters and ",ndim[1]," dimensions."))
         cl1 <- cluspcamix(x[index1[,b],,drop=FALSE],nclus=krange,ndim=ndim,nstart=nstart, scale = scale, center = center, seed = seed, binary = TRUE)
         cl2 <- cluspcamix(x[index2[,b],,drop=FALSE],nclus=krange,ndim=ndim,nstart=nstart, scale = scale, center = center, seed = seed, binary = TRUE)
       }
@@ -90,7 +101,7 @@ boot_cluspcamix <- function(data, krange, nd = NULL,alpha=NULL, scale = TRUE, ce
       x1 = xgood[index1[,b],]
       gm=apply(x1,2,mean)
       x1$clu = cl1$cluster
-      clum=(x1 %>% group_by(clu) %>% summarise_all(funs(mean)))
+      clum=(x1 %>% group_by(clu) %>% summarise_all(list(mean)))
       
       bm = data.frame(rbind(clum[,-1],gm))
       #rownames(bm) = c(paste("C",1:nrow(clum),sep=""),"all")
@@ -107,7 +118,7 @@ boot_cluspcamix <- function(data, krange, nd = NULL,alpha=NULL, scale = TRUE, ce
       gm=apply(x2,2,mean)
       
       x2$clu = cl2$cluster
-      clum=(x2 %>% group_by(clu) %>% summarise_all(funs(mean)))
+      clum=(x2 %>% group_by(clu) %>% summarise_all(list(mean)))
       
       bm = data.frame(rbind(clum[,-1],gm))
       
@@ -121,7 +132,7 @@ boot_cluspcamix <- function(data, krange, nd = NULL,alpha=NULL, scale = TRUE, ce
       clust2[,l] <- apply(xgood, 1, closest.cluster2)
       
       rand[l] <-  randIndex(clust1[,l], clust2[,l])
-                           
+      
       I = length(unique(clust1[,l]))
       J = length(unique(clust2[,l]))
       chisq = suppressWarnings(chisq.test(table(clust1[,l],clust2[,l]))$statistic)
