@@ -1,4 +1,4 @@
-47d90e33a9f27278321f85fa7e5246d9 *DESCRIPTION
+9520370e18b7498a63363ebac41ed08a *DESCRIPTION
 0ba91392fe9b4c8a7310b3d0d7160bfa *NAMESPACE
 c0ca6fcf1b4de118dc1c5c98e21ed63f *R/EmptyKmeans.r
 cbc72ce9c1bbebbb0761ba9d31d41989 *R/MCAk.r
@@ -8,7 +8,7 @@ a82de8f8b09aa8e5b3c95b773464c392 *R/boot_clusmca.R
 7eeab44088af866007f205983aed2136 *R/clu_means.R
 df9692cef4a28bf3e26d61396a2ecc9d *R/clusCA.R
 de5ead9ff27de3ada285a87199b06965 *R/clusmca.R
-8ea4cd51978dd70d08b0ca4556e896f1 *R/cluspca.R
+fc5b6ca025f83be8aa71efdfb0c5ea48 *R/cluspca.R
 f8ba592c2ab528ece2672ba0c4bf3c23 *R/cluspcamix.R
 7b77f7ef89779e56ddebf8485e750956 *R/clusval.R
 cc62aa877881bffa9255685b090250d8 *R/disjMake.r
@@ -24,9 +24,9 @@ b83606b9a3a7c3ccce3143e017683708 *R/local_bootclus.R
 8e4283944b5baa01a6c80e70bfcf072e *R/nrm.r
 19b41f3bfffc6a368afee98a59a5543b *R/orth.r
 9a7dd8f9f82b26a29a62a9c7e91ba6e7 *R/outOfIndependence.r
-65d798f72f4f44ad0e6ee6935edadb24 *R/plot.clusmca.R
-c008492f13847bb61e6083b7ddcc9f0a *R/plot.cluspca.R
-f47ad4fd05689e5af578c29f186e0439 *R/plot.cluspcamix.R
+c7accfdc2ca9c56f44cf84f1484b93b0 *R/plot.clusmca.R
+4ad7da51fc31b7b2da4214b83fa0c53f *R/plot.cluspca.R
+40bb51df97b00eab5500bb4816d41311 *R/plot.cluspcamix.R
 d95597d2fbf186a313ac25747b89cb6a *R/plot.tuneclus.R
 750317519d62b817b387d8b618ffe8f1 *R/print.clusmca.R
 f0902807dd5e4f2c1681246c6c27e7d8 *R/print.cluspca.R
@@ -38,9 +38,9 @@ ff70c7ec26c206bbe0e2360cd6ae4426 *R/rosplit.r
 8d67776ee7169565b4cd4eca76605653 *R/summary.cluspcamix.R
 5d2d099b2925105b5cae35150c9e7d7a *R/summary.tuneclus.R
 c75b605975e3de9ce2222d21ee2a32c0 *R/tab.disjonctif.R
-84106c3b4ba09e00939dce528c76d627 *R/tune_clusmca.R
-895a70c79a4f2223e79baa880112bd08 *R/tune_cluspca.R
-8ea75e75c52d9d23119b532ec3afb4f1 *R/tune_cluspcamix.R
+c88b33b0566966ee1b7f0dd90a0a4f21 *R/tune_clusmca.R
+cbe990e503638ce0050c7eb6bfe17089 *R/tune_cluspca.R
+0d6a49a8ac724dcf6c731afb0ce22261 *R/tune_cluspcamix.R
 382af372127e0c1ee93eaa8c820b8812 *R/tuneclus.R
 0e6486cb75d60ad425a022beae20f501 *data/bribery.rda
 a9a3a1be0c471bf5d47729bf76b8bcdf *data/cmc.rda

@@ -76,7 +76,7 @@ plot.clusmca<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, t
       names(group_df)[3] = "gr"
       levels(obs_df$gr) = levels(group_df$gr)
     }
-    a=ggplot(data=obs_df,aes(x=d1,y=d2,colour=gr,shape=gr))+xlim(xallmin,xallmax)+ylim(yallmin,yallmax)
+    a=ggplot(data=obs_df,aes(x=d1,y=d2,colour=gr,shape=gr))+coord_cartesian(xlim=c(xallmin,xallmax),ylim=c(yallmin,yallmax))
     a=a+geom_point(aes(x=d1,y=d2,colour=gr,shape=gr,alpha=.4),size=1,na.rm = TRUE)+theme_bw()
     a=a+theme(legend.position="none",axis.text.x = element_blank(),axis.text.y = element_blank())+xlab("")+ylab("")
     a=a+geom_vline(xintercept=0)+geom_hline(yintercept=0)
@@ -106,7 +106,7 @@ plot.clusmca<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, t
       mysize=max(2,mysize)
     }else{mysize=5}
     
-    a=ggplot(data=att_df,aes(x=d1,y=d2))+xlim(xallmin,xallmax)+ylim(yallmin,yallmax)
+    a=ggplot(data=att_df,aes(x=d1,y=d2))+coord_cartesian(xlim=c(xallmin,xallmax),ylim=c(yallmin,yallmax))
     a=a+geom_point(alpha=.5,size=.25,na.rm = TRUE)+theme_bw()+xlab("")+ylab("")
     a=a+geom_text_repel(data=subset(att_df,act=="outer"),aes( label = attnam),size=mysize,segment.size = 0.01)
     a=a+geom_text_repel(data=subset(att_df,act!="outer"),aes( label = attnam),size=mysize*.8,segment.size = 0.01)
@@ -135,7 +135,7 @@ plot.clusmca<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, t
       mysize=max(2,mysize)
     }else{mysize=5}
     
-    a=ggplot(data=att_df,aes(x=d1,y=d2))+xlim(xallmin,xallmax)+ylim(yallmin,yallmax)
+    a=ggplot(data=att_df,aes(x=d1,y=d2))+coord_cartesian(xlim=c(xallmin,xallmax),ylim=c(yallmin,yallmax))
     
     a=a+geom_point(data=obs_df,aes(x=d1,y=d2,colour=gr,shape=gr,alpha=.4),size=1,na.rm = TRUE)+theme_bw()
     a=a+theme(legend.position="none",axis.text.x = element_blank(),axis.text.y = element_blank())+xlab("")+ylab("")
@@ -151,6 +151,62 @@ plot.clusmca<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, t
     a=a+geom_text_repel(data=subset(att_df,act!="outer"),aes( label = attnam),size=mysize*.8,segment.size = 0.01)
     a=a+geom_vline(xintercept=0)+geom_hline(yintercept=0)
     a=a+xlab(paste("Dim.",dims[1])) + ylab(paste("Dim.",dims[2]))  
+    
+  #######
+    # a=a+geom_vline(xintercept=0)+geom_hline(yintercept=0)
+    # att_df$slp=att_df$d2/att_df$d1
+    # 
+    # # arrow_df=data.frame(slp=att_df$slp)
+    # quad_check=sign(att_df[,1:2])
+    # marg_df=quad_check
+    # marg_mat=matrix(c(xallmin,yallmin,xallmax,yallmax),nrow=2)
+    # 
+    # for(j in 1:2){
+    #   neg_val=which(quad_check[j]<0)
+    #   marg_df[neg_val,j]=marg_mat[j,1]
+    #   marg_df[-neg_val,j]=marg_mat[j,2]
+    # }
+    # 
+    # who_marg=apply(marg_df,1,function(x)which.min(abs(x)))
+    # 
+    # arrow_df=marg_df
+    # for(i in 1:length(who_marg)){
+    #   arrow_df$rd2[i]=arrow_df$d1[i]*(att_df$slp[i])
+    #   arrow_df$rd1[i]=arrow_df$d2[i]*(1/att_df$slp[i])
+    # }
+    # 
+    # sel_arrow_x=apply(arrow_df[,c(2,4)],1,function(x) which.min(abs(x)))
+    # 
+    # myarrow_df=arrow_df[,1:2]
+    # for(i in 1:length(sel_arrow_x)){
+    #   if(sel_arrow_x[i]==1){
+    #     myarrow_df$d1[i]=arrow_df$d1[i]
+    #     myarrow_df$d2[i]=arrow_df$rd2[i]
+    #   }else{
+    #     myarrow_df$d1[i]=arrow_df$rd1[i]
+    #     myarrow_df$d2[i]=arrow_df$d2[i]
+    #   }
+    # }
+    # 
+    # myarrow_df$attnam=att_df$attnam
+    # 
+    # a=a+geom_abline(data=att_df,aes(intercept=0,slope=slp,colour=attnam),alpha=.5)
+    # a=a+geom_segment(data=myarrow_df,aes(x=0,y=0,xend=d1,yend=d2,colour=attnam),alpha=.5,
+    #                  arrow=arrow(length=unit(.15,"inches")))
+    # 
+    # a=a+theme(legend.title=element_blank(),legend.position="none",axis.text.x = element_blank(),axis.text.y = element_blank())
+    # a=a+guides(shape=FALSE, alpha=FALSE)
+    # 
+    # #do not show var labels if more than 50
+    # if (dim(x$attcoord)[1] < 50) {
+    #   a=a+geom_text_repel(data=myarrow_df,aes(x=d1,y=d2,label=attnam))
+    # }
+    # 
+    # a=a+xlab(paste("Dim.",dims[1])) + ylab(paste("Dim.",dims[2]))  
+    # 
+    
+    
+  ######
     out = list()
     out$map = a
     # print(a)

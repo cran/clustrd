@@ -1,4 +1,4 @@
-tune_cluspca <- function(data, nclusrange = 2:7, ndimrange = 2:4, criterion = "asw", dst = "full", alpha = NULL, method = "RKM", center = TRUE, scale = TRUE, rotation = "none", nstart = 100, smartStart = NULL, seed = NULL){
+tune_cluspca <- function(data, nclusrange = 2:7, ndimrange = 2:4, criterion = "asw", dst = "low", alpha = NULL, method = "RKM", center = TRUE, scale = TRUE, rotation = "none", nstart = 100, smartStart = NULL, seed = NULL){
   
   criterion <- match.arg(criterion, c("asw", "ASW","ch","CH","crit","CRIT"), several.ok = T)[1]
   criterion <- tolower(criterion)
@@ -65,7 +65,6 @@ tune_cluspca <- function(data, nclusrange = 2:7, ndimrange = 2:4, criterion = "a
   d.best <- ndimrange[indd.best]
   outcluspcabest = cluspca(data = data, nclus = k.best, ndim = d.best, alpha = alpha, method = method,  center = center, scale = scale, rotation = rotation, nstart = nstart, smartStart = smartStart, seed = seed)
  # outcluspcabest = cluspcamix(data = data, nclus = k.best, ndim = d.best, alpha = alpha,  center = center, scale = scale, rotation = rotation, nstart = nstart, smartStart = smartStart, seed = seed)
-  
   rownames(critval) = c(nclusrange)
   colnames(critval) = c(ndimrange)
   
@@ -75,8 +74,9 @@ tune_cluspca <- function(data, nclusrange = 2:7, ndimrange = 2:4, criterion = "a
   crit.grid[is.na(crit.grid)]=''
   crit.grid = as.data.frame(crit.grid)
   
-  if (criterion == "asw")
+  if (criterion == "asw"){
     cluasw = clusval(outcluspcabest, dst = dst)$cluasw
+  }
   else
     cluasw = NULL
   

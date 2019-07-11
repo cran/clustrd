@@ -1,4 +1,4 @@
-tune_cluspcamix <- function(data, nclusrange = 2:7, ndimrange = 2:4, criterion = "asw", dst = "full", alpha = NULL, method = "RKM", center = TRUE, scale = TRUE, rotation = "none", nstart = 100, smartStart = NULL, seed = NULL){
+tune_cluspcamix <- function(data, nclusrange = 2:7, ndimrange = 2:4, criterion = "asw", dst = "low", alpha = NULL, method = "RKM", center = TRUE, scale = TRUE, rotation = "none", nstart = 100, smartStart = NULL, seed = NULL){
   criterion <- match.arg(criterion, c("asw", "ASW","ch","CH","crit","CRIT"), several.ok = T)[1]
   criterion <- tolower(criterion)
   

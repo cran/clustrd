@@ -73,7 +73,7 @@ plot.cluspcamix<-function(x, dims = c(1,2), cludesc = FALSE, topstdres = 20, att
   att_df$act[xyact]="outer"
   
   if(what[1]==TRUE && what[2]==FALSE ){
-    a=ggplot(data=obs_df,aes(x=d1,y=d2))+xlim(xallmin,xallmax)+ylim(yallmin,yallmax)
+    a=ggplot(data=obs_df,aes(x=d1,y=d2))+coord_cartesian(xlim = c(xallmin,xallmax), ylim = c(yallmin,yallmax))
     a=a+geom_point(aes(x=d1,y=d2,colour=gr,shape=gr,alpha=.4),size=1)+theme_bw()
     #do not show obs labels if more than 30
     if (dim(x$obscoord)[1] < 30) {
@@ -115,7 +115,7 @@ plot.cluspcamix<-function(x, dims = c(1,2), cludesc = FALSE, topstdres = 20, att
       mysize=max(2,mysize)
     }else{mysize=5}
     
-    a=ggplot(data=att_df,aes(x=d1,y=d2))+xlim(xallmin,xallmax)+ylim(yallmin,yallmax)
+    a=ggplot(data=att_df,aes(x=d1,y=d2))+coord_cartesian(xlim = c(xallmin,xallmax), ylim = c(yallmin,yallmax))
     a=a+geom_point(alpha=.5,size=.25)+theme_bw()+xlab("")+ylab("")
     a=a+geom_text_repel(data=subset(att_df,act=="outer"),aes( label = attnam),size=mysize,segment.size = 0.1)
     a=a+geom_text(data=subset(att_df,act!="outer"),aes( label = attnam),size=mysize) #size=mysize*.8)
@@ -141,7 +141,7 @@ plot.cluspcamix<-function(x, dims = c(1,2), cludesc = FALSE, topstdres = 20, att
       mysize=max(2,mysize)
     }else{mysize=5}
     
-    a=ggplot(data=obs_df,aes(x=d1,y=d2))+xlim(xallmin,xallmax)+ylim(yallmin,yallmax)
+    a=ggplot(data=obs_df,aes(x=d1,y=d2))+coord_cartesian(xlim = c(xallmin,xallmax), ylim = c(yallmin,yallmax))
     a=a+geom_point(aes(x=d1,y=d2,shape=gr,alpha=.4),size=1)+theme_bw()#,colour=gr
     #do not show obs labels if more than 30
     if (dim(x$obscoord)[1] < 30) {

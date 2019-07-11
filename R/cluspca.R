@@ -23,7 +23,7 @@ cluspca <- function(data, nclus, ndim, alpha=NULL, method=c("RKM","FKM"), center
       names(out$cluster) = rownames(data)
       out$criterion = 1 # criterion
       out$size=n #as.integer(aa)  #round((table(cluster)/sum( table(cluster)))*100,digits=1)
-      out$odata=data.frame(lapply(data.frame(data),factor))
+      out$odata= data.frame(data)#data.frame(lapply(data.frame(data),factor))
       out$scale = scale
       out$center = center
       out$nstart = nstart
@@ -81,7 +81,7 @@ cluspca <- function(data, nclus, ndim, alpha=NULL, method=c("RKM","FKM"), center
           #set.seed(myseed)
           set.seed(seed[run])
           randVec= matrix(ceiling(runif(n)*nclus),n,1)
-        }else{
+        } else {
           randVec=smartStart
         }
         

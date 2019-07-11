@@ -73,7 +73,7 @@ plot.cluspca<-function(x, dims = c(1,2), cludesc = FALSE, what = c(TRUE,TRUE), a
   att_df$act[xyact]="outer"
   
   if(what[1]==TRUE && what[2]==FALSE ){
-    a=ggplot(data=obs_df,aes(x=d1,y=d2))+xlim(xallmin,xallmax)+ylim(yallmin,yallmax)
+    a=ggplot(data=obs_df,aes(x=d1,y=d2))+coord_cartesian(xlim = c(xallmin,xallmax), ylim = c(yallmin,yallmax))
     a=a+geom_point(aes(x=d1,y=d2,colour=gr,shape=gr,alpha=.4),size=1)+theme_bw()
     #do not show obs labels if more than 30
     if (dim(x$obscoord)[1] < 30) {
@@ -115,7 +115,7 @@ plot.cluspca<-function(x, dims = c(1,2), cludesc = FALSE, what = c(TRUE,TRUE), a
       mysize=max(2,mysize)
     }else{mysize=5}
     
-    a=ggplot(data=att_df,aes(x=d1,y=d2))+xlim(xallmin,xallmax)+ylim(yallmin,yallmax)
+    a=ggplot(data=att_df,aes(x=d1,y=d2))+coord_cartesian(xlim = c(xallmin,xallmax), ylim = c(yallmin,yallmax))
     a=a+geom_point(alpha=.5,size=.25)+theme_bw()+xlab("")+ylab("")
     a=a+geom_text_repel(data=subset(att_df,act=="outer"),aes( label = attnam),size=mysize,segment.size = 0.1)
     a=a+geom_text(data=subset(att_df,act!="outer"),aes( label = attnam),size=mysize) #size=mysize*.8)
@@ -142,7 +142,7 @@ plot.cluspca<-function(x, dims = c(1,2), cludesc = FALSE, what = c(TRUE,TRUE), a
       mysize=max(2,mysize)
     }else{mysize=5}
     
-    a=ggplot(data=obs_df,aes(x=d1,y=d2))+xlim(xallmin,xallmax)+ylim(yallmin,yallmax)
+    a=ggplot(data=obs_df,aes(x=d1,y=d2))+coord_cartesian(xlim = c(xallmin,xallmax),ylim = c(yallmin,yallmax))
     a=a+geom_point(aes(x=d1,y=d2,shape=gr,alpha=.4),size=1)+theme_bw()#,colour=gr
     #do not show obs labels if more than 30
     if (dim(x$obscoord)[1] < 30) {
@@ -194,7 +194,7 @@ plot.cluspca<-function(x, dims = c(1,2), cludesc = FALSE, what = c(TRUE,TRUE), a
     
     a=a+geom_abline(data=att_df,aes(intercept=0,slope=slp,colour=attnam),alpha=.5)
     a=a+geom_segment(data=myarrow_df,aes(x=0,y=0,xend=d1,yend=d2,colour=attnam),alpha=.5,
-                     arrow=arrow(length=unit(.15,"inches")))
+                    arrow=arrow(length=unit(.15,"inches")))
     
     a=a+theme(legend.title=element_blank(),legend.position="none",axis.text.x = element_blank(),axis.text.y = element_blank())
     a=a+guides(shape=FALSE, alpha=FALSE)
