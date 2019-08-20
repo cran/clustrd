@@ -8,7 +8,8 @@ Plotting function that creates a scatterplot of the object scores and/or the att
 }
 \usage{
 \method{plot}{clusmca}(x, dims = c(1,2), what = c(TRUE,TRUE),
-cludesc = FALSE, topstdres = 20, attlabs = NULL, binary = FALSE, subplot = FALSE, \dots)
+cludesc = FALSE, topstdres = 20, objlabs = FALSE, attlabs = NULL, 
+binary = FALSE, subplot = FALSE, \dots)
 }
 
 \arguments{
@@ -18,6 +19,7 @@ second dimension vertical}
   \item{what}{Vector of two logical values specifying the contents of the plots. First entry indicates whether a scatterplot of the objects is displayed in principal coordinates. Second entry indicates whether a scatterplot of the attribute categories is displayed in principal coordinates. Cluster centroids are always displayed. The default is \code{c(TRUE, TRUE)} and the resultant plot is a biplot of both objects and attribute categories with gamma-based scaling (see van de Velden et al., 2017)}
   \item{cludesc}{A logical value indicating whether a series of barplots is produced showing the largest (in absolute value) standardized residuals per attribute for each cluster (default = \code{FALSE})}
   \item{topstdres}{Number of largest standardized residuals used to describe each cluster (default = 20). Works only in combination with \code{cludesc = TRUE}}
+  \item{objlabs}{A logical value indicating whether object labels will be plotted; if \code{TRUE} row names of the data matrix are used (default = \code{FALSE}). Warning: when \code{TRUE}, execution time of the plotting function will increase dramatically as the number of objects gets larger}
   \item{attlabs}{Vector of custom attribute labels; if not provided, default labeling is applied}
   \item{subplot}{A logical value indicating whether a subplot with the full distribution of the standardized residuals will appear at the bottom left corner of the corresponding plots. Works only in combination with \code{cludesc = TRUE}}
   \item{binary}{A logical value indicating whether the visualization refers to a dataset of binary variables}

@@ -1,10 +1,11 @@
-plot.clusmca<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, topstdres = 20, attlabs = NULL, binary = FALSE, subplot = FALSE, ...){
+plot.clusmca<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, topstdres = 20, objlabs = FALSE, attlabs = NULL, binary = FALSE, subplot = FALSE, ...){
   
   act = NULL
   attnam = NULL
   d1 = NULL
   d2 = NULL
   gr = NULL
+  olab = NULL
   out=list()
   if (dim(data.frame(x$attcoord))[2] == 1) {
     stop('There is only one dimension. A 2D scatterplot cannot be produced.')
@@ -22,6 +23,15 @@ plot.clusmca<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, t
     lab1=rep(lab1a,times=unlist(lapply(lab1b,length)))
     lab2=unlist(lab1b)
     attlabs=paste(lab1,lab2,sep=".")
+  }
+  
+  
+  #do not show obs labels if more than 30
+  if (objlabs == TRUE) {
+    obslabs = row.names(x$odata)
+  } else
+  {
+    obslabs = paste("")
   }
   
   xallmax=max(max(x$attcoord[,dim1]),max(x$obscoord[,dim1]))
@@ -52,9 +62,11 @@ plot.clusmca<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, t
   filt = 1*att_range
   att_df=data.frame(d1=x$attcoord[,dim1],d2=x$attcoord[,dim2],attnam=attlabs)
   if(binary == TRUE){
-    pres=seq(from=2,to=nrow(dfAtt),by=2)
+    pres=seq(from=2,to=nrow(att_df),by=2)
+ #   print(pres)
     att_df=att_df[pres,]
   }
+ 
   xact=union(which(att_df$d1> filt),which(att_df$d1< -filt))
   yact=union(which(att_df$d2> filt), which(att_df$d2< -filt))
   xyact=union(xact,yact)
@@ -66,9 +78,7 @@ plot.clusmca<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, t
   {
     group_df= data.frame(d1=x$centroid[,dim1],d2=x$centroid[,dim2],glab=glab)
   }
-  obs_df=data.frame(d1=x$obscoord[,dim1],d2=x$obscoord[,dim2],gr=factor(x$cluster))
-  
-  
+  obs_df=data.frame(d1=x$obscoord[,dim1],d2=x$obscoord[,dim2],gr=factor(x$cluster),olab=obslabs)
   
   if(what[1]==TRUE && what[2]==FALSE ){
     if (length(x$size) != 1)
@@ -78,6 +88,10 @@ plot.clusmca<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, t
     }
     a=ggplot(data=obs_df,aes(x=d1,y=d2,colour=gr,shape=gr))+coord_cartesian(xlim=c(xallmin,xallmax),ylim=c(yallmin,yallmax))
     a=a+geom_point(aes(x=d1,y=d2,colour=gr,shape=gr,alpha=.4),size=1,na.rm = TRUE)+theme_bw()
+    if (objlabs == TRUE) {
+      a=a+geom_text_repel(data=obs_df,aes(label=olab))
+    }
+    
     a=a+theme(legend.position="none",axis.text.x = element_blank(),axis.text.y = element_blank())+xlab("")+ylab("")
     a=a+geom_vline(xintercept=0)+geom_hline(yintercept=0)
     
@@ -138,6 +152,11 @@ plot.clusmca<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, t
     a=ggplot(data=att_df,aes(x=d1,y=d2))+coord_cartesian(xlim=c(xallmin,xallmax),ylim=c(yallmin,yallmax))
     
     a=a+geom_point(data=obs_df,aes(x=d1,y=d2,colour=gr,shape=gr,alpha=.4),size=1,na.rm = TRUE)+theme_bw()
+    if (objlabs == TRUE) {
+      a=a+geom_text_repel(data=obs_df,aes(label=olab))
+    }
+    
+    
     a=a+theme(legend.position="none",axis.text.x = element_blank(),axis.text.y = element_blank())+xlab("")+ylab("")
     a=a+geom_vline(xintercept=0)+geom_hline(yintercept=0)
     if (length(x$size) != 1)
@@ -224,7 +243,7 @@ plot.clusmca<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, t
     
     myminx = -10
     mymaxx = 10
-    TopplotGroups=outOfIndependence(x$odata,x$cluster,attlabs,firstfew=ffew,textSize=4,segSize=4,minx=myminx,maxx=mymaxx)
+    TopplotGroups=outOfIndependence(x$odata,x$cluster,attlabs,firstfew=ffew,textSize=3,segSize=4,minx=myminx,maxx=mymaxx)
     plotGroups=outOfIndependence(x$odata,x$cluster,nolabs=T,attlabs,fixmarg=F,textSize=1.5,segSize=1.5,minx=-2.5,maxx=2.5)
     
     for(jjj in 1:K){

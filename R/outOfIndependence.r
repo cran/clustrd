@@ -36,7 +36,7 @@ outOfIndependence=function(data,Gvec,labs,nolabs=FALSE,fixmarg=TRUE,firstfew=0,m
   dfP=list()
   sortOp=list()
   bp=list()
-  
+
   colorPal=rainbow(K)
   for(jj in 1:K){
     #topfew=which(abs(devP[,jj]*sqrt(n))>1)
@@ -54,19 +54,22 @@ outOfIndependence=function(data,Gvec,labs,nolabs=FALSE,fixmarg=TRUE,firstfew=0,m
       dfP[[jj]]$newplace=firstfew:1
     }
     
+   # pres=seq(from=2,to=nrow(dfP[[jj]]),by=2)
+  #  att_df=att_df[pres,]
+    
+    
     bbp=ggplot(data=dfP[[jj]], aes(x=value,y=newplace),labels=lbls)
     
     if(fixmarg==TRUE){
-      bbp=bbp+geom_segment(data=dfP[[jj]],aes(x=0,xend=value,y=newplace,yend=newplace),colour=colorPal[jj],size=segSize,alpha=.25)
-      bbp=bbp+theme(legend.position="none")+xlab("")+ylab("")+xlim(c(minx,maxx))
+      bbp=bbp+geom_segment(data=dfP[[jj]],aes(x=0,xend=value,y=newplace,yend=newplace),colour=colorPal[jj],size=segSize,alpha=.25)#+scale_x_continuous(expand = c(0,0))+scale_y_continuous(expand = c(0,0))#+coord_cartesian(xlim = c(0, value),ylim=c(newplace,newplace))
+      bbp=bbp+theme(legend.position="none")+xlab("")+ylab("")+coord_cartesian(xlim = c(value,value))#,ylim=c(0,newplace)#xlim(c(minx,maxx))
       bbp=bbp+theme(axis.text.x  = element_text(size=textSize),axis.text.y  = element_text(size=textSize))
      # bbp=bbp+xlab(paste("Standardized residuals")) + ylab(paste("Variable categories"))  
       if(firstfew==0){bbp=bbp+theme(axis.line=element_blank(),axis.ticks = element_blank())}
       
     }
     else{
-      
-      bbp=bbp+geom_segment(data=dfP[[jj]],aes(x=0,xend=value,y=newplace,yend=newplace),colour=colorPal[jj],size=segSize,alpha=.25)
+      bbp=bbp+geom_segment(data=dfP[[jj]],aes(x=-0,xend=value,y=newplace,yend=newplace),colour=colorPal[jj],size=segSize,alpha=.25)
       bbp=bbp+theme(legend.position="none")+xlab("")+ylab("")+xlim(xran)
       bbp=bbp+theme(axis.text.x  = element_text(size=textSize),axis.text.y  = element_text(size=textSize))
    #   bbp=bbp+xlab(paste("Standardized residuals")) + ylab(paste("Variable categories"))          

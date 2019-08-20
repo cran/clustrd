@@ -6,8 +6,8 @@ clusmca <- function(data,nclus,ndim,method=c("clusCA","iFCB","MCAk"),alphak = .5
     data = data.frame(data)
     n = nrow(data)
     #asymmetric map, biplot
-    A = mjca(data)$colcoord[,1:ndim]
-    Fm = mjca(data)$rowpcoord[,1:ndim]
+    A = mjca(data)$colcoord#[,1:ndim]
+    Fm = mjca(data)$rowpcoord#[,1:ndim]
     
     if (gamma == TRUE) {
       distB = sum(diag(t(A)%*%  A))

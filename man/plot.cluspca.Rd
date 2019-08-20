@@ -8,7 +8,8 @@ Plotting function for \code{cluspca()} output.
 Plotting function that creates a scatterplot of the objects, a correlation circle of the variables or a biplot of both objects and variables. Optionally, it returns a parallel coordinate plot showing cluster means.}
 
 \usage{
-\method{plot}{cluspca}(x, dims = c(1, 2), cludesc = FALSE, what = c(TRUE,TRUE), attlabs, \dots)
+\method{plot}{cluspca}(x, dims = c(1, 2), cludesc = FALSE, 
+what = c(TRUE,TRUE), objlabs = FALSE, attlabs, \dots)
 }
 
 \arguments{
@@ -17,6 +18,7 @@ Plotting function that creates a scatterplot of the objects, a correlation circl
 second dimension vertical}
   \item{what}{Vector of two logical values specifying the contents of the plots. First entry indicates whether a scatterplot of the objects and cluster centroids is displayed and the second entry whether a correlation circle of the variables is displayed. The default is \code{c(TRUE, TRUE)} and the resultant plot is a biplot of both objects and variables}
   \item{cludesc}{A logical value indicating if a parallel coordinate plot showing cluster means is produced (default = \code{FALSE)}}
+    \item{objlabs}{A logical value indicating whether object labels will be plotted; if \code{TRUE} row names of the data matrix are used (default = \code{FALSE}). Warning: when \code{TRUE}, execution time of the plotting function will increase dramatically as the number of objects gets larger}
     \item{attlabs}{Vector of custom attribute labels; if not provided, default labeling is applied}
   \item{\dots}{Further arguments to be transferred to \code{cluspca()}}
 }
