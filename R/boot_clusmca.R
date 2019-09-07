@@ -49,8 +49,8 @@ boot_clusmca <- function(data, krange, nd=NULL, method = "clusCA", nstart=100, n
       x1 = x[index1[,b],,drop=FALSE]
       x2 = x[index2[,b],,drop=FALSE]
       
-      cl1 <- clusmca(x[index1[,b],,drop=FALSE],nclus=krange[l],ndim=ndim,method = method,nstart=nstart, seed = seed, binary = TRUE)
-      cl2 <- clusmca(x[index2[,b],,drop=FALSE],nclus=krange[l],ndim=ndim,method = method,nstart=nstart, seed = seed, binary = TRUE)
+      cl1 <- clusmca(x[index1[,b],,drop=FALSE],nclus=krange[l],ndim=ndim,method = method,nstart=nstart, seed = seed)
+      cl2 <- clusmca(x[index2[,b],,drop=FALSE],nclus=krange[l],ndim=ndim,method = method,nstart=nstart, seed = seed)
       
     } else{
       if (!is.null(nd)) {
@@ -68,8 +68,8 @@ boot_clusmca <- function(data, krange, nd=NULL, method = "clusCA", nstart=100, n
       x1 = x[index1[,b],,drop=FALSE]
       x2 = x[index2[,b],,drop=FALSE]
       
-      cl1 <- clusmca(x1,nclus=krange,ndim=ndim,method = method,nstart=nstart, seed = seed, binary = TRUE)
-      cl2 <- clusmca(x2,nclus=krange,ndim=ndim,method = method,nstart=nstart, seed = seed, binary = TRUE)
+      cl1 <- clusmca(x1,nclus=krange,ndim=ndim,method = method,nstart=nstart, seed = seed, inboot = TRUE)
+      cl2 <- clusmca(x2,nclus=krange,ndim=ndim,method = method,nstart=nstart, seed = seed, inboot = TRUE)
     }
     
     gm=apply(x1,2,mean)

@@ -15,7 +15,7 @@ This function implements MCA K-means (Hwang, Dillon and Takane, 2006), i-FCB (Io
 \usage{
 clusmca(data, nclus, ndim, method=c("clusCA","iFCB","MCAk"),
 alphak = .5, nstart = 100, smartStart = NULL, gamma = TRUE, 
-binary = FALSE, seed = NULL)
+inboot = FALSE, seed = NULL)
 
 \method{print}{clusmca}(x, \dots)
 
@@ -34,7 +34,7 @@ binary = FALSE, seed = NULL)
   \item{smartStart}{If \code{NULL} then a random cluster membership vector is generated. Alternatively, a cluster membership vector can be provided as a starting solution}
   \item{gamma}{Scaling parameter that leads to similar spread in the object and variable scores (default = \code{TRUE})}
   \item{seed}{An integer that is used as argument by \code{set.seed()} for offsetting the random number generator when \code{smartStart = NULL}. The default value is NULL.}
-  \item{binary}{If \code{TRUE} then all categorical variables are 0-1 (dummy) variables.}
+  \item{inboot}{Used internally in the bootstrap functions to perform bootstrapping on the indicator matrix.}
   \item{x}{For the \code{print} method, a class of \code{clusmca}}
   \item{object}{For the \code{summary} method, a class of \code{clusmca}}
   \item{mth}{For the \code{fitted} method, a character string that specifies the type of fitted value to return: \code{"centers"} for the observations center vector, or \code{"class"} for the observations cluster membership value}

@@ -1,4 +1,4 @@
-plot.clusmca<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, topstdres = 20, objlabs = FALSE, attlabs = NULL, binary = FALSE, subplot = FALSE, ...){
+plot.clusmca<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, topstdres = 20, objlabs = FALSE, attlabs = NULL, subplot = FALSE, ...){
   
   act = NULL
   attnam = NULL
@@ -61,11 +61,11 @@ plot.clusmca<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, t
   ######################################################
   filt = 1*att_range
   att_df=data.frame(d1=x$attcoord[,dim1],d2=x$attcoord[,dim2],attnam=attlabs)
-  if(binary == TRUE){
-    pres=seq(from=2,to=nrow(att_df),by=2)
+#  if(binary == TRUE){
+#    pres=seq(from=2,to=nrow(att_df),by=2)
  #   print(pres)
-    att_df=att_df[pres,]
-  }
+#    att_df=att_df[pres,]
+#  }
  
   xact=union(which(att_df$d1> filt),which(att_df$d1< -filt))
   yact=union(which(att_df$d2> filt), which(att_df$d2< -filt))

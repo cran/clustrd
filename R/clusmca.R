@@ -1,4 +1,4 @@
-clusmca <- function(data,nclus,ndim,method=c("clusCA","iFCB","MCAk"),alphak = .5,nstart=100,smartStart=NULL,gamma = TRUE,binary=FALSE,seed=NULL){
+clusmca <- function(data,nclus,ndim,method=c("clusCA","iFCB","MCAk"),alphak = .5,nstart=100,smartStart=NULL,gamma = TRUE,inboot=FALSE,seed=NULL){
 
   #### A single cluster gives the MCA solution
   if (nclus == 1) { 
@@ -45,7 +45,7 @@ clusmca <- function(data,nclus,ndim,method=c("clusCA","iFCB","MCAk"),alphak = .5
     method <- tolower(method)
     
     if(method=="clusca"){
-      out=clusCA(data=data,nclus=nclus,ndim=ndim,nstart=nstart,smartStart=smartStart, gamma = gamma,seed=seed,binary=binary)
+      out=clusCA(data=data,nclus=nclus,ndim=ndim,nstart=nstart,smartStart=smartStart, gamma = gamma,seed=seed,inboot=inboot)
     }
     if(method=="ifcb"){
       out=iFCB(data=data,nclus=nclus,ndim=ndim,nstart=nstart,smartStart=smartStart, gamma = gamma,seed=seed)

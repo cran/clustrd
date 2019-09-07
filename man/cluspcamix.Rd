@@ -15,7 +15,7 @@ This function implements clustering and dimension reduction for mixed-type varia
 \usage{
 cluspcamix(data, nclus, ndim, method=c("mixedRKM", "mixedFKM"), 
 center = TRUE, scale = TRUE, alpha=NULL, rotation="none", 
-nstart = 100, smartStart=NULL, seed=NULL, binary = FALSE)
+nstart = 100, smartStart=NULL, seed=NULL, inboot = FALSE)
 
 \method{print}{cluspcamix}(x, \dots)
 
@@ -36,7 +36,7 @@ nstart = 100, smartStart=NULL, seed=NULL, binary = FALSE)
   \item{nstart}{Number of random starts (default = 100)}
   \item{smartStart}{If \code{NULL} then a random cluster membership vector is generated. Alternatively, a cluster membership vector can be provided as a starting solution}
   \item{seed}{An integer that is used as argument by \code{set.seed()} for offsetting the random number generator when \code{smartStart = NULL}. The default value is NULL.}
-  \item{binary}{If \code{TRUE} then all categorical variables are 0-1 (dummy) variables.}
+  \item{inboot}{Used internally in the bootstrap functions to perform bootstrapping on the indicator matrix.}
   \item{x}{For the \code{print} method, a class of \code{cluspcamix}}
   \item{object}{For the \code{summary} method, a class of \code{cluspcamix}}
   \item{mth}{For the \code{fitted} method, a character string that specifies the type of fitted value to return: \code{"centers"} for the observations center vector, or \code{"class"} for the observations cluster membership value}

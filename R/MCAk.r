@@ -1,9 +1,9 @@
-MCAk <- function(data, nclus = 3, ndim = 2, alphak = .5, nstart = 100, smartStart=NULL,gamma = TRUE, seed=NULL, binary = FALSE){
+MCAk <- function(data, nclus = 3, ndim = 2, alphak = .5, nstart = 100, smartStart=NULL,gamma = TRUE, seed=NULL, inboot = FALSE){
   out=list()
   
   group={}
   data = data.frame(data)
-  if (binary == FALSE) {
+  if (inboot == FALSE) {
     data=as.data.frame(lapply(data,as.factor))
     lab1a=names(data)
     lab1b=lapply(data,function(z) levels(as.factor(z)))
@@ -28,7 +28,7 @@ MCAk <- function(data, nclus = 3, ndim = 2, alphak = .5, nstart = 100, smartStar
       randVec=smartStart
     }
     
-    U = dummy(randVec)
+    U = tab.disjonctif(randVec)
     
     center = chol2inv(chol(crossprod(U))) %*% t(U) %*% Fm 
     outK = try(kmeans(Fm, centers = center, nstart = 100), silent = TRUE)
@@ -77,7 +77,7 @@ MCAk <- function(data, nclus = 3, ndim = 2, alphak = .5, nstart = 100, smartStar
     return(out)
   } else {
     
-    if (binary == FALSE)
+    if (inboot == FALSE)
       zz = as.matrix(tab.disjonctif(data))#as.matrix(dummy.data.frame(data,dummy.classes = "ALL"))
     else
       zz = data
@@ -124,7 +124,7 @@ MCAk <- function(data, nclus = 3, ndim = 2, alphak = .5, nstart = 100, smartStar
         randVec = smartStart
       }
       
-      U = dummy(randVec)
+      U = tab.disjonctif(randVec)
       
       #   center = pseudoinverse(t(U) %*% U) %*% t(U) %*% Fm 
       
@@ -158,7 +158,7 @@ MCAk <- function(data, nclus = 3, ndim = 2, alphak = .5, nstart = 100, smartStar
         }
         center=outK$centers
         index = outK$cluster
-        U = dummy(index)
+        U = tab.disjonctif(index)
         U0 = scale(U,center=TRUE, scale=FALSE)
         uu = colSums(crossprod(U)) #colSums(t(U)%*% U)
         invsqDru = 1/sqrt(c(rr,uu))

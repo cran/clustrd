@@ -1,4 +1,4 @@
-clusCA <- function(data,nclus,ndim,nstart=100,smartStart=NULL,gamma = FALSE, seed=NULL, binary = FALSE){
+clusCA <- function(data,nclus,ndim,nstart=100,smartStart=NULL,gamma = FALSE, seed=NULL, inboot= FALSE){
   K = nclus
   k = ndim
   nrs = nstart
@@ -6,7 +6,7 @@ clusCA <- function(data,nclus,ndim,nstart=100,smartStart=NULL,gamma = FALSE, see
   maxiter = 100
   maxinert=-1
   data = data.frame(data)
-  if (binary == FALSE) {
+  if (inboot == FALSE) {
     data=as.data.frame(lapply(data,as.factor))
     Z = tab.disjonctif(data)#dummy.data.frame(data, dummy.classes = "ALL") # The original super indicator
     lab1a=names(data)
@@ -47,7 +47,8 @@ clusCA <- function(data,nclus,ndim,nstart=100,smartStart=NULL,gamma = FALSE, see
       randVec=smartStart
     }
     
-    Zki=dummy(randVec)
+   Zki=tab.disjonctif(randVec)
+
     Dk=t(Zki) %*% Zki
     Dks=Dk^(.5)
     #Dksi=pseudoinverse(Dks)
@@ -61,9 +62,12 @@ clusCA <- function(data,nclus,ndim,nstart=100,smartStart=NULL,gamma = FALSE, see
       Lk = data.matrix(svdDZkZD$d[1])
     }
     G = svdDZkZD$u
+
     Gi = G[,1:k]
-    
+
     Gi=Dksi%*%Gi%*%Lk # CA row coordinates (section 2 in the paper right below formula (1))
+  #  Gs = Gi%*%pseudoinverse(Lk)
+  #  ARC = Dk%*%(Gs*Gs)# cluster means absolute contributions
     
     Bstar=svdDZkZD$v
     B=sqrt(n*q)*Dzhi %*% Bstar # as in eq. (8)
@@ -72,21 +76,25 @@ clusCA <- function(data,nclus,ndim,nstart=100,smartStart=NULL,gamma = FALSE, see
     Bi=Bstar[,1:k]           # attribute quantifications. Orthonormal
     
     #              
-    
     #  inertia = sum(t(Lk)%*% Lk) # explained inertia in k dimensions
     
     Yi=sqrt((n/q)) * MZD%*%Bi  # The coordinates for the subjects. as in eq. (10).
+ #   Ys = Zki%*%chol2inv(chol(Dk))%*%t(Zki)%*%Yi%*%pseudoinverse(Lk)
+#    ARCy = Ys*Ys
+    
+    #######
+#    ARCb = Bi*Bi
+#    print(ARCb)
+#    print(apply(ARCb,2,sum))
+    #######
     
     GDGbef=sum(diag(t(Gi) %*% Dk %*% Gi))   # Objective value before K means This is equivalent to formula (6), but then in the paper
-    
     objbef=GDGbef
     ######## END first fixed C step: Given random C, B and G are optimal
-    #  obj_improv=c()
-    #  kmeanobj=1000        # initialize  obj value
     improv=10
     iter=0   
     
-    objective=sum(diag((t(Yi)%*%Zki%*%chol2inv(chol(t(Zki)%*%Zki))%*%t(Zki)%*%Yi)))
+  #  objective=sum(diag((t(Yi)%*%Zki%*%chol2inv(chol(t(Zki)%*%Zki))%*%t(Zki)%*%Yi)))
     while ((improv > 0.0001) && (iter<=maxiter)){
       iter = iter + 1
       outK = try(kmeans(Yi,centers=Gi,nstart=100),silent=T)
@@ -97,8 +105,8 @@ clusCA <- function(data,nclus,ndim,nstart=100,smartStart=NULL,gamma = FALSE, see
       }
       Zki=outK$cluster
       Gi=outK$centers
+      Zki = tab.disjonctif(Zki)
       
-      Zki = dummy(Zki)
       Dk = t(Zki) %*% Zki        
       Dks = Dk^(.5)                  # New Dch weights
       #Dksi = pseudoinverse(Dks)
@@ -108,7 +116,6 @@ clusCA <- function(data,nclus,ndim,nstart=100,smartStart=NULL,gamma = FALSE, see
       DkZkZD=sqrt(n/q)*Dksi%*% t(Zki)%*%MZD # Make the new matrix for the SVD.
       
       outDkZkZD=svd(DkZkZD)       # New SVD, CA analysis
-      
       G=outDkZkZD$u
       Gi=G[,1:k]
       # this is for ndim = 1 to work
@@ -119,16 +126,19 @@ clusCA <- function(data,nclus,ndim,nstart=100,smartStart=NULL,gamma = FALSE, see
       }
       
       Gi = Dksi %*% Gi %*% Lk
+      
+#      Gs = Gi%*%pseudoinverse(Lk)
+#      ARC = Dk%*%(Gs*Gs)# cluster means absolute contributions
+      
       Bstar=outDkZkZD$v
       Bi=Bstar[,1:k]
       B=sqrt(n*q)*Dzhi%*%Bi
       Bns=B[,1:k]
-      #Attribute quantifications
+ 
       Yi= sqrt((n/q)) * MZD %*% Bi # Subject coordinates
-      lambda = outDkZkZD$d
-      objective=c(objective,sum(diag(t(Lk)%*% Lk)))
+#      Ys = Zki%*%chol2inv(chol(Dk))%*%t(Zki)%*%Yi%*%pseudoinverse(Lk)
+#      ARCy = Ys*Ys
       
-      # B rescaled in such a way that B'DzB=nqI.
       improv=sum(diag(t(Gi)%*% t(Zki)%*%Zki%*%Gi))-objbef
       objbef=sum(diag(t(Gi) %*% t(Zki) %*% Zki %*% Gi))
       #    print(improv)
@@ -146,11 +156,31 @@ clusCA <- function(data,nclus,ndim,nstart=100,smartStart=NULL,gamma = FALSE, see
         distB = sum(diag(t(Bns)%*%  Bns))
         distG = sum(diag(t(Gi)%*% Gi))
         g = ((K/Q)* distB/distG)^.25
+  #      ARC = ARC
         
+  #      ARCy = ARCy
+  #      G2 = Dk%*%(G[,1:nclus-1]*G[,1:nclus-1])
+  #      totg = apply(G2,1,sum)
+  #      RPCG = pseudoinverse(diag(totg))%*%G2
+        
+  #      Y2 = Yi*Yi
+  #      toty = apply(Y2,1,sum)
+  #      RRCY = chol2inv(chol(diag(toty)))%*%Y2
         Bsol = (1/g)*Bns
         Gsol = g*Gi
         Ysol = g*Yi
       } else {
+   #     ARC = ARC
+  #      ARCy = ARCy
+        
+   #     G2 = Dk%*%(G[,1:nclus-1]*G[,1:nclus-1])
+  #      totg = apply(G2,1,sum)
+    #    RPCG = pseudoinverse(diag(totg))%*%G2
+        
+    #    Y2 = Yi*Yi
+    #    toty = apply(Y2,1,sum)
+    #    RRCY= chol2inv(chol(diag(toty)))%*%Y2
+        
         Bsol = Bns
         Gsol = Gi
         Ysol = Yi
@@ -177,6 +207,10 @@ clusCA <- function(data,nclus,ndim,nstart=100,smartStart=NULL,gamma = FALSE, see
   out$obscoord=data.frame(Ysol) # observations coordinates
   out$attcoord=data.frame(Bsol) # attributes coordinates
   out$centroid=data.frame(Gsol) # centroids
+ # out$ARC=data.frame(ARC)
+#  out$ARCy=data.frame(ARCy)
+#  out$RPCG=data.frame(RPCG)
+#  out$RRCY=data.frame(RRCY)
   cluster = as.integer(cluster)
   names(cluster) = rownames(data) 
   rownames(out$obscoord) = rownames(data)

@@ -1,4 +1,4 @@
-iFCB<- function(data,nclus=3,ndim=2,nstart=100,smartStart=NULL,gamma = TRUE,seed=NULL, binary = FALSE){
+iFCB<- function(data,nclus=3,ndim=2,nstart=100,smartStart=NULL,gamma = TRUE,seed=NULL, inboot = FALSE){
   
   data = data.frame(data)
   minobs = min(sapply(apply(data,2,unique),length))
@@ -7,7 +7,7 @@ iFCB<- function(data,nclus=3,ndim=2,nstart=100,smartStart=NULL,gamma = TRUE,seed
   q=ncol(data)
   n=nrow(data)
   
-  if (binary == FALSE) {
+  if (inboot == FALSE) {
     data=as.data.frame(lapply(data,as.factor))
     lab1a=names(data)
     lab1b=lapply(data,function(z) levels(as.factor(z)))
@@ -43,7 +43,7 @@ iFCB<- function(data,nclus=3,ndim=2,nstart=100,smartStart=NULL,gamma = TRUE,seed
     }
     
     
-    C=dummy(randVec)
+    C=tab.disjonctif(randVec)
     
     w= -Inf
     ceps=0.00000001
@@ -92,7 +92,7 @@ iFCB<- function(data,nclus=3,ndim=2,nstart=100,smartStart=NULL,gamma = TRUE,seed
       
       G = outK$centers
       ngvec = outK$cluster
-      C = dummy(ngvec)
+      C = tab.disjonctif(ngvec)
       centerC = matrix(apply(C,2,sum),nrow=n,ncol=nclus,byrow=T)/n
       Zstar = dZ - matrix(c*(n*q)/n,nrow=n,ncol = ndZ,byrow=T)/n
       Cstar = C - centerC

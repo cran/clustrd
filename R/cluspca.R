@@ -85,7 +85,7 @@ cluspca <- function(data, nclus, ndim, alpha=NULL, method=c("RKM","FKM"), center
           randVec=smartStart
         }
         
-        U = dummy(randVec)
+        U = tab.disjonctif(randVec)
         # U = data.matrix(fac2disj(randVec))
         #update A
         pseudoinvU = chol2inv(chol(t(U)%*%U))
@@ -412,7 +412,7 @@ cluspca <- function(data, nclus, ndim, alpha=NULL, method=c("RKM","FKM"), center
       }
       
       ##reorder according to cluster size
-      UU = dummy(uu)
+      UU = tab.disjonctif(uu)
       
       #mi = which.min(func)
       U= UU#UU[[mi]]

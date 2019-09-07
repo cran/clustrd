@@ -1,11 +1,11 @@
-cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), center = TRUE, scale = TRUE, alpha=NULL, rotation="none", nstart=100, smartStart=NULL, seed=NULL, binary = FALSE)
+cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), center = TRUE, scale = TRUE, alpha=NULL, rotation="none", nstart=100, smartStart=NULL, seed=NULL, inboot = FALSE)
 {
   clu=group=trueOrd={}
   . = NULL
   data = data.frame(data)
   odata = data
   #define X case kapws alliws
-  if (binary == FALSE) {
+  if (inboot == FALSE) {
     numvars <- sapply(data, is.numeric)
     anynum <- any(numvars)
     catvars <- sapply(data, is.factor)

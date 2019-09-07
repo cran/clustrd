@@ -78,8 +78,8 @@ boot_cluspcamix <- function(data, krange, nd = NULL,alpha=NULL, scale = TRUE, ce
           ndim = krange[l]-1
         cat('\n')
         print(paste0("Running for ",krange[l]," clusters and ",ndim[1]," dimensions."))
-        cl1 <- cluspcamix(x[index1[,b],,drop=FALSE],nclus=krange[l],ndim=ndim,nstart=nstart, scale = scale, center = center, seed = seed, binary = TRUE)
-        cl2 <- cluspcamix(x[index2[,b],,drop=FALSE],nclus=krange[l],ndim=ndim,nstart=nstart, scale = scale, center = center, seed = seed, binary = TRUE)
+        cl1 <- cluspcamix(x[index1[,b],,drop=FALSE],nclus=krange[l],ndim=ndim,nstart=nstart, scale = scale, center = center, seed = seed, inboot = TRUE)
+        cl2 <- cluspcamix(x[index2[,b],,drop=FALSE],nclus=krange[l],ndim=ndim,nstart=nstart, scale = scale, center = center, seed = seed, inboot = TRUE)
       } else{
         if (!is.null(nd)) {
           if ((length(nd) >1) & (l==1))  {
@@ -92,8 +92,8 @@ boot_cluspcamix <- function(data, krange, nd = NULL,alpha=NULL, scale = TRUE, ce
           ndim = krange-1
         cat('\n')
         print(paste0("Running for ",krange," clusters and ",ndim[1]," dimensions."))
-        cl1 <- cluspcamix(x[index1[,b],,drop=FALSE],nclus=krange,ndim=ndim,nstart=nstart, scale = scale, center = center, seed = seed, binary = TRUE)
-        cl2 <- cluspcamix(x[index2[,b],,drop=FALSE],nclus=krange,ndim=ndim,nstart=nstart, scale = scale, center = center, seed = seed, binary = TRUE)
+        cl1 <- cluspcamix(x[index1[,b],,drop=FALSE],nclus=krange,ndim=ndim,nstart=nstart, scale = scale, center = center, seed = seed, inboot = TRUE)
+        cl2 <- cluspcamix(x[index2[,b],,drop=FALSE],nclus=krange,ndim=ndim,nstart=nstart, scale = scale, center = center, seed = seed, inboot = TRUE)
       }
       
       indx <- sapply(xgood, is.factor)

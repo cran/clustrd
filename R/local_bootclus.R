@@ -26,7 +26,7 @@ local_bootclus <- function(data, nclus, ndim = NULL, method=c("RKM","FKM","mixed
   method <- toupper(method)
   
   if ((method == "CLUSCA") | (method == "IFCB") | (method == "MCAK")) {
-    x = dummy.data.frame(x, dummy.classes = "ALL") # The original super indicator
+    x = tab.disjonctif(x)#dummy.data.frame(x, dummy.classes = "ALL") # The original super indicator
   }
   
   if (method %in% c("MIXEDRKM","MIXEDFKM")) {
@@ -84,8 +84,8 @@ local_bootclus <- function(data, nclus, ndim = NULL, method=c("RKM","FKM","mixed
         ndim = k-1
       
       if (method %in% c("CLUSCA","IFCB","MCAK"))  {
-        cl1 <- clusmca(x[index1[[b]],,drop=FALSE],nclus=k,ndim=ndim,method = method,nstart=nstart, alphak = alphak, seed = seed, binary = TRUE)
-        cl2 <- clusmca(x[index2[[b]],,drop=FALSE],nclus=k,ndim=ndim,method = method,nstart=nstart, alphak = alphak, seed = seed, binary = TRUE)
+        cl1 <- clusmca(x[index1[[b]],,drop=FALSE],nclus=k,ndim=ndim,method = method,nstart=nstart, alphak = alphak, seed = seed, inboot = TRUE)
+        cl2 <- clusmca(x[index2[[b]],,drop=FALSE],nclus=k,ndim=ndim,method = method,nstart=nstart, alphak = alphak, seed = seed, inboot = TRUE)
       }
       
       if (method %in% c("RKM","FKM") |  (!is.null(alpha))) {
@@ -94,8 +94,8 @@ local_bootclus <- function(data, nclus, ndim = NULL, method=c("RKM","FKM","mixed
       }
       
       if (method %in% c("MIXEDRKM","MIXEDFKM")) {
-        cl1 <- cluspcamix(x[index1[[b]],,drop=FALSE],nclus=k,ndim=ndim,alpha = alpha,nstart=nstart, scale = scale, center = center, seed = seed, binary = TRUE)
-        cl2 <- cluspcamix(x[index2[[b]],,drop=FALSE],nclus=k,ndim=ndim,alpha = alpha,nstart=nstart, scale = scale, center = center, seed = seed, binary = TRUE)
+        cl1 <- cluspcamix(x[index1[[b]],,drop=FALSE],nclus=k,ndim=ndim,alpha = alpha,nstart=nstart, scale = scale, center = center, seed = seed, inboot = TRUE)
+        cl2 <- cluspcamix(x[index2[[b]],,drop=FALSE],nclus=k,ndim=ndim,alpha = alpha,nstart=nstart, scale = scale, center = center, seed = seed, inboot = TRUE)
         
       }
       
@@ -105,11 +105,11 @@ local_bootclus <- function(data, nclus, ndim = NULL, method=c("RKM","FKM","mixed
       
       if (method %in% c("CLUSCA","IFCB","MCAK")) 
       {
-        clall <- clusmca(x[indextest[[b]],],nclus=k[l],ndim=ndim, method = method, nstart=nstart, alphak = alphak, seed = seed, binary = TRUE)
+        clall <- clusmca(x[indextest[[b]],],nclus=k[l],ndim=ndim, method = method, nstart=nstart, alphak = alphak, seed = seed, inboot = TRUE)
       }
       
       if (method %in% c("MIXEDRKM","MIXEDFKM")| (!is.null(alpha)))   {
-          clall <- cluspcamix(x[indextest[[b]],],nclus=k[l],ndim=ndim, alpha = alpha,nstart=nstart, scale = scale, center = center,seed = seed, binary = TRUE)
+          clall <- cluspcamix(x[indextest[[b]],],nclus=k[l],ndim=ndim, alpha = alpha,nstart=nstart, scale = scale, center = center,seed = seed, inboot = TRUE)
       }
       
       x1 = data.frame(x[index1[[b]],,drop=FALSE])

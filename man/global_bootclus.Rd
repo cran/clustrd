@@ -70,11 +70,11 @@ Dolnicar, S., & Leisch, F. (2010). Evaluation of structure and reproducibility o
 \code{\link{local_bootclus}}
 }
 \examples{
-## 5 bootstrap replicates and nstart = 1 for speed in example,
-## use more for real applications
+## 3 bootstrap replicates and nstart = 1 for speed in example,
+## use at least 20 replicates for real applications
 data(diamond)
-boot_mixedRKM = global_bootclus(diamond[,-7], nclusrange = 3:5,
-method = "mixedRKM", nboot = 5, nstart = 1, seed = 1234)
+boot_mixedRKM = global_bootclus(diamond[,-7], nclusrange = 3:4,
+method = "mixedRKM", nboot = 3, nstart = 1, seed = 1234)
 
 boxplot(boot_mixedRKM$rand, xlab = "Number of clusters", ylab =
 "adjusted Rand Index")

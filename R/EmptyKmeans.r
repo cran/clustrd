@@ -29,7 +29,7 @@ EmptyKmeans<-function(data,centers){
       
     }
     
-    C=dummy(gvec)
+    C=tab.disjonctif(gvec)
     
     G=chol2inv(chol(t(C)%*% C))%*% t(C) %*% data
 
@@ -50,7 +50,7 @@ EmptyKmeans<-function(data,centers){
         allDist=allDist[-far]
       }
       
-      C=dummy(gvec)
+      C=tab.disjonctif(gvec)
       G=chol2inv(chol(t(C)%*% C))%*% t(C) %*% data
       CG=C%*%G
     }
