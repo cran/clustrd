@@ -149,15 +149,17 @@ cluspca <- function(data, nclus, ndim, alpha=NULL, method=c("RKM","FKM"), center
       centroid = centroid[as.integer(names(aa)), ]
       if (rotation == "varimax") {
         AA = varimax(AA)$loadings[1:m, 1:ndim]
-        FF = data %*% AA
-        centroid = PP %*% FF
-        centroid = centroid[as.integer(names(aa)), ]
+        FF = data%*%AA
+        #update center
+        centroid = pseudoinverse(t(UU)%*%UU)%*%t(UU)%*%FF 
+        centroid = centroid[as.integer(names(aa)),]
       }
       else if (rotation == "promax") {
-        AA = promax(AA)$loadings[1:m, 1:ndim]
-        FF = data %*% AA
-        centroid = PP %*% FF
-        centroid = centroid[as.integer(names(aa)), ]
+        AA = promax(AA)$loadings[1:m,1:ndim]
+        FF = data%*%AA
+        #update center
+        centroid = pseudoinverse(t(UU)%*%UU)%*%t(UU)%*%FF
+        centroid = centroid[as.integer(names(aa)),]
       }
       
       ##########################
@@ -432,14 +434,14 @@ cluspca <- function(data, nclus, ndim, alpha=NULL, method=c("RKM","FKM"), center
         AA = varimax(AA)$loadings[1:m,1:ndim]
         FF = data%*%AA
         #update center
-        centroid =  chol2inv(chol(crossprod(U)))%*%t(U)%*%FF
+        centroid = pseudoinverse(t(UU)%*%UU)%*%t(UU)%*%FF 
         centroid = centroid[as.integer(names(aa)),]
         
       } else if (rotation == "promax") {
         AA = promax(AA)$loadings[1:m,1:ndim]
         FF = data%*%AA
         #update center
-        centroid =  chol2inv(chol(crossprod(U)))%*%t(U)%*%FF
+        centroid = pseudoinverse(t(UU)%*%UU)%*%t(UU)%*%FF
         centroid = centroid[as.integer(names(aa)),]
       }
       

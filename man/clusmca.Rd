@@ -53,8 +53,14 @@ When \code{nclus} = 1 the function returns the MCA solution with objects in prin
 
 \value{
 \item{obscoord}{Object scores}
-\item{attcoord}{Variable scores}
+\item{attcoord}{Attribute scores}
 \item{centroid}{Cluster centroids}
+%\item{abscluscontr}{Centroid absolute contributions}
+%\item{absobscontr}{Object absolute contributions}
+%\item{absattcontr}{Attribute absolute contributions}
+%\item{relcluscontr}{Centroid relative contributions}
+%\item{relobscontr}{Object relative contributions}
+%\item{relattcontr}{Attribute relative contributions}
 \item{cluster}{Cluster membership}
 \item{criterion}{Optimal value of the objective criterion}
 \item{size}{The number of objects in each cluster}

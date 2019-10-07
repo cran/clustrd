@@ -241,10 +241,12 @@ plot.clusmca<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, t
     }
     ffew = topstdres 
     
-    myminx = -10
-    mymaxx = 10
-    TopplotGroups=outOfIndependence(x$odata,x$cluster,attlabs,firstfew=ffew,textSize=3,segSize=4,minx=myminx,maxx=mymaxx)
-    plotGroups=outOfIndependence(x$odata,x$cluster,nolabs=T,attlabs,fixmarg=F,textSize=1.5,segSize=1.5,minx=-2.5,maxx=2.5)
+    if (subplot == TRUE) 
+      TopplotGroups=outOfIndependence(x$odata,x$cluster,attlabs,firstfew=ffew,textSize=3.5,segSize=4,myleftmarg=5,myrightmarg=1)
+    else
+      TopplotGroups=outOfIndependence(x$odata,x$cluster,attlabs,firstfew=ffew,textSize=3.5,segSize=4,myleftmarg=0.5, myrightmarg=0.5)
+    
+    plotGroups=outOfIndependence(x$odata,x$cluster,nolabs=T,attlabs,fixmarg=F,textSize=1.5,segSize=1.5)#,myleftmarg=0.5, myrightmarg=0.5)
     
     for(jjj in 1:K){
       TopplotGroups$G[[jjj]]=TopplotGroups$G[[jjj]]+theme_bw()+ggtitle(cnm[jjj])

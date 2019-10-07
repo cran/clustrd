@@ -267,14 +267,20 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
       if (rotation == "varimax") {
         AA = varimax(AA)$loadings[1:m, 1:ndim]
         FF = data %*% AA
-        centroid = PP %*% FF
-        centroid = centroid[as.integer(names(aa)), ]
+        centroid = pseudoinverse(t(UU)%*%UU)%*%t(UU)%*%FF 
+        centroid = centroid[as.integer(names(aa)),]
+        
+      #  centroid = PP %*% FF
+       # centroid = centroid[as.integer(names(aa)), ]
       }
       else if (rotation == "promax") {
         AA = promax(AA)$loadings[1:m, 1:ndim]
         FF = data %*% AA
-        centroid = PP %*% FF
-        centroid = centroid[as.integer(names(aa)), ]
+        centroid = pseudoinverse(t(UU)%*%UU)%*%t(UU)%*%FF 
+        centroid = centroid[as.integer(names(aa)),]
+        
+       # centroid = PP %*% FF
+      #  centroid = centroid[as.integer(names(aa)), ]
       }
       setTxtProgressBar(pb, 1)
       
@@ -523,15 +529,21 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
         AA = varimax(AA)$loadings[1:m,1:ndim]
         FF = data%*%AA
         #update center
-        centroid =  chol2inv(chol(crossprod(U)))%*%t(U)%*%FF
+        centroid = pseudoinverse(t(UU)%*%UU)%*%t(UU)%*%FF 
         centroid = centroid[as.integer(names(aa)),]
+        
+        #centroid =  chol2inv(chol(crossprod(U)))%*%t(U)%*%FF
+        #centroid = centroid[as.integer(names(aa)),]
         
       } else if (rotation == "promax") {
         AA = promax(AA)$loadings[1:m,1:ndim]
         FF = data%*%AA
         #update center
-        centroid =  chol2inv(chol(crossprod(U)))%*%t(U)%*%FF
+        centroid = pseudoinverse(t(UU)%*%UU)%*%t(UU)%*%FF 
         centroid = centroid[as.integer(names(aa)),]
+        
+        #centroid =  chol2inv(chol(crossprod(U)))%*%t(U)%*%FF
+        #centroid = centroid[as.integer(names(aa)),]
       }
       
       setTxtProgressBar(pb, 1)

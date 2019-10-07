@@ -1,4 +1,4 @@
-outOfIndependence=function(data,Gvec,labs,nolabs=FALSE,fixmarg=TRUE,firstfew=0,minx=-2.5,maxx=2.5,segSize=4,textSize=6){
+outOfIndependence=function(data,Gvec,labs,nolabs=FALSE,fixmarg=TRUE,firstfew=0,segSize=4,textSize=6,myleftmarg = 0.5, myrightmarg = 0.5){
   
   value = NULL
   newplace = NULL
@@ -31,7 +31,6 @@ outOfIndependence=function(data,Gvec,labs,nolabs=FALSE,fixmarg=TRUE,firstfew=0,m
   eP = r%*% t(c)
   devP=invsqDr %*% (P-eP) %*% invsqDc
   
-  
   ###### HERE STARTS THE FOR LOOP
   dfP=list()
   sortOp=list()
@@ -48,7 +47,7 @@ outOfIndependence=function(data,Gvec,labs,nolabs=FALSE,fixmarg=TRUE,firstfew=0,m
     
     dfP[[jj]]=dfP[[jj]][sortOp[[jj]]$ix,]
     dfP[[jj]]$newplace=nrow(devP):1
-    xran=c(min(dfP[[jj]]$value)-.5,max(dfP[[jj]]$value)+.5)
+    xran=c(min(dfP[[jj]]$value)-myleftmarg,max(dfP[[jj]]$value)+myrightmarg)
     if(firstfew>0){
       dfP[[jj]]=dfP[[jj]][1:firstfew,]#names(dfP[[jj]])
       dfP[[jj]]$newplace=firstfew:1
@@ -62,7 +61,7 @@ outOfIndependence=function(data,Gvec,labs,nolabs=FALSE,fixmarg=TRUE,firstfew=0,m
     
     if(fixmarg==TRUE){
       bbp=bbp+geom_segment(data=dfP[[jj]],aes(x=0,xend=value,y=newplace,yend=newplace),colour=colorPal[jj],size=segSize,alpha=.25)#+scale_x_continuous(expand = c(0,0))+scale_y_continuous(expand = c(0,0))#+coord_cartesian(xlim = c(0, value),ylim=c(newplace,newplace))
-      bbp=bbp+theme(legend.position="none")+xlab("")+ylab("")+coord_cartesian(xlim = c(value,value))#,ylim=c(0,newplace)#xlim(c(minx,maxx))
+      bbp=bbp+theme(legend.position="none")+xlab("")+ylab("")+coord_cartesian(xlim = xran)#,ylim=c(0,newplace)#xlim(c(minx,maxx))
       bbp=bbp+theme(axis.text.x  = element_text(size=textSize),axis.text.y  = element_text(size=textSize))
      # bbp=bbp+xlab(paste("Standardized residuals")) + ylab(paste("Variable categories"))  
       if(firstfew==0){bbp=bbp+theme(axis.line=element_blank(),axis.ticks = element_blank())}

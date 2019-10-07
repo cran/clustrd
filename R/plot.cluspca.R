@@ -1,4 +1,4 @@
-plot.cluspca<-function(x, dims = c(1,2), cludesc = FALSE, what = c(TRUE,TRUE), objlabs = FALSE, attlabs, ...){
+plot.cluspca<-function(x, dims = c(1,2), cludesc = FALSE, what = c(TRUE,TRUE), attlabs, ...){
   
   d1 = NULL
   d2 = NULL
@@ -20,7 +20,7 @@ plot.cluspca<-function(x, dims = c(1,2), cludesc = FALSE, what = c(TRUE,TRUE), o
     attlabs=colnames(x$odata) #row.names(x$attcoord)
   }
   #do not show obs labels if more than 30
-  if (objlabs == TRUE) {
+  if (dim(x$obscoord)[1] < 30) {
     obslabs = row.names(x$odata)
   } else
   {
@@ -76,7 +76,7 @@ plot.cluspca<-function(x, dims = c(1,2), cludesc = FALSE, what = c(TRUE,TRUE), o
     a=ggplot(data=obs_df,aes(x=d1,y=d2))+coord_cartesian(xlim = c(xallmin,xallmax), ylim = c(yallmin,yallmax))
     a=a+geom_point(aes(x=d1,y=d2,colour=gr,shape=gr,alpha=.4),size=1)+theme_bw()
     #do not show obs labels if more than 30
-    if (objlabs == TRUE) {
+    if (dim(x$obscoord)[1] < 30) {#(objlabs == TRUE) {
       a=a+geom_text_repel(data=obs_df,aes(label=olab))
     }
     a=a+theme(legend.position="none",axis.text.x = element_blank(),axis.text.y = element_blank())+xlab("")+ylab("")
@@ -145,7 +145,7 @@ plot.cluspca<-function(x, dims = c(1,2), cludesc = FALSE, what = c(TRUE,TRUE), o
     a=ggplot(data=obs_df,aes(x=d1,y=d2))+coord_cartesian(xlim = c(xallmin,xallmax),ylim = c(yallmin,yallmax))
     a=a+geom_point(aes(x=d1,y=d2,shape=gr,alpha=.4),size=1)+theme_bw()#,colour=gr
     #do not show obs labels if more than 30
-    if (objlabs == TRUE) {
+    if (dim(x$obscoord)[1] < 30) {#(objlabs == TRUE) {
       a=a+geom_text_repel(data=obs_df,aes(label=olab))
     }
     

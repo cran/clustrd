@@ -29,8 +29,8 @@ summary.cluspca <- function(object, ...) {
     }
     print(attc)
     
-    # cat("\nClustering vector:\n")
-    #  print(x$cluster)
+     cat("\nClustering vector:\n")
+      print(x$cluster)
     
     
     cat("\nAvailable output:\n", 

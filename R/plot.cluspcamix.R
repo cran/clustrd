@@ -257,10 +257,15 @@ plot.cluspcamix<-function(x, dims = c(1,2), cludesc = FALSE, topstdres = 20, obj
       }
       ffew = topstdres 
       
-      myminx = -10
-      mymaxx = 10
-      TopplotGroups=outOfIndependence(data[, facAct, drop = FALSE],x$cluster,attlabs,firstfew=ffew,textSize=4,segSize=4,minx=myminx,maxx=mymaxx)
-      plotGroups=outOfIndependence(data[, facAct, drop = FALSE],x$cluster,nolabs=T,attlabs,fixmarg=F,textSize=1.5,segSize=1.5,minx=-2.5,maxx=2.5)
+      if (subplot == TRUE) 
+        TopplotGroups=outOfIndependence(data[, facAct, drop = FALSE],x$cluster,attlabs,firstfew=ffew,textSize=3.5,segSize=4,myleftmarg=5,myrightmarg=1)
+      else
+        TopplotGroups=outOfIndependence(data[, facAct, drop = FALSE],x$cluster,attlabs,firstfew=ffew,textSize=3.5,segSize=4,myleftmarg=0.5, myrightmarg=0.5)
+      
+      
+     # myminx = -10
+    #  mymaxx = 10
+      plotGroups=outOfIndependence(data[, facAct, drop = FALSE],x$cluster,nolabs=T,attlabs,fixmarg=F,textSize=1.5,segSize=1.5)#,myleftmarg=0.5, myrightmarg=0.5)
       
       for(jjj in 1:K){
         TopplotGroups$G[[jjj]]=TopplotGroups$G[[jjj]]+theme_bw()+ggtitle(cnm[jjj])
