@@ -1,0 +1,29 @@
+\name{clustrd-package}
+\alias{clustrd-package}
+\alias{clustrd}
+\docType{package}
+\title{
+Methods for Joint Dimension Reduction and Clustering
+}
+\description{
+A class of methods that combine dimension reduction and clustering of continuous, categorical or mixed-type data (Markos, Iodice D'Enza and van de Velden 2019; <DOI:10.18637/jss.v091.i10>). For continuous data, the package contains implementations of factorial K-means (Vichi and Kiers 2001; <DOI:10.1016/S0167-9473(00)00064-5>) and reduced K-means (De Soete and Carroll 1994; <DOI:10.1007/978-3-642-51175-2_24>); both methods that combine principal component analysis with K-means clustering. For categorical data, the package provides MCA K-means (Hwang, Dillon and Takane 2006; <DOI:10.1007/s11336-004-1173-x>), i-FCB (Iodice D'Enza and Palumbo 2013, <DOI:10.1007/s00180-012-0329-x>) and Cluster Correspondence Analysis (van de Velden, Iodice D'Enza and Palumbo 2017; <DOI:10.1007/s11336-016-9514-0>), which combine multiple correspondence analysis with K-means. For mixed-type data, it provides mixed Reduced K-means and mixed Factorial K-means (van de Velden, Iodice D'Enza and Markos 2019; <DOI:10.1002/wics.1456>), which combine PCA for mixed-type data with K-means.
+}
+\details{
+\tabular{ll}{
+Package: \tab clustrd\cr
+Type: \tab Package\cr
+Version: \tab 1.3.6-2\cr
+Date: \tab 2019-10-28\cr
+License: \tab GPL-3\cr
+}
+}
+\author{
+Angelos Markos [aut, cre],
+Alfonso Iodice D' Enza [aut],
+Michel van de Velden [aut]
+}
+\references{
+Markos, A., Iodice D'Enza, A., & van de Velden, M. (2019). Beyond Tandem Analysis: Joint Dimension Reduction and Clustering in {R}. \emph{Journal of Statistical Software}, \emph{91}(10), 1--24. doi:10.18637/jss.v091.i10.
+}
+
+\keyword{ package }

@@ -1,4 +1,4 @@
-e52cfacc28190a5c34e1ebd3e794f12b *DESCRIPTION
+84a4f187a478da25c450d5803482f97f *DESCRIPTION
 9ebf683ff6afcfa6d9d0d178925c48bc *NAMESPACE
 f7d0051ad063e3fabd8ed3b70975fcf0 *R/EmptyKmeans.r
 89b4f9b6e242de7d9d14448e04b900f6 *R/MCAk.r
@@ -47,10 +47,12 @@ a9a3a1be0c471bf5d47729bf76b8bcdf *data/cmc.rda
 93c5203032bbe3c6ef41871352a783a3 *data/diamond.rda
 b5cf26b9639e3c3149a20e7ee8d53e70 *data/hsq.rda
 23d9be0ffdbb4020f4f0017ad8c3c5bf *data/macro.rda
-e363413747e292f984cf1ac976fa724d *man/bribery.Rd
+9efe8d658a9ffcab3395f1b7d051c0a0 *inst/CITATION
+ade9d483002a7c8074d31b5c80a8388f *man/bribery.Rd
 8c9438133916c534d6cb229ecbb9d528 *man/clusmca.Rd
 c899f161d8c9789b367ef2c17685c8ab *man/cluspca.Rd
 97b7bf546603c23b1ee77dff3ae96dc0 *man/cluspcamix.Rd
+7b851033f04798fb5285adeb0daf4d2e *man/clustrd.Rd
 aee751b479dff88cf39594f91f7d604d *man/cmc.Rd
 dea3d25d37d3f5e013d7abc91cc9c4c5 *man/diamond.Rd
 9751b08536ef4f12981b0bda5dbb4657 *man/global_bootclus.Rd

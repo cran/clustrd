@@ -1,0 +1,18 @@
+bibentry(bibtype = "Article",
+  title        = "Beyond Tandem Analysis: Joint Dimension Reduction and Clustering in {R}",
+  author       = c(person(given = "Angelos",
+                          family = "Markos",
+                          email = "amarkos@eled.duth.gr"),
+                   person(given = "Alfonso",
+                          family = "Iodice D'Enza"),
+                   person(given = "Michel",
+                          family = "van de Velden")),
+  journal      = "Journal of Statistical Software",
+  year         = "2019",
+  volume       = "91",
+  number       = "10",
+  pages        = "1--24",
+  doi          = "10.18637/jss.v091.i10",
+  header       = "To cite clustrd in publications use:"
+)
+

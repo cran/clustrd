@@ -3,7 +3,7 @@
 \docType{data}
 \title{Bribery cases in Russia}
 \description{
-The data set refers to a collection of 55 articles on Bribery cases from central Russian newspapers 1999-2000 (Mirkin, 2005). The variables reflect the following fivefold structure of bribery situations: two interacting sides - the office and the client, their interaction, the corrupt service rendered, and the environment in which it all occurs. These structural aspects can be characterized by eleven variables that have been manually recovered from the newspaper articles.}
+The data set refers to a collection of 55 articles on bribery cases from central Russian newspapers 1999-2000 (Mirkin, 2005). The variables reflect the following five-fold structure of bribery situations: two interacting sides - the office and the client, their interaction, the corrupt service rendered, and the environment in which it all occurs. These structural aspects can be characterized by 11 variables that have been manually recovered from the newspaper articles.}
 
 \usage{data("bribery")}
 \format{
