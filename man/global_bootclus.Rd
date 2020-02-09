@@ -16,6 +16,7 @@ nboot = 10, alpha = NULL, alphak = NULL, center = TRUE,
 scale = TRUE, nstart = 100, smartStart = NULL, seed = NULL)
 }
 
+
 \arguments{
   \item{data}{Continuous, Categorical ot Mixed data set}
   \item{nclusrange}{An integer or an integer vector with the number of clusters or a range of numbers of clusters (should be greater than one)}
@@ -29,7 +30,6 @@ scale = TRUE, nstart = 100, smartStart = NULL, seed = NULL)
   \item{nstart}{Number of random starts (default = 100)}
   \item{smartStart}{If \code{NULL} then a random cluster membership vector is generated. Alternatively, a cluster membership vector can be provided as a starting solution}
   \item{seed}{An integer that is used as argument by \code{set.seed()} for offsetting the random number generator when \code{smartStart = NULL}. The default value is NULL.}
-  \item{\dots}{Not used}
 }
 
 \details{

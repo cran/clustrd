@@ -64,12 +64,12 @@ clusCA <- function(data,nclus,ndim,nstart=100,smartStart=NULL,gamma = FALSE, see
     } else {
       Lk = data.matrix(svdDZkZD$d[1])
     }
-    G = svdDZkZD$u[,1:k]
-    
+  
+    G = data.matrix(svdDZkZD$u[,1:k])
     Gi = G[,1:k]
     Gi=Dksi%*%Gi%*%Lk # CA row coordinates (section 2 in the paper right below formula (1))
     #inertia=sum(diag(Lk%*%Lk)) # explained inertia in k dimensions
-    Bstar=svdDZkZD$v[,1:k]
+    Bstar = data.matrix(svdDZkZD$v[,1:k])
     #sqrt(n*q)*
     B=Dzhi %*% Bstar # as in eq. (8)
     Bns = B[,1:k]

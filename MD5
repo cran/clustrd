@@ -1,4 +1,4 @@
-84a4f187a478da25c450d5803482f97f *DESCRIPTION
+e97c9397326259cb8a5888e59fa6ed1a *DESCRIPTION
 9ebf683ff6afcfa6d9d0d178925c48bc *NAMESPACE
 f7d0051ad063e3fabd8ed3b70975fcf0 *R/EmptyKmeans.r
 89b4f9b6e242de7d9d14448e04b900f6 *R/MCAk.r
@@ -6,7 +6,7 @@ f7d0051ad063e3fabd8ed3b70975fcf0 *R/EmptyKmeans.r
 29354fece30b671d5a5bc1484e917c2c *R/boot_cluspca.R
 401a4fff9fa230dd9b3965d9776b8be6 *R/boot_cluspcamix.R
 919d4afea19c54295a9b55e8d4180770 *R/clu_means.R
-68406b038265007c91a0fead9321728a *R/clusCA.R
+a9c2f4a0d9840c8faec7bc99ff9f3f3c *R/clusCA.R
 30f755ed655df7d83401c37fdc6c32ac *R/clusmca.R
 c5501d1e3a8ca03fec21051eb43ceea9 *R/cluspca.R
 a3eaa64a8040ac935134a9fe3d07d3bd *R/cluspcamix.R
@@ -55,7 +55,7 @@ c899f161d8c9789b367ef2c17685c8ab *man/cluspca.Rd
 7b851033f04798fb5285adeb0daf4d2e *man/clustrd.Rd
 aee751b479dff88cf39594f91f7d604d *man/cmc.Rd
 dea3d25d37d3f5e013d7abc91cc9c4c5 *man/diamond.Rd
-9751b08536ef4f12981b0bda5dbb4657 *man/global_bootclus.Rd
+84d46e759b636d823c6995447d54e98f *man/global_bootclus.Rd
 d00b7ebeb35764f2970ac4fd52e1826c *man/hsq.Rd
 52481b61d42056d210db6566f08ad7bf *man/local_bootclus.Rd
 974d9e231fb77e66bfdb41d7d4eef002 *man/macro.Rd
