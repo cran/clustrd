@@ -1,6 +1,6 @@
 tab.disjonctif <- function (tab) 
 {
-  tab <- as.data.frame(tab)
+  tab <- data.frame(tab, stringsAsFactors = TRUE)
   modalite.disjonctif <- function(i) {
     moda <- as.factor(tab[, i])
     n <- length(moda)
@@ -25,7 +25,7 @@ tab.disjonctif <- function (tab)
       listModa[numlistModa] <- paste(variable[numlistModa], 
                                      listModa[numlistModa], sep = ".")
     res <- lapply(1:ncol(tab), modalite.disjonctif)
-    res <- as.matrix(data.frame(res, check.names = FALSE))
+    res <- as.matrix(data.frame(res, check.names = FALSE, stringsAsFactors = TRUE))
     dimnames(res) <- list(attributes(tab)$row.names, listModa)
   }
   return(res)

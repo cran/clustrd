@@ -72,7 +72,7 @@ tune_cluspca <- function(data, nclusrange = 2:7, ndimrange = 2:4, criterion = "a
   crit.grid  = round(critval,3)
   
   crit.grid[is.na(crit.grid)]=''
-  crit.grid = as.data.frame(crit.grid)
+  crit.grid = data.frame(crit.grid,stringsAsFactors = TRUE)
   
   if (criterion == "asw"){
     cluasw = clusval(outcluspcabest, dst = dst)$cluasw

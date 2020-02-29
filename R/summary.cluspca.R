@@ -5,7 +5,7 @@ summary.cluspca <- function(object, ...) {
 
   if (k == 1)
   {
-    d = dim(data.frame(x$attcoord))[2]
+    d = dim(data.frame(x$attcoord, stringsAsFactors = TRUE))[2]
     size = x$size
     csize = round((table(x$cluster)/sum(table(x$cluster)))*100,digits=1)
     tt = paste('(',csize,'%)',sep="")
@@ -22,7 +22,7 @@ summary.cluspca <- function(object, ...) {
     #    colnames(xcent)[i] = paste0("Dim.",i)
     #  }
     #  print(xcent)
-    attc = data.frame(round(x$attcoord,4))
+    attc = data.frame(round(x$attcoord,4),stringsAsFactors = TRUE)
     cat("\nAttribute scores:\n")
     for (i in 1:ncol(attc)) {
       colnames(attc)[i] = paste0("Dim.",i)
@@ -39,7 +39,7 @@ summary.cluspca <- function(object, ...) {
     invisible(x)
     
   }  else {
-    d = dim(data.frame(x$attcoord))[2]
+    d = dim(data.frame(x$attcoord,stringsAsFactors = TRUE))[2]
     size = x$size
     csize = round((table(x$cluster)/sum(table(x$cluster)))*100,digits=1)
     
@@ -57,7 +57,7 @@ summary.cluspca <- function(object, ...) {
     cat(paste("Solution with ",k ," clusters of sizes ", paste(cs, collapse = ", ")," in ",d ," dimensions. ", "Variables were ", centering, " and ", scaling,".", "\n", sep = ""))
     
     cat("\nCluster centroids:\n")
-    xcent = data.frame(round(x$centroid,4))
+    xcent = data.frame(round(x$centroid,4),stringsAsFactors = TRUE)
     for (i in 1:k) {
       rownames(xcent)[i] = paste("Cluster",i)
     }
@@ -65,7 +65,7 @@ summary.cluspca <- function(object, ...) {
       colnames(xcent)[i] = paste0("Dim.",i)
     }
     print(xcent)
-    attc = data.frame(round(x$attcoord,4))
+    attc = data.frame(round(x$attcoord,4),stringsAsFactors = TRUE)
     cat("\nVariable scores:\n")
     for (i in 1:ncol(attc)) {
       colnames(attc)[i] = paste0("Dim.",i)

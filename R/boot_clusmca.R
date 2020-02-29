@@ -2,9 +2,9 @@ boot_clusmca <- function(data, krange, nd=NULL, method = "clusCA", nstart=100, n
 {
   clu={}
   #bootstrapping on Z
-  data = data.frame(data)
+  data = data.frame(data, stringsAsFactors = TRUE)
   data=as.data.frame(lapply(data,as.factor))
-  x = data.frame(tab.disjonctif(data))
+  x = data.frame(tab.disjonctif(data),stringsAsFactors = TRUE)
   
   #dummy.data.frame(data, dummy.classes = "ALL")
   if(!is.null(seed)) set.seed(seed)
@@ -75,13 +75,13 @@ boot_clusmca <- function(data, krange, nd=NULL, method = "clusCA", nstart=100, n
     gm=apply(x1,2,mean)
     x1$clu = cl1$cluster
     clum=(x1 %>% group_by(clu) %>% summarise_all(list(mean)))
-    bm = data.frame(rbind(clum[,-1],gm))
+    bm = data.frame(rbind(clum[,-1],gm),stringsAsFactors = TRUE)
     #rownames(bm) = c(paste("C",1:nrow(clum),sep=""),"all")
     cl1$centers = as.matrix(bm[1:krange[l],])
     x1 = x1[,-ncol(x1)]
     
     closest.cluster1 <- function(x) {
-      cluster.dist <- apply(data.frame(cl1$centers), 1, function(y) sqrt(sum((x-y)^2)))
+      cluster.dist <- apply(data.frame(cl1$centers,stringsAsFactors = TRUE), 1, function(y) sqrt(sum((x-y)^2)))
       return(which.min(cluster.dist)[1])
     }
     clust1[,l] <- apply(x, 1, closest.cluster1)
@@ -90,12 +90,12 @@ boot_clusmca <- function(data, krange, nd=NULL, method = "clusCA", nstart=100, n
     gm=apply(x2,2,mean)
     x2$clu = cl2$cluster
     clum=(x2 %>% group_by(clu) %>% summarise_all(list(mean)))
-    bm = data.frame(rbind(clum[,-1],gm))
+    bm = data.frame(rbind(clum[,-1],gm),stringsAsFactors = TRUE)
     cl2$centers = as.matrix(bm[1:krange[l],])
     x2 = x2[,-ncol(x2)]
     
     closest.cluster2 <- function(x) {
-      cluster.dist <- apply(data.frame(cl2$centers), 1, function(y) sqrt(sum((x-y)^2)))
+      cluster.dist <- apply(data.frame(cl2$centers,stringsAsFactors = TRUE), 1, function(y) sqrt(sum((x-y)^2)))
       return(which.min(cluster.dist)[1])
     }
     clust2[,l] <- apply(x, 1, closest.cluster2)

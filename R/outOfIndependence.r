@@ -6,7 +6,7 @@ outOfIndependence=function(data,Gvec,labs,nolabs=FALSE,fixmarg=TRUE,firstfew=0,s
 
   #data=data.frame(data)
   data=as.data.frame(lapply(data,as.factor))
-  data= data.frame(tab.disjonctif(data))#dummy.data.frame(data, dummy.classes = "ALL")
+  data= data.frame(tab.disjonctif(data),stringsAsFactors = TRUE)#dummy.data.frame(data, dummy.classes = "ALL")
   #data = data.matrix(data)
   K=max(Gvec)
 
@@ -40,7 +40,7 @@ outOfIndependence=function(data,Gvec,labs,nolabs=FALSE,fixmarg=TRUE,firstfew=0,s
   for(jj in 1:K){
     #topfew=which(abs(devP[,jj]*sqrt(n))>1)
     #print(labs[topfew])
-    dfP[[jj]]=data.frame(value=devP[,jj]*sqrt(n),place=1:nrow(devP),lbls=labs)
+    dfP[[jj]]=data.frame(value=devP[,jj]*sqrt(n),place=1:nrow(devP),lbls=labs,stringsAsFactors = TRUE)
     sortOp[[jj]]=sort(abs(dfP[[jj]]$value),decreasing=T,index.return=T)
     #   sortOp2=sort(abs(dfP2$value),decreasing=T,index.return=T)
     #   sortOp3=sort(abs(dfP3$value),decreasing=T,index.return=T)  

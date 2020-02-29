@@ -2,9 +2,9 @@ MCAk <- function(data, nclus = 3, ndim = 2, alphak = .5, nstart = 100, smartStar
   out=list()
   
   group={}
-  data = data.frame(data)
+  data = data.frame(data,stringsAsFactors = TRUE)
   if (inboot == FALSE) {
-    data=as.data.frame(lapply(data,as.factor))
+    data=as.data.frame(lapply(data,as.factor),stringsAsFactors = TRUE)
     lab1a=names(data)
     lab1b=lapply(data,function(z) levels(as.factor(z)))
     lab1=rep(lab1a,times=unlist(lapply(lab1b,length)))
@@ -71,7 +71,7 @@ MCAk <- function(data, nclus = 3, ndim = 2, alphak = .5, nstart = 100, smartStar
     out$cluster = cluster
     out$criterion = 1 # criterion
     out$size=as.integer(aa)  #round((table(cluster)/sum( table(cluster)))*100,digits=1)
-    out$odata=data.frame(lapply(data.frame(data),factor))
+    out$odata=data.frame(lapply(data.frame(data),factor),stringsAsFactors = TRUE)
     out$nstart = nstart
     class(out)="clusmca"
     return(out)
@@ -86,7 +86,7 @@ MCAk <- function(data, nclus = 3, ndim = 2, alphak = .5, nstart = 100, smartStar
     #data=data.frame(data)
     n = nrow(data)
     zitem = ncol(data)            
-    zncati = sapply(data.frame(data), function(x) length(unique(x))) #apply(data,2,max)
+    zncati = sapply(data.frame(data,stringsAsFactors = TRUE), function(x) length(unique(x))) #apply(data,2,max)
     oner = matrix(1,n,1)
     muz  = colMeans(zz)
     z = zz - oner %*% muz  
@@ -251,7 +251,7 @@ MCAk <- function(data, nclus = 3, ndim = 2, alphak = .5, nstart = 100, smartStar
     out$cluster = cluster #as.numeric(index) # cluster membership
     out$criterion = f # criterion
     out$size = as.integer(aa)  #round((table(cluster)/sum( table(cluster)))*100,digits=1)
-    out$odata = data.frame(lapply(data.frame(data),factor))
+    out$odata = data.frame(lapply(data.frame(data),factor),stringsAsFactors = TRUE)
     out$nstart = nstart
     class(out) = "clusmca"
     return(out)

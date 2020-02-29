@@ -81,7 +81,7 @@ tune_clusmca <- function(data, nclusrange = 2:5, ndimrange = 2:4, method = "clus
     cluasw = NULL
   
   crit.grid[is.na(crit.grid)]=''
-  crit.grid = as.data.frame(crit.grid)
+  crit.grid = data.frame(crit.grid, stringsAsFactors = TRUE)
   out <- list(clusobjbest = outclusmcabest, nclusbest = k.best, ndimbest = d.best, critbest = crit.best, critgrid  = crit.grid, crit = criterion, cluasw = cluasw)
   class(out) = "tuneclus"
   out

@@ -4,7 +4,7 @@ summary.tuneclus <- function(object, ...) {
   csize = round((table(x$clusobjbest$cluster)/sum(table(x$clusobjbest$cluster)))*100,digits=1)
   k = x$nclusbest
   d = x$ndimbest
-  x$clusobjbest$centroid = data.frame(x$clusobjbest$centroid)
+  x$clusobjbest$centroid = data.frame(x$clusobjbest$centroid, stringsAsFactors = TRUE)
   cluspca = FALSE
   try(if (x$clusobjbest$center) { cluspca = TRUE }, silent = TRUE)
   
@@ -32,7 +32,7 @@ summary.tuneclus <- function(object, ...) {
   print(x$critgrid)
   
   cat("\nCluster centroids:\n")
-  xcent = data.frame(round(x$clusobjbest$centroid,4))
+  xcent = data.frame(round(x$clusobjbest$centroid,4), stringsAsFactors = TRUE)
   for (i in 1:k) {
     rownames(xcent)[i] = paste("Cluster",i)
   }
@@ -40,7 +40,7 @@ summary.tuneclus <- function(object, ...) {
     colnames(xcent)[i] = paste0("Dim.",i)
   }
   print(xcent)
-  attc = data.frame(round(x$clusobjbest$attcoord,4))
+  attc = data.frame(round(x$clusobjbest$attcoord,4), stringsAsFactors = TRUE)
   cat("\nVariable scores:\n")
   for (i in 1:ncol(attc)) {
     colnames(attc)[i] = paste0("Dim.",i)

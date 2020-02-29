@@ -4,7 +4,7 @@
 boot_cluspcamix <- function(data, krange, nd = NULL,alpha=NULL, scale = TRUE, center= TRUE,nstart=100, nboot=10, seed=NULL, ...)
 {
   clu={}
-  data = data.frame(data)
+  data = data.frame(data, stringsAsFactors = TRUE)
   numvars <- sapply(data, is.numeric)
   anynum <- any(numvars)
   catvars <- sapply(data, is.factor)
@@ -36,7 +36,7 @@ boot_cluspcamix <- function(data, krange, nd = NULL,alpha=NULL, scale = TRUE, ce
   #  prop <- colSums(QualiAct * (rep(1,numobs)/numobs))
   #  QualiAct <- t(t(QualiAct) - as.vector(crossprod(rep(1,numobs)/numobs, as.matrix(QualiAct)))  ) #this is centering MZ
   #  QualiAct <- t(t(QualiAct)/sqrt(prop))
-  QualiAct = data.frame(QualiAct)
+  QualiAct = data.frame(QualiAct, stringsAsFactors = TRUE)
   for (i in 1:ncol(QualiAct)) 
     QualiAct[,i] = factor((QualiAct[,i]))
   
@@ -103,12 +103,12 @@ boot_cluspcamix <- function(data, krange, nd = NULL,alpha=NULL, scale = TRUE, ce
       x1$clu = cl1$cluster
       clum=(x1 %>% group_by(clu) %>% summarise_all(list(mean)))
       
-      bm = data.frame(rbind(clum[,-1],gm))
+      bm = data.frame(rbind(clum[,-1],gm),stringsAsFactors = TRUE)
       #rownames(bm) = c(paste("C",1:nrow(clum),sep=""),"all")
       cl1$centers = as.matrix(bm[1:krange[l],])
       x1 = x1[,-ncol(x1)]
       closest.cluster1 <- function(x) {
-        cluster.dist <- apply(data.frame(cl1$centers), 1, function(y) sqrt(sum((x-y)^2)))
+        cluster.dist <- apply(data.frame(cl1$centers, stringsAsFactors = TRUE), 1, function(y) sqrt(sum((x-y)^2)))
         return(which.min(cluster.dist)[1])
       }
       clust1[,l] <- apply(xgood, 1, closest.cluster1)
@@ -120,13 +120,13 @@ boot_cluspcamix <- function(data, krange, nd = NULL,alpha=NULL, scale = TRUE, ce
       x2$clu = cl2$cluster
       clum=(x2 %>% group_by(clu) %>% summarise_all(list(mean)))
       
-      bm = data.frame(rbind(clum[,-1],gm))
+      bm = data.frame(rbind(clum[,-1],gm), stringsAsFactors = TRUE)
       
       cl2$centers = as.matrix(bm[1:krange[l],])
       x2 = x2[,-ncol(x2)]
       
       closest.cluster2 <- function(x) {
-        cluster.dist <- apply(data.frame(cl2$centers), 1, function(y) sqrt(sum((x-y)^2)))
+        cluster.dist <- apply(data.frame(cl2$centers, stringsAsFactors = TRUE), 1, function(y) sqrt(sum((x-y)^2)))
         return(which.min(cluster.dist)[1])
       }
       clust2[,l] <- apply(xgood, 1, closest.cluster2)

@@ -8,7 +8,7 @@ plot.cluspcamix<-function(x, dims = c(1,2), cludesc = FALSE, topstdres = 20, obj
   attnam = NULL
   slp = NULL
   out=list()
-  if (dim(data.frame(x$attcoord))[2] == 1) {
+  if (dim(data.frame(x$attcoord,stringsAsFactors = TRUE))[2] == 1) {
     stop('There is only one dimension. A 2D scatterplot cannot be produced.')
   } 
   # out=list()
@@ -59,13 +59,13 @@ plot.cluspcamix<-function(x, dims = c(1,2), cludesc = FALSE, topstdres = 20, obj
   xattmax=xattmin+att_range
   yattmax=yattmin+att_range
   ######################################################
-  att_df=data.frame(d1=x$attcoord[,dim1],d2=x$attcoord[,dim2],attnam=attlabs)
+  att_df=data.frame(d1=x$attcoord[,dim1],d2=x$attcoord[,dim2],attnam=attlabs,stringsAsFactors = TRUE)
   glab=paste(rep("C",K),1:K,sep="")  
   if (length(x$size) != 1)
   {
-    group_df= data.frame(d1=x$centroid[,dim1],d2=x$centroid[,dim2],glab=glab,gr=levels(factor(x$cluster)))
+    group_df= data.frame(d1=x$centroid[,dim1],d2=x$centroid[,dim2],glab=glab,gr=levels(factor(x$cluster)),stringsAsFactors = TRUE)
   }
-  obs_df=data.frame(d1=x$obscoord[,dim1],d2=x$obscoord[,dim2],gr=factor(x$cluster),olab=obslabs)
+  obs_df=data.frame(d1=x$obscoord[,dim1],d2=x$obscoord[,dim2],gr=factor(x$cluster),olab=obslabs,stringsAsFactors = TRUE)
   xact=union(which(att_df$d1> .5),which(att_df$d1< -.5))
   yact=union(which(att_df$d2>.5), which(att_df$d2< -.5))
   xyact=union(xact,yact)
@@ -169,7 +169,7 @@ plot.cluspcamix<-function(x, dims = c(1,2), cludesc = FALSE, topstdres = 20, obj
     }
     who_marg=apply(marg_df,1,function(x)which.min(abs(x)))
     
-    arrow_df=data.frame(marg_df)
+    arrow_df=data.frame(marg_df,stringsAsFactors = TRUE)
     for(i in 1:length(who_marg)){
       arrow_df$rd2[i]=arrow_df$d1[i]*(att_df$slp[i])
       arrow_df$rd1[i]=arrow_df$d2[i]*(1/att_df$slp[i])
@@ -210,7 +210,7 @@ plot.cluspcamix<-function(x, dims = c(1,2), cludesc = FALSE, topstdres = 20, obj
     #if the user gives custom attlabs, they won't be used
     #in cludesc=TRUE
     
-    data <- as.data.frame(x$odata)
+    data <- as.data.frame(x$odata,stringsAsFactors = TRUE)
     data <- droplevels(data)
     numAct <- which(sapply(data, is.numeric))
     facAct <- which(!sapply(data, is.numeric))

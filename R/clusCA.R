@@ -5,7 +5,7 @@ clusCA <- function(data,nclus,ndim,nstart=100,smartStart=NULL,gamma = FALSE, see
   q = ncol(data)
   maxiter = 100
   maxinert=-1
-  data = data.frame(data)
+  data = data.frame(data, stringsAsFactors = TRUE)
   if (inboot == FALSE) {
     data=as.data.frame(lapply(data,as.factor))
     Z = tab.disjonctif(data)#dummy.data.frame(data, dummy.classes = "ALL") # The original super indicator
@@ -203,9 +203,9 @@ clusCA <- function(data,nclus,ndim,nstart=100,smartStart=NULL,gamma = FALSE, see
   Gsol = Gsol[as.integer(names(aa)),]
   setTxtProgressBar(pb, 1)
   out=list()
-  out$obscoord=data.frame(Ysol) # observations coordinates
-  out$attcoord=data.frame(Bsol) # attributes coordinates
-  out$centroid=data.frame(Gsol) # centroids
+  out$obscoord=data.frame(Ysol,stringsAsFactors = TRUE) # observations coordinates
+  out$attcoord=data.frame(Bsol,stringsAsFactors = TRUE) # attributes coordinates
+  out$centroid=data.frame(Gsol,stringsAsFactors = TRUE) # centroids
 #  out$abscluscontr=data.frame(abscluscontr)
 #  out$absobscontr=data.frame(absobscontr)
 #  out$absattcontr=data.frame(absattcontr)
@@ -227,7 +227,7 @@ clusCA <- function(data,nclus,ndim,nstart=100,smartStart=NULL,gamma = FALSE, see
   out$criterion=maxinert # criterion
   #  out$iters=iters # number of iterations
   out$size=as.integer(aa) #round((table(cluster)/sum( table(cluster)))*100,digits=1)
-  out$odata=data.frame(lapply(data.frame(data),factor))
+  out$odata=data.frame(lapply(data.frame(data,stringsAsFactors = TRUE),factor),stringsAsFactors = TRUE)
   out$nstart = nstart
   class(out)="clusmca"
   return(out)

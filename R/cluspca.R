@@ -8,7 +8,7 @@ cluspca <- function(data, nclus, ndim, alpha=NULL, method=c("RKM","FKM"), center
     #### A single cluster gives the PCA solution
     if (nclus == 1) {
       nstart = 1
-      data = data.frame(data)
+      data = data.frame(data, stringsAsFactors = TRUE)
       n = nrow(data)
       #asymmetric map, biplot
       outp = princomp(data)
@@ -23,7 +23,7 @@ cluspca <- function(data, nclus, ndim, alpha=NULL, method=c("RKM","FKM"), center
       names(out$cluster) = rownames(data)
       out$criterion = 1 # criterion
       out$size=n #as.integer(aa)  #round((table(cluster)/sum( table(cluster)))*100,digits=1)
-      out$odata= data.frame(data)#data.frame(lapply(data.frame(data),factor))
+      out$odata= data.frame(data, stringsAsFactors = TRUE)#data.frame(lapply(data.frame(data),factor))
       out$scale = scale
       out$center = center
       out$nstart = nstart
@@ -184,7 +184,7 @@ cluspca <- function(data, nclus, ndim, alpha=NULL, method=c("RKM","FKM"), center
       
       out$criterion = bestf
       out$size = as.integer(aa) #round((table(cluster)/sum(table(cluster)))*100,digits=1)
-      out$odata = data.frame(odata)
+      out$odata = data.frame(odata, stringsAsFactors = TRUE)
       out$scale = scale
       out$center = center
       out$nstart = nstart
@@ -196,7 +196,7 @@ cluspca <- function(data, nclus, ndim, alpha=NULL, method=c("RKM","FKM"), center
     #### A single cluster gives the PCA solution
     if (nclus == 1) {
       nstart = 1
-      data = data.frame(data)
+      data = data.frame(data, stringsAsFactors = TRUE)
       n = nrow(data)
       #asymmetric map, biplot
       outp = princomp(data, scale = scale, center = center)
@@ -211,7 +211,7 @@ cluspca <- function(data, nclus, ndim, alpha=NULL, method=c("RKM","FKM"), center
       names(out$cluster) = rownames(data)
       out$criterion = 1 # criterion
       out$size=n #as.integer(aa)  #round((table(cluster)/sum( table(cluster)))*100,digits=1)
-      out$odata=data.frame(lapply(data.frame(data),factor))
+      out$odata=data.frame(lapply(data.frame(data, stringsAsFactors = TRUE),factor),stringsAsFactors = TRUE)
       out$scale = scale
       out$center = center
       out$nstart = nstart
@@ -469,7 +469,7 @@ cluspca <- function(data, nclus, ndim, alpha=NULL, method=c("RKM","FKM"), center
       out$cluster = cluster #apply(U,1,which.max)
       out$criterion = bestf
       out$size = as.integer(aa) #round((table(cluster)/sum(table(cluster)))*100,digits=1)
-      out$odata = data.frame(odata)
+      out$odata = data.frame(odata,stringsAsFactors = TRUE)
       out$scale = scale
       out$center = center
       out$nstart = nstart

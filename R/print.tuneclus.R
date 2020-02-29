@@ -3,7 +3,7 @@ print.tuneclus <- function(x, ...) {
   csize = round((table(x$clusobjbest$cluster)/sum(table(x$clusobjbest$cluster)))*100,digits=1)
   k = x$nclusbest
   d = x$ndimbest
-  x$clusobjbest$centroid = data.frame(x$clusobjbest$centroid)
+  x$clusobjbest$centroid = data.frame(x$clusobjbest$centroid, stringsAsFactors = TRUE)
   cluspca = FALSE
   try(if (class(x$clusobjbest)=="cluspca") { cluspca = TRUE }, silent = TRUE)
   
@@ -49,7 +49,7 @@ print.tuneclus <- function(x, ...) {
     
   
   cat("\nCluster centroids:\n")
-  xcent = data.frame(round(x$clusobjbest$centroid,4))
+  xcent = data.frame(round(x$clusobjbest$centroid,4),stringsAsFactors = TRUE)
   for (i in 1:k) {
     rownames(xcent)[i] = paste("Cluster",i)
   }

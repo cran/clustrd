@@ -3,7 +3,7 @@ clusmca <- function(data,nclus,ndim,method=c("clusCA","iFCB","MCAk"),alphak = .5
   #### A single cluster gives the MCA solution
   if (nclus == 1) { 
     nstart = 1
-    data = data.frame(data)
+    data = data.frame(data, stringsAsFactors = TRUE)
     n = nrow(data)
     #asymmetric map, biplot
     A = mjca(data)$colcoord#[,1:ndim]
@@ -22,7 +22,7 @@ clusmca <- function(data,nclus,ndim,method=c("clusCA","iFCB","MCAk"),alphak = .5
     out$cluster = rep(1,n)#cluster
     out$criterion=1 # criterion
     out$size=n #as.integer(aa)  #round((table(cluster)/sum( table(cluster)))*100,digits=1)
-    out$odata=data.frame(lapply(data.frame(data),factor))
+    out$odata=data.frame(lapply(data.frame(data),factor),stringsAsFactors = TRUE)
     out$nstart = nstart
     class(out)="clusmca"
     return(out)

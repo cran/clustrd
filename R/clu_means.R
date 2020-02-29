@@ -3,7 +3,7 @@ clu_means<-function(x, id, disp=TRUE, center=TRUE, scale=TRUE){
   clu = NULL
   funs = NULL
   
-  x = data.frame(scale(as.matrix(x), center = center, scale = scale))
+  x = data.frame(scale(as.matrix(x), center = center, scale = scale), stringsAsFactors = TRUE)
   
   p=ncol(x)
   gm=apply(x,2,mean)
@@ -15,11 +15,11 @@ clu_means<-function(x, id, disp=TRUE, center=TRUE, scale=TRUE){
   clum=(x %>% group_by(clu) %>% summarise_all(funs(mean)))
   
   am=rbind(clum[,-1],gm)
-  bm=data.frame(t(am))
+  bm=data.frame(t(am),stringsAsFactors = TRUE)
   names(bm)=c(paste("C",1:nrow(clum),sep=""),"all")
   bm$names=row.names(bm)
   
-  par_bm=data.frame(t(bm[-ncol(bm)]))
+  par_bm=data.frame(t(bm[-ncol(bm)]),stringsAsFactors = TRUE)
   gnam=paste(names(bm)[-ncol(bm)]," (",round(csize*100,digits=1),"%",")",sep="")
   #  cnm=paste(cnames,": ",round(csize*100,2),"%",sep="")
   

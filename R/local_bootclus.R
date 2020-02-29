@@ -4,7 +4,7 @@ local_bootclus <- function(data, nclus, ndim = NULL, method=c("RKM","FKM","mixed
   if(!is.null(seed)) set.seed(seed)
   seed <- round(2^31 * runif(nboot, -1, 1))
   
-  x = data.frame(data)
+  x = data.frame(data,stringsAsFactors = TRUE)
   k = nclus
   nd = ndim
   nk <- length(k)
@@ -112,13 +112,13 @@ local_bootclus <- function(data, nclus, ndim = NULL, method=c("RKM","FKM","mixed
           clall <- cluspcamix(x[indextest[[b]],],nclus=k[l],ndim=ndim, alpha = alpha,nstart=nstart, scale = scale, center = center,seed = seed, inboot = TRUE)
       }
       
-      x1 = data.frame(x[index1[[b]],,drop=FALSE])
+      x1 = data.frame(x[index1[[b]],,drop=FALSE],stringsAsFactors = TRUE)
       gm=apply(x1,2,mean)
       x1$clu = cl1$cluster
       clum=(x1 %>% group_by(clu) %>% summarise_all(funs(mean)))
       
       am = rbind(clum[,-1],gm)
-      bm = data.frame(am)
+      bm = data.frame(am,stringsAsFactors = TRUE)
       #rownames(bm) = c(paste("C",1:nrow(clum),sep=""),"all")
       
       cl1$centers = as.matrix(bm[1:k,])
@@ -131,14 +131,14 @@ local_bootclus <- function(data, nclus, ndim = NULL, method=c("RKM","FKM","mixed
       }
       clust1[,l] <- apply(x, 1, closest.cluster1)
       
-      x2 = data.frame(x[index2[[b]],,drop=FALSE])
+      x2 = data.frame(x[index2[[b]],,drop=FALSE],stringsAsFactors = TRUE)
       gm=apply(x2,2,mean)
       
       x2$clu = cl2$cluster
       clum=(x2 %>% group_by(clu) %>% summarise_all(funs(mean)))
       
       am = rbind(clum[,-1],gm)
-      bm = data.frame(am)
+      bm = data.frame(am,stringsAsFactors = TRUE)
       #rownames(bm) = c(paste("C",1:nrow(clum),sep=""),"all")
       
       cl2$centers = as.matrix(bm[1:k,])

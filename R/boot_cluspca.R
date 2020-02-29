@@ -5,7 +5,7 @@ boot_cluspca <- function(data, krange, nd = NULL, method = "RKM", alpha=NULL,sca
 {
   clu={}
   #x = scale(data, center = center, scale = scale)
-  x = data.frame(data)
+  x = data.frame(data, stringsAsFactors = TRUE)
   
   if(!is.null(seed)) set.seed(seed)
   seed <- round(2^31 * runif(nboot, -1, 1))
@@ -68,7 +68,7 @@ boot_cluspca <- function(data, krange, nd = NULL, method = "RKM", alpha=NULL,sca
       clum=(x1 %>% group_by(clu) %>% summarise_all(list(mean)))
       
       am = rbind(clum[,-1],gm)
-      bm = data.frame(am)
+      bm = data.frame(am, stringsAsFactors = TRUE)
       #rownames(bm) = c(paste("C",1:nrow(clum),sep=""),"all")
       
       cl1$centers = as.matrix(bm[1:krange[l],])
@@ -89,7 +89,7 @@ boot_cluspca <- function(data, krange, nd = NULL, method = "RKM", alpha=NULL,sca
       clum=(x2 %>% group_by(clu) %>% summarise_all(list(mean)))
       
       am = rbind(clum[,-1],gm)
-      bm = data.frame(am)
+      bm = data.frame(am, stringsAsFactors = TRUE)
       #rownames(bm) = c(paste("C",1:nrow(clum),sep=""),"all")
       
       cl2$centers = as.matrix(bm[1:krange[l],])

@@ -2,7 +2,7 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
 {
   clu=group=trueOrd={}
   . = NULL
-  data = data.frame(data)
+  data = data.frame(data, stringsAsFactors = TRUE)
   odata = data
   #define X case kapws alliws
   if (inboot == FALSE) {
@@ -18,7 +18,7 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
       rownames(data) = 1:nrow(data)
     if (is.null(colnames(data))) 
       colnames(data) = paste("V", 1:ncol(data), sep = "")
-    data <- as.data.frame(data)
+    data <- data.frame(data, stringsAsFactors = TRUE)
     data <- droplevels(data)
     numAct <- which(sapply(data, is.numeric))
     facAct <- which(!sapply(data, is.numeric))
@@ -83,7 +83,7 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
       rownames(data) = 1:nrow(data)
     if (is.null(colnames(data))) 
       colnames(data) = paste("V", 1:ncol(data), sep = "")
-    data <- as.data.frame(data)
+    data <- data.frame(data, stringsAsFactors = TRUE)
     data <- droplevels(data)
     numAct <- which(sapply(data, is.numeric))
     facAct <- which(!sapply(data, is.numeric))
@@ -129,7 +129,7 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
     #######
     if (nclus == 1) {
       nstart = 1
-      data = data.frame(data)
+      data = data.frame(data, stringsAsFactors = TRUE)
       n = nrow(data)
       outp = princomp(data)
       out=list()
@@ -591,7 +591,7 @@ fac2disj<- function(fac, drop = FALSE) {
   x <- matrix(0, n, nlevels(fac))
   x[(1:n) + n * (unclass(fac) - 1)] <- 1
   dimnames(x) <- list(names(fac), as.character(levels(fac)))
-  return(data.frame(x, check.names = FALSE))
+  return(data.frame(x, check.names = FALSE, stringsAsFactors = TRUE))
 }
 
 ssq = function(a) {

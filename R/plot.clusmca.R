@@ -7,7 +7,7 @@ plot.clusmca<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, t
   gr = NULL
   olab = NULL
   out=list()
-  if (dim(data.frame(x$attcoord))[2] == 1) {
+  if (dim(data.frame(x$attcoord,stringsAsFactors = TRUE))[2] == 1) {
     stop('There is only one dimension. A 2D scatterplot cannot be produced.')
   } 
   
@@ -60,7 +60,7 @@ plot.clusmca<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, t
   yattmax=yattmin+att_range
   ######################################################
   filt = 1*att_range
-  att_df=data.frame(d1=x$attcoord[,dim1],d2=x$attcoord[,dim2],attnam=attlabs)
+  att_df=data.frame(d1=x$attcoord[,dim1],d2=x$attcoord[,dim2],attnam=attlabs,stringsAsFactors = TRUE)
 #  if(binary == TRUE){
 #    pres=seq(from=2,to=nrow(att_df),by=2)
  #   print(pres)
@@ -76,9 +76,9 @@ plot.clusmca<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, t
   glab=paste(rep("C",K),1:K,sep="")
   if (length(x$size) != 1)
   {
-    group_df= data.frame(d1=x$centroid[,dim1],d2=x$centroid[,dim2],glab=glab)
+    group_df= data.frame(d1=x$centroid[,dim1],d2=x$centroid[,dim2],glab=glab,stringsAsFactors = TRUE)
   }
-  obs_df=data.frame(d1=x$obscoord[,dim1],d2=x$obscoord[,dim2],gr=factor(x$cluster),olab=obslabs)
+  obs_df=data.frame(d1=x$obscoord[,dim1],d2=x$obscoord[,dim2],gr=factor(x$cluster),olab=obslabs,stringsAsFactors = TRUE)
   
   if(what[1]==TRUE && what[2]==FALSE ){
     if (length(x$size) != 1)
