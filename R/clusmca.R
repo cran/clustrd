@@ -41,7 +41,7 @@ clusmca <- function(data,nclus,ndim,method=c("clusCA","iFCB","MCAk"),alphak = .5
       stop('The number of dimensions should be less than the number of variables.')
     }
     
-    method <- match.arg(method, c("clusCA", "clusca","CLUSCA","CLUSca", "ifcb","iFCB","IFCB","mcak", "MCAk", "MCAK","mcaK"), several.ok = T)[1]
+    method <- match.arg(method, c("clusCA", "clusca","CLUSCA","CLUSca", "ifcb","iFCB","IFCB","mcak", "MCAk", "MCAK","mcaK"), several.ok = TRUE)[1]
     method <- tolower(method)
     
     if(method=="clusca"){

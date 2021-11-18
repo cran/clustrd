@@ -86,17 +86,17 @@ data(diamond)
 #after 10 random starts
 outmixedRKM = cluspcamix(diamond, 3, 2, method = "mixedRKM", nstart = 10, seed = 1234)
 outmixedRKM 
-#Scatterplot (dimensions 1 and 2)
+#A graph with the categories and a biplot of the continuous variables (dimensions 1 and 2)
 plot(outmixedRKM)
 
-#Tandem analysis: PCAMIX followed by K-means solution 
+#Tandem analysis: PCAMIX or FAMD followed by K-means solution 
 #with 3 clusters in 2 dimensions after 10 random starts 
 outTandem = cluspcamix(diamond, 3, 2, alpha = 1, nstart = 10, seed = 1234)
 outTandem
 #Scatterplot (dimensions 1 and 2)
 plot(outTandem)
 
-#nclus = 1 just gives the PCAMIX solution
+#nclus = 1 just gives the PCAMIX or FAMD solution
 #outPCAMIX = cluspcamix(diamond, 1, 2)
 #outPCAMIX
 #Biplot (dimensions 1 and 2) 

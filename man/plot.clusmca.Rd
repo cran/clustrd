@@ -8,7 +8,8 @@ Plotting function that creates a scatterplot of the object scores and/or the att
 }
 \usage{
 \method{plot}{clusmca}(x, dims = c(1,2), what = c(TRUE,TRUE),
-cludesc = FALSE, topstdres = 20, objlabs = FALSE, attlabs = NULL, subplot = FALSE, \dots)
+cludesc = FALSE, topstdres = 20, objlabs = FALSE, attlabs = NULL, 
+subplot = FALSE, max.overlaps=10, \dots)
 }
 
 \arguments{
@@ -21,6 +22,7 @@ second dimension vertical}
   \item{objlabs}{A logical value indicating whether object labels will be plotted; if \code{TRUE} row names of the data matrix are used (default = \code{FALSE}). Warning: when \code{TRUE}, execution time of the plotting function will increase dramatically as the number of objects gets larger}
   \item{attlabs}{Vector of custom attribute labels; if not provided, default labeling is applied}
   \item{subplot}{A logical value indicating whether a subplot with the full distribution of the standardized residuals will appear at the bottom left corner of the corresponding plots. Works only in combination with \code{cludesc = TRUE}}
+  \item{max.overlaps}{Maximum number of text labels allowed to overlap. Defaults to 10}
   \item{\dots}{Further arguments to be transferred to \code{clusmca()}}
 }
 \value{
@@ -38,24 +40,24 @@ van de Velden M., Iodice D'Enza, A., and Palumbo, F. (2017).  Cluster correspond
 \code{\link{plot.cluspca}, \link{plot.cluspcamix}}
 }
 \examples{
-data("hsq")
+data("mybond")
 #Cluster Correspondence Analysis with 3 clusters in 2 dimensions after 10 random starts
-outclusCA = clusmca(hsq[,1:8], 3, 2, nstart = 10)
+outclusCA = clusmca(mybond[,8:10], 3, 2, nstart = 100, seed = 234)
 #Save the ggplot2 scatterplot  
-map = plot(outclusCA)$map
+map = plot(outclusCA, max.overlaps = 40)$map
 #Customization (adding titles)
-map + ggtitle(paste("Cluster CA plot of the hsq data: 3 clusters of sizes ", 
-paste(outclusCA$size, collapse = ", "),sep = "")) + 
-xlab("Dim. 1") + ylab("Dim. 2") + 
-theme(plot.title = element_text(size = 10, face = "bold", hjust = 0.5))
-
-data("hsq")
-#i-FCB with 4 clusters in 3 dimensions after 10 random starts
-outclusCA = clusmca(hsq[,1:8], 4, 3, method = "iFCB", nstart= 10)
-#Scatterlot with the observations only (dimensions 1 and 3) 
+map + ggtitle(paste("Cluster CA plot of the James bond categorical data: 3 clusters of sizes ", 
+                    paste(outclusCA$size, collapse = ", "),sep = "")) + 
+    xlab("Dim. 1") + ylab("Dim. 2") + 
+    theme(plot.title = element_text(size = 10, face = "bold", hjust = 0.5))
+    
+data("mybond")
+#i-FCB with 3 clusters in 2 dimensions after 10 random starts
+outclusCA = clusmca(mybond[,8:10], 3, 2, method = "iFCB", nstart= 10)
+#Scatterlot with the observations only (dimensions 1 and 2) 
 #and cluster description plots showing the 20 largest std. residuals 
 #(with the full distribution showing in subplots)
-plot(outclusCA, dim = c(1,3), what = c(TRUE, FALSE), cludesc = TRUE, 
+plot(outclusCA, dim = c(1,2), what = c(TRUE, FALSE), cludesc = TRUE, 
 subplot = TRUE)
 }
 

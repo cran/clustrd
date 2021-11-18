@@ -1,5 +1,4 @@
-plot.cluspca<-function(x, dims = c(1,2), cludesc = FALSE, what = c(TRUE,TRUE), attlabs, ...){
-  
+plot.cluspca<-function(x, dims = c(1,2), cludesc = FALSE, what = c(TRUE,TRUE), attlabs, max.overlaps = 10, ...){
   d1 = NULL
   d2 = NULL
   gr = NULL
@@ -73,17 +72,17 @@ plot.cluspca<-function(x, dims = c(1,2), cludesc = FALSE, what = c(TRUE,TRUE), a
   att_df$act[xyact]="outer"
   
   if(what[1]==TRUE && what[2]==FALSE ){
-    a=ggplot(data=obs_df,aes(x=d1,y=d2))+coord_cartesian(xlim = c(xallmin,xallmax), ylim = c(yallmin,yallmax))
+    a=ggplot(data=obs_df,aes(x=d1,y=d2))#+coord_cartesian(xlim = c(xallmin,xallmax), ylim = c(yallmin,yallmax))
     a=a+geom_point(aes(x=d1,y=d2,colour=gr,shape=gr,alpha=.4),size=1)+theme_bw()
     #do not show obs labels if more than 30
     if (dim(x$obscoord)[1] < 30) {#(objlabs == TRUE) {
-      a=a+geom_text_repel(data=obs_df,aes(label=olab))
+      a=a+geom_text_repel(data=obs_df,aes(label=olab), max.overlaps = max.overlaps)
     }
     a=a+theme(legend.position="none",axis.text.x = element_blank(),axis.text.y = element_blank())+xlab("")+ylab("")
     if (length(x$size) != 1)
     {
       a=a+geom_point(data=group_df,aes(x=d1,y=d2,shape=gr))+theme(legend.position="none",axis.text.x = element_blank(),axis.text.y = element_blank())
-      a=a+geom_text_repel(data=group_df,aes(label=glab))
+      a=a+geom_text_repel(data=group_df,aes(label=glab), max.overlaps = max.overlaps)
     }
     a=a+geom_vline(xintercept=0)+geom_hline(yintercept=0)
     a=a+xlab(paste("Dim.",dims[1])) + ylab(paste("Dim.",dims[2]))  
@@ -103,10 +102,10 @@ plot.cluspca<-function(x, dims = c(1,2), cludesc = FALSE, what = c(TRUE,TRUE), a
     # yallmax=yattmax
     # yallmin=yattmin
     
-    xallmax=1
-    xallmin=-1
-    yallmax=1
-    yallmin=-1
+   # xallmax=1
+  #  xallmin=-1
+  #  yallmax=1
+  #  yallmin=-1
     
     
     if(nrow(att_df)>=25){
@@ -115,9 +114,9 @@ plot.cluspca<-function(x, dims = c(1,2), cludesc = FALSE, what = c(TRUE,TRUE), a
       mysize=max(2,mysize)
     }else{mysize=5}
     
-    a=ggplot(data=att_df,aes(x=d1,y=d2))+coord_cartesian(xlim = c(xallmin,xallmax), ylim = c(yallmin,yallmax))
+    a=ggplot(data=att_df,aes(x=d1,y=d2))#+coord_cartesian(xlim = c(xallmin,xallmax), ylim = c(yallmin,yallmax))
     a=a+geom_point(alpha=.5,size=.25)+theme_bw()+xlab("")+ylab("")
-    a=a+geom_text_repel(data=subset(att_df,act=="outer"),aes( label = attnam),size=mysize,segment.size = 0.1)
+    a=a+geom_text_repel(data=subset(att_df,act=="outer"),aes( label = attnam),size=mysize,segment.size = 0.1, max.overlaps = max.overlaps)
     a=a+geom_text(data=subset(att_df,act!="outer"),aes( label = attnam),size=mysize) #size=mysize*.8)
     a=a+geom_segment(data=att_df, aes(x=0,y=0,xend=d1,yend=d2),arrow=arrow(angle=15,unit(0.15, "inches")))
     a=a+annotate("path",x=0+1*cos(seq(0,2*pi,length.out=100)),
@@ -142,18 +141,18 @@ plot.cluspca<-function(x, dims = c(1,2), cludesc = FALSE, what = c(TRUE,TRUE), a
       mysize=max(2,mysize)
     }else{mysize=5}
     
-    a=ggplot(data=obs_df,aes(x=d1,y=d2))+coord_cartesian(xlim = c(xallmin,xallmax),ylim = c(yallmin,yallmax))
+    a=ggplot(data=obs_df,aes(x=d1,y=d2))#+coord_cartesian(xlim = c(xallmin,xallmax),ylim = c(yallmin,yallmax))
     a=a+geom_point(aes(x=d1,y=d2,shape=gr,alpha=.4),size=1)+theme_bw()#,colour=gr
     #do not show obs labels if more than 30
     if (dim(x$obscoord)[1] < 30) {#(objlabs == TRUE) {
-      a=a+geom_text_repel(data=obs_df,aes(label=olab))
+      a=a+geom_text_repel(data=obs_df,aes(label=olab), max.overlaps = max.overlaps)
     }
     
     a=a+theme(axis.text.x = element_blank(),axis.text.y = element_blank())+xlab("")+ylab("")
     if (length(x$size) != 1)
     {
       a=a+geom_point(data=group_df,aes(x=d1,y=d2,shape=gr))
-      a=a+geom_text_repel(data=group_df,aes(label=glab))
+      a=a+geom_text_repel(data=group_df,aes(label=glab), max.overlaps= max.overlaps)
     }
     a=a+geom_vline(xintercept=0)+geom_hline(yintercept=0)
     att_df$slp=att_df$d2/att_df$d1
@@ -197,11 +196,11 @@ plot.cluspca<-function(x, dims = c(1,2), cludesc = FALSE, what = c(TRUE,TRUE), a
                     arrow=arrow(length=unit(.15,"inches")))
     
     a=a+theme(legend.title=element_blank(),legend.position="none",axis.text.x = element_blank(),axis.text.y = element_blank())
-    a=a+guides(shape=FALSE, alpha=FALSE)
+    a=a+guides(shape="none", alpha="none")
     
     #do not show var labels if more than 50
     if (dim(x$attcoord)[1] < 50) {
-      a=a+geom_text_repel(data=myarrow_df,aes(x=d1,y=d2,label=attnam))
+      a=a+geom_text_repel(data=myarrow_df,aes(x=d1,y=d2,label=attnam), max.overlaps = max.overlaps)
     }
     
     a=a+xlab(paste("Dim.",dims[1])) + ylab(paste("Dim.",dims[2]))  

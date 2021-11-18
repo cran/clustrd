@@ -1,6 +1,7 @@
 iFCB<- function(data,nclus=3,ndim=2,nstart=100,smartStart=NULL,gamma = TRUE,seed=NULL, inboot = FALSE){
   
   data = data.frame(data,stringsAsFactors = TRUE)
+  odata = data
   minobs = min(sapply(apply(data,2,unique),length))
   maxobs = max(sapply(apply(data,2,unique),length))
   #data=data.frame(data)
@@ -191,7 +192,7 @@ iFCB<- function(data,nclus=3,ndim=2,nstart=100,smartStart=NULL,gamma = TRUE,seed
   #  out$lambda=lambda
   # out$critvec=fvec
   out$size=as.integer(aa) #round((table(cluster)/sum( table(cluster)))*100,digits=1)
-  out$odata=data.frame(lapply(data.frame(data),factor),stringsAsFactors = TRUE)
+  out$odata=data.frame(odata, stringsAsFactors = TRUE)#data.frame(lapply(data.frame(data),factor),stringsAsFactors = TRUE)
   out$nstart = nstart
   class(out)="clusmca"
   return(out)

@@ -23,7 +23,14 @@ print.cluspcamix <- function(x, ...) {
     #  }
     #  print(xcent)
     attc = data.frame(round(x$attcoord,4),stringsAsFactors = TRUE)
-    cat("\nAttribute scores:\n")
+    cat("\nAttribute scores (continuous):\n")
+    for (i in 1:ncol(attc)) {
+      colnames(attc)[i] = paste0("Dim.",i)
+    }
+    print(attc)
+    
+    attc = data.frame(round(x$attcatcoord,4),stringsAsFactors = TRUE)
+    cat("\nAttribute scores (categorical):\n")
     for (i in 1:ncol(attc)) {
       colnames(attc)[i] = paste0("Dim.",i)
     }
@@ -65,10 +72,18 @@ print.cluspcamix <- function(x, ...) {
       colnames(xcent)[i] = paste0("Dim.",i)
     }
     print(xcent)
+    
     attc = data.frame(round(x$attcoord,4),stringsAsFactors = TRUE)
-    cat("\nVariable scores:\n")
+    cat("\n Continuous variables:\n")
     for (i in 1:ncol(attc)) {
-     colnames(attc)[i] = paste0("Dim.",i)
+      colnames(attc)[i] = paste0("Dim.",i)
+    }
+    print(attc)
+    
+    attc = data.frame(round(x$attcatcoord,4),stringsAsFactors = TRUE)
+    cat("\n Categories:\n")
+    for (i in 1:ncol(attc)) {
+      colnames(attc)[i] = paste0("Dim.",i)
     }
     print(attc)
     

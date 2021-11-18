@@ -1,4 +1,4 @@
-plot.clusmca<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, topstdres = 20, objlabs = FALSE, attlabs = NULL, subplot = FALSE, ...){
+plot.clusmca<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, topstdres = 20, objlabs = FALSE, attlabs = NULL, subplot = FALSE, max.overlaps = 10,...){
   
   act = NULL
   attnam = NULL
@@ -20,11 +20,11 @@ plot.clusmca<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, t
   if (is.null(attlabs)) {
     lab1a=names(x$odata)
     lab1b=lapply(x$odata,function(z) levels(z))
-    lab1=rep(lab1a,times=unlist(lapply(lab1b,length)))
+    lab1=abbreviate(rep(lab1a,times=unlist(lapply(lab1b,length))),3)
     lab2=unlist(lab1b)
     attlabs=paste(lab1,lab2,sep=".")
   }
-  
+ 
   
   #do not show obs labels if more than 30
   if (objlabs == TRUE) {
@@ -86,10 +86,10 @@ plot.clusmca<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, t
       names(group_df)[3] = "gr"
       levels(obs_df$gr) = levels(group_df$gr)
     }
-    a=ggplot(data=obs_df,aes(x=d1,y=d2,colour=gr,shape=gr))+coord_cartesian(xlim=c(xallmin,xallmax),ylim=c(yallmin,yallmax))
+    a=ggplot(data=obs_df,aes(x=d1,y=d2,colour=gr,shape=gr))#+coord_cartesian(xlim=c(xallmin,xallmax),ylim=c(yallmin,yallmax))
     a=a+geom_point(aes(x=d1,y=d2,colour=gr,shape=gr,alpha=.4),size=1,na.rm = TRUE)+theme_bw()
     if (objlabs == TRUE) {
-      a=a+geom_text_repel(data=obs_df,aes(label=olab))
+      a=a+geom_text_repel(data=obs_df,aes(label=olab), max.overlaps = max.overlaps)
     }
     
     a=a+theme(legend.position="none",axis.text.x = element_blank(),axis.text.y = element_blank())+xlab("")+ylab("")
@@ -99,7 +99,7 @@ plot.clusmca<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, t
     {
       a=a+geom_point(data=group_df,colour="black",aes(x=d1,y=d2,shape=gr),na.rm=TRUE)+theme(legend.position="none",axis.text.x = element_blank(),axis.text.y = element_blank())
       
-      a=a+geom_text_repel(data=group_df,colour="black",aes(label=gr))
+      a=a+geom_text_repel(data=group_df,colour="black",aes(label=gr), max.overlaps = max.overlaps)
     }
     a=a+xlab(paste("Dim.",dims[1])) + ylab(paste("Dim.",dims[2]))  
     #out = a
@@ -120,14 +120,14 @@ plot.clusmca<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, t
       mysize=max(2,mysize)
     }else{mysize=5}
     
-    a=ggplot(data=att_df,aes(x=d1,y=d2))+coord_cartesian(xlim=c(xallmin,xallmax),ylim=c(yallmin,yallmax))
-    a=a+geom_point(alpha=.5,size=.25,na.rm = TRUE)+theme_bw()+xlab("")+ylab("")
-    a=a+geom_text_repel(data=subset(att_df,act=="outer"),aes( label = attnam),size=mysize,segment.size = 0.01)
-    a=a+geom_text_repel(data=subset(att_df,act!="outer"),aes( label = attnam),size=mysize*.8,segment.size = 0.01)
+    a=ggplot(data=att_df,aes(x=d1,y=d2))#+coord_cartesian(xlim=c(xallmin,xallmax),ylim=c(yallmin,yallmax))
+    a=a+theme_bw()+xlab("")+ylab("")
+    a=a+geom_text_repel(data=subset(att_df,act=="outer"),aes( label = attnam),size=mysize,segment.size = 0.01, max.overlaps = max.overlaps)
+    a=a+geom_text_repel(data=subset(att_df,act!="outer"),aes( label = attnam),size=mysize*.8,segment.size = 0.01, max.overlaps = max.overlaps)
     if (length(x$size) != 1)
     {  
       a=a+geom_point(data=group_df,aes(x=d1,y=d2,shape=glab),na.rm=TRUE)+theme(legend.position="none",axis.text.x = element_blank(),axis.text.y = element_blank())
-      a=a+geom_text_repel(data=group_df,aes(label=glab))
+      a=a+geom_text_repel(data=group_df,aes(label=glab), max.overlaps = max.overlaps)
     }
     a=a+geom_vline(xintercept=0)+geom_hline(yintercept=0)
     a=a+xlab(paste("Dim.",dims[1])) + ylab(paste("Dim.",dims[2]))  
@@ -149,11 +149,11 @@ plot.clusmca<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, t
       mysize=max(2,mysize)
     }else{mysize=5}
     
-    a=ggplot(data=att_df,aes(x=d1,y=d2))+coord_cartesian(xlim=c(xallmin,xallmax),ylim=c(yallmin,yallmax))
+    a=ggplot(data=att_df,aes(x=d1,y=d2))#+coord_cartesian(xlim=c(xallmin,xallmax),ylim=c(yallmin,yallmax))
     
-    a=a+geom_point(data=obs_df,aes(x=d1,y=d2,colour=gr,shape=gr,alpha=.4),size=1,na.rm = TRUE)+theme_bw()
+    a=a+geom_point(data=obs_df,aes(x=d1,y=d2,shape=gr,alpha=.4),size=1,na.rm = TRUE)+theme_bw()
     if (objlabs == TRUE) {
-      a=a+geom_text_repel(data=obs_df,aes(label=olab))
+      a=a+geom_text_repel(data=obs_df,aes(label=olab), max.overlaps = max.overlaps)
     }
     
     
@@ -162,12 +162,12 @@ plot.clusmca<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, t
     if (length(x$size) != 1)
     {
       a=a+geom_point(data=group_df,colour="black",aes(x=d1,y=d2,shape=gr),na.rm = TRUE)+theme(legend.position="none",axis.text.x = element_blank(),axis.text.y = element_blank())
-      a=a+geom_text_repel(data=group_df,colour="black",aes(label=gr))
+      a=a+geom_text_repel(data=group_df,colour="black",aes(label=gr), max.overlaps = max.overlaps)
     }
     # 
-    a = a + geom_point(data=att_df,aes(x=d1,y=d2),alpha=.5,size=.25,na.rm=TRUE) #+theme_bw()+xlab("")+ylab("")
-    a=a+geom_text_repel(data=subset(att_df,act=="outer"),aes( label = attnam),size=mysize,segment.size = 0.1)
-    a=a+geom_text_repel(data=subset(att_df,act!="outer"),aes( label = attnam),size=mysize*.8,segment.size = 0.01)
+    a = a + geom_point(data=att_df,aes(x=d1,y=d2),alpha=0,size=0,na.rm=TRUE) #+theme_bw()+xlab("")+ylab("")
+ #   a=a+geom_text_repel(data=subset(att_df,act=="outer"),aes( label = attnam),size=mysize,segment.size = 0.1, max.overlaps = max.overlaps)
+    a=a+geom_text_repel(data=subset(att_df,act!="outer"),aes( label = attnam),size=mysize*.8,segment.size = 0.01, max.overlaps = max.overlaps)
     a=a+geom_vline(xintercept=0)+geom_hline(yintercept=0)
     a=a+xlab(paste("Dim.",dims[1])) + ylab(paste("Dim.",dims[2]))  
     
@@ -246,7 +246,7 @@ plot.clusmca<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, t
     else
       TopplotGroups=outOfIndependence(x$odata,x$cluster,attlabs,firstfew=ffew,textSize=3.5,segSize=4,myleftmarg=0.5, myrightmarg=0.5)
     
-    plotGroups=outOfIndependence(x$odata,x$cluster,nolabs=T,attlabs,fixmarg=F,textSize=1.5,segSize=1.5)#,myleftmarg=0.5, myrightmarg=0.5)
+    plotGroups=outOfIndependence(x$odata,x$cluster,nolabs=TRUE,attlabs,fixmarg=F,textSize=1.5,segSize=1.5)#,myleftmarg=0.5, myrightmarg=0.5)
     
     for(jjj in 1:K){
       TopplotGroups$G[[jjj]]=TopplotGroups$G[[jjj]]+theme_bw()+ggtitle(cnm[jjj])

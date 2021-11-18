@@ -6,12 +6,13 @@ clusCA <- function(data,nclus,ndim,nstart=100,smartStart=NULL,gamma = FALSE, see
   maxiter = 100
   maxinert=-1
   data = data.frame(data, stringsAsFactors = TRUE)
+  odata = data
   if (inboot == FALSE) {
     data=as.data.frame(lapply(data,as.factor))
     Z = tab.disjonctif(data)#dummy.data.frame(data, dummy.classes = "ALL") # The original super indicator
     lab1a=names(data)
     lab1b=lapply(data,function(z) levels(as.factor(z)))
-    lab1=rep(lab1a,times=unlist(lapply(lab1b,length)))
+    lab1=abbreviate(rep(lab1a,times=unlist(lapply(lab1b,length))),3)
     lab2=unlist(lab1b)
     colnames(Z) = paste(lab1,lab2,sep=".")
   }
@@ -227,7 +228,7 @@ clusCA <- function(data,nclus,ndim,nstart=100,smartStart=NULL,gamma = FALSE, see
   out$criterion=maxinert # criterion
   #  out$iters=iters # number of iterations
   out$size=as.integer(aa) #round((table(cluster)/sum( table(cluster)))*100,digits=1)
-  out$odata=data.frame(lapply(data.frame(data,stringsAsFactors = TRUE),factor),stringsAsFactors = TRUE)
+  out$odata=data.frame(odata, stringsAsFactors = TRUE)#data.frame(lapply(data.frame(data,stringsAsFactors = TRUE),factor),stringsAsFactors = TRUE)
   out$nstart = nstart
   class(out)="clusmca"
   return(out)

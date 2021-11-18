@@ -11,9 +11,9 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
     catvars <- sapply(data, is.factor)
     anyfact <- any(catvars)
     if (!anynum) 
-      cat("\nNo continuous (numeric) variables in data! \n")
+      cat("\nNo continuous (numeric) variables in data! Use clusmca() \n")
     if (!anyfact) 
-      cat("\nNo categorical (factor) variables in data! \n")
+      cat("\nNo categorical (factor) variables in data! Use cluspca() \n")
     if (is.null(rownames(data))) 
       rownames(data) = 1:nrow(data)
     if (is.null(colnames(data))) 
@@ -45,10 +45,9 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
       
       lab1a=names(data[, facAct, drop = FALSE])
       lab1b=lapply(data[, facAct, drop = FALSE],function(z) levels(z))
-      lab1=rep(lab1a,times=unlist(lapply(lab1b,length)))
+      lab1=abbreviate(rep(lab1a,times=unlist(lapply(lab1b,length))),3)
       lab2=unlist(lab1b)
       qualilabs=paste(lab1,lab2,sep=".")
-      
       QualiAct <-  tab.disjonctif(data[, facAct, drop = FALSE])
       
       #standardize categorical
@@ -64,25 +63,24 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
       qualilabs = {}
     }
     
-    
     attlabs = c(colnames(QuantiAct),qualilabs)
     
     X <- cbind(QuantiAct, QualiAct) 
     
   }
   else { #binary = TRUE
-    #  numvars <- sapply(data, is.numeric)
-    #  anynum <- any(numvars)
-    #  catvars <- sapply(data, is.factor)
-    #  anyfact <- any(catvars)
-    #  if (!anynum) 
-    #    cat("\nNo continuous (numeric) variables in data! \n")
-    #  if (!anyfact) 
-    #    cat("\nNo categorical (factor) variables in data! \n")
+    numvars <- sapply(data, is.numeric)
+    anynum <- any(numvars)
+    catvars <- sapply(data, is.factor)
+    anyfact <- any(catvars)
+    if (!anynum) 
+      cat("\nNo continuous (numeric) variables in data! Use clusmca() \n")
+    if (!anyfact) 
+      cat("\nNo categorical (factor) variables in data! Use cluspca() \n")
     if (is.null(rownames(data))) 
       rownames(data) = 1:nrow(data)
     if (is.null(colnames(data))) 
-      colnames(data) = paste("V", 1:ncol(data), sep = "")
+      colnames(data) = paste("v", 1:ncol(data), sep = "")
     data <- data.frame(data, stringsAsFactors = TRUE)
     data <- droplevels(data)
     numAct <- which(sapply(data, is.numeric))
@@ -137,7 +135,6 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
       out$attcoord = data.matrix(outp$loadings[,1:ndim]) # attributes coordinates
       rownames(out$obscoord) = rownames(data)
       rownames(out$attcoord) = attlabs#colnames(data)
-      
       out$centroid = 0 #center
       out$cluster = rep(1,n)#cluster
       names(out$cluster) = rownames(data)
@@ -166,7 +163,7 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
       
       method <- toupper(method)
       
-      method <- match.arg(method, c("MIXEDRKM", "MIXEDFKM"), several.ok = T)[1]
+      method <- match.arg(method, c("MIXEDRKM", "MIXEDFKM"), several.ok = TRUE)[1]
       
       
       if (is.null(alpha) == TRUE) {
@@ -190,7 +187,7 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
           prog <- prog + 1
         }
         setTxtProgressBar(pb, prog * 0.1)
-
+        
         if (is.null(smartStart)) {
           #  myseed = seed + run
           #  set.seed(myseed)
@@ -207,9 +204,9 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
         P = U%*%pseudoinvU%*%t(U)
         
         #P = U %*% pseudoinverse(t(U) %*% U) %*% t(U)
-        A = eigen(t(data) %*% ((1 - alpha) * P - (1 - 2 * 
-                                                    alpha) * diag(n)) %*% data)$vectors
-        A = A[, 1:ndim]
+        df_res <- eigen(t(data) %*% ((1 - alpha) * P - (1 - 2 * 
+                                                          alpha) * diag(n)) %*% data)
+        A = df_res$vectors[,1:ndim]
         G = data %*% A
         #  Y = pseudoinverse(t(U) %*% U) %*% t(U) %*% G
         Y = pseudoinvU%*%t(U)%*%G
@@ -233,8 +230,8 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
           P = U%*%pseudoinvU%*%t(U)
           #R = t(data)%*%((1-alpha)*P-(1-2*alpha)*diag(n))%*%data
           #A = suppressWarnings(eigs_sym(R,ndim)$vectors)
-          A = eigen(t(data)%*%((1-alpha)*P-(1-2*alpha)*diag(n))%*%data)$vectors
-          A = A[,1:ndim]
+          df_res <- eigen(t(data)%*%((1-alpha)*P-(1-2*alpha)*diag(n))%*%data)
+          A = df_res$vectors[,1:ndim]
           G = data %*% A
           #update Y
           Y = pseudoinvU%*%t(U)%*%G
@@ -247,7 +244,14 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
         if (f < bestf) {
           bestf = f
           FF = G
-          AA = A
+          AA = A[1:length(numAct),]
+          if (anyfact) {
+            ind.quali <- c((length(numAct)+1):nrow(A))#which((rownames(A) %in% colnames(data)[numAct]))
+            #AM: 18.11.2021 - this is a wild guess
+            AAcat <- 1/(alpha*numobs)*t(t(A[ind.quali, , drop = FALSE]/sqrt(prop)) * 
+                                  (df_res$values[1:ndim]))
+          }
+          
           YY = Y
           UU = U
           PP = P
@@ -265,22 +269,22 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
       centroid = YY#[[mi]]
       centroid = centroid[as.integer(names(aa)), ]
       if (rotation == "varimax") {
-        AA = varimax(AA)$loadings[1:m, 1:ndim]
-        FF = data %*% AA
+        AA = varimax(AA)$loadings[1:length(numAct),1:ndim]
+        FF = QuantiAct %*% AA
         centroid = pseudoinverse(t(UU)%*%UU)%*%t(UU)%*%FF 
         centroid = centroid[as.integer(names(aa)),]
         
-      #  centroid = PP %*% FF
-       # centroid = centroid[as.integer(names(aa)), ]
+        #  centroid = PP %*% FF
+        # centroid = centroid[as.integer(names(aa)), ]
       }
       else if (rotation == "promax") {
-        AA = promax(AA)$loadings[1:m, 1:ndim]
-        FF = data %*% AA
+        AA = promax(AA)$loadings[1:length(numAct),1:ndim]
+        FF = QuantiAct %*% AA
         centroid = pseudoinverse(t(UU)%*%UU)%*%t(UU)%*%FF 
         centroid = centroid[as.integer(names(aa)),]
         
-       # centroid = PP %*% FF
-      #  centroid = centroid[as.integer(names(aa)), ]
+        # centroid = PP %*% FF
+        #  centroid = centroid[as.integer(names(aa)), ]
       }
       setTxtProgressBar(pb, 1)
       
@@ -289,7 +293,11 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
       out$obscoord = FF
       rownames(out$obscoord) = rownames(data)
       out$attcoord = data.matrix(AA)
-      rownames(out$attcoord) = attlabs#colnames(data)
+      rownames(out$attcoord) = attlabs[1:length(numAct)]#colnames(data)
+      if (anyfact) {
+        out$attcatcoord = data.matrix(AAcat)
+        rownames(out$attcatcoord) = attlabs[-c(1:length(numAct))]
+      }
       out$centroid = centroid
       names(cluster) = rownames(data)
       out$cluster = cluster
@@ -314,8 +322,11 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
       out$obscoord = outp$scores[,1:ndim] # observations coordinates
       out$attcoord = data.matrix(outp$loadings[,1:ndim]) # attributes coordinates
       rownames(out$obscoord) = rownames(data)
-      rownames(out$attcoord) = attlabs#colnames(data)
-      
+      rownames(out$attcoord) = attlabs[1:length(numAct)]#colnames(data)
+      if (anyfact) {
+        out$attcatcoord = data.matrix(AAcat)
+        rownames(out$attcatcoord) = attlabs[-c(1:length(numAct))]
+      }
       out$centroid = 0 #center
       out$cluster = rep(1,n)#cluster
       names(out$cluster) = rownames(data)
@@ -344,7 +355,7 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
       
       method <- toupper(method)
       
-      method <- match.arg(method, c("MIXEDRKM", "MIXEDFKM"), several.ok = T)[1]
+      method <- match.arg(method, c("MIXEDRKM", "MIXEDFKM"), several.ok = TRUE)[1]
       
       
       if (is.null(alpha) == TRUE) {
@@ -399,10 +410,14 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
         #gets ndim + 20% of all dims 
         nd = ndim+round(m*0.2)
         if (nd > ndim) nd = ndim
-        if (ncol(R) > 2) 
-          A = eigs_sym(R,nd)$vectors
-        else
-          A =  eigen(R)$vectors
+        if (ncol(R) > 2)  {
+          df_res = eigs_sym(R,nd)
+          A = df_res$vectors
+        }
+        else {
+          df_res = eigen(R)
+          A = df_res$vectors
+        }
         #    A = eigen(R,symmetric = TRUE)$vectors
         A = A[,1:ndim]
         #update Y
@@ -448,7 +463,6 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
           mydata = as_tibble(cbind(data,group = as.factor(outK$cluster)))
           all_groups=tibble(group=mydata$group,trueOrd=1:nrow(mydata))
           # mydata=as_tibble(mydata)
-          
           gmeans=mydata%>%
             group_by(group) %>%
             summarise_all(mean)%>%
@@ -464,10 +478,14 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
           }
           
           #  A = suppressWarnings(eigs(R,ncol(data))$vectors)
-          if (ncol(R) > 2) 
-            A = eigs_sym(R,nd)$vectors
-          else
-            A =  eigen(R)$vectors
+          if (ncol(R) > 2) {
+            df_res <- eigs_sym(R,nd)
+            A <- df_res$vectors
+          }
+          else {
+            df_res <- eigen(R)
+            A <-  df_res$vectors
+          }
           
           #     A = eigen(R,symmetric = TRUE)$vectors
           A = A[,1:ndim]
@@ -498,9 +516,16 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
         if (f < bestf) {
           bestf = f
           FF = G
-          AA = A
+          AA = A[1:length(numAct),]
+          if (anyfact) {
+            ind.quali <- c((length(numAct)+1):nrow(A)) #which((rownames(A) %in% colnames(data)[numAct]))
+            #AM: 18.11.2021 - this is a wild guess
+            AAcat <- 1/(alpha*numobs)*t(t(A[ind.quali, , drop = FALSE]/sqrt(prop)) * 
+                                  (df_res$values[1:ndim]))
+          }
           YY = Y
           uu = outK$cluster
+          
         }
         if (run > (prog * (nstart/10))) {
           prog <- prog + 1
@@ -509,7 +534,7 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
         
       }
       ##reorder according to cluster size
-    #  UU = tab.disjonctif(uu)#dummy(uu)
+      #  UU = tab.disjonctif(uu)#dummy(uu)
       UU = tab.disjonctif(uu)#diag(nlevels(uu))[uu,]
       #mi = which.min(func)
       U= UU#UU[[mi]]
@@ -526,8 +551,8 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
       
       ### rotation options ###
       if (rotation == "varimax") { #with Kaiser Normalization
-        AA = varimax(AA)$loadings[1:m,1:ndim]
-        FF = data%*%AA
+        AA = varimax(AA)$loadings[1:length(numAct),1:ndim]
+        FF = QuantiAct%*%AA
         #update center
         centroid = pseudoinverse(t(UU)%*%UU)%*%t(UU)%*%FF 
         centroid = centroid[as.integer(names(aa)),]
@@ -536,8 +561,8 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
         #centroid = centroid[as.integer(names(aa)),]
         
       } else if (rotation == "promax") {
-        AA = promax(AA)$loadings[1:m,1:ndim]
-        FF = data%*%AA
+        AA = promax(AA)$loadings[1:length(numAct),1:ndim]
+        FF = QuantiAct%*%AA
         #update center
         centroid = pseudoinverse(t(UU)%*%UU)%*%t(UU)%*%FF 
         centroid = centroid[as.integer(names(aa)),]
@@ -553,7 +578,11 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
       out$obscoord = FF
       rownames(out$obscoord) = rownames(data)
       out$attcoord = data.matrix(AA)
-      rownames(out$attcoord) = attlabs#colnames(data)
+      rownames(out$attcoord) = attlabs[1:length(numAct)]#colnames(data)
+      if (anyfact) {
+        out$attcatcoord = data.matrix(AAcat)
+        rownames(out$attcatcoord) = attlabs[-c(1:length(numAct))]
+      }
       out$centroid = centroid
       names(cluster) = rownames(data)
       out$cluster = cluster

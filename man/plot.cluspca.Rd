@@ -9,7 +9,7 @@ Plotting function that creates a scatterplot of the objects, a correlation circl
 
 \usage{
 \method{plot}{cluspca}(x, dims = c(1, 2), cludesc = FALSE, 
-what = c(TRUE,TRUE), attlabs, \dots)
+what = c(TRUE,TRUE), attlabs, max.overlaps=10, \dots)
 }
 
 \arguments{
@@ -20,7 +20,9 @@ second dimension vertical}
   \item{cludesc}{A logical value indicating if a parallel coordinate plot showing cluster means is produced (default = \code{FALSE)}}
  %   \item{objlabs}{A logical value indicating whether object labels will be plotted; if \code{TRUE} row names of the data matrix are used (default = \code{FALSE}). Warning: when \code{TRUE}, execution time of the plotting function will increase dramatically as the number of objects gets larger}
     \item{attlabs}{Vector of custom attribute labels; if not provided, default labeling is applied}
+  \item{max.overlaps}{Maximum number of text labels allowed to overlap. Defaults to 10}
   \item{\dots}{Further arguments to be transferred to \code{cluspca()}}
+
 }
 \value{
 The function returns a ggplot2 scatterplot of the solution obtained via \code{cluspca()} that can be further customized using the \pkg{ggplot2} package. When \code{cludesc = TRUE} 

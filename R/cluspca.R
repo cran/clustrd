@@ -45,7 +45,7 @@ cluspca <- function(data, nclus, ndim, alpha=NULL, method=c("RKM","FKM"), center
         stop('The number of dimensions should be less than the number of variables.')
       }
       
-      method <- match.arg(method, c("RKM", "rkm","rKM","FKM", "fkm","fKM"), several.ok = T)[1]
+      method <- match.arg(method, c("RKM", "rkm","rKM","FKM", "fkm","fKM"), several.ok = TRUE)[1]
       method <- toupper(method)
       
       if(!is.null(seed)) set.seed(seed)
@@ -229,7 +229,7 @@ cluspca <- function(data, nclus, ndim, alpha=NULL, method=c("RKM","FKM"), center
       #    stop('The number of clusters should be larger than the number of dimensions.')
       #  }
       
-      method <- match.arg(method, c("RKM", "rkm","rKM","FKM", "fkm","fKM"), several.ok = T)[1]
+      method <- match.arg(method, c("RKM", "rkm","rKM","FKM", "fkm","fKM"), several.ok = TRUE)[1]
       method <- toupper(method)
       
       if(!is.null(seed)) set.seed(seed)
