@@ -16,7 +16,7 @@ boot_cluspcamix <- function(data, krange, nd = NULL,alpha=NULL, scale = TRUE, ce
   if (is.null(rownames(data))) 
     rownames(data) = 1:nrow(data)
   if (is.null(colnames(data))) 
-    colnames(data) = paste("V", 1:ncol(data), sep = "")
+    colnames(data) = paste("v", 1:ncol(data), sep = "")
   data <- as.data.frame(data)
   data <- droplevels(data)
   numAct <- which(sapply(data, is.numeric))
@@ -36,11 +36,11 @@ boot_cluspcamix <- function(data, krange, nd = NULL,alpha=NULL, scale = TRUE, ce
   #  prop <- colSums(QualiAct * (rep(1,numobs)/numobs))
   #  QualiAct <- t(t(QualiAct) - as.vector(crossprod(rep(1,numobs)/numobs, as.matrix(QualiAct)))  ) #this is centering MZ
   #  QualiAct <- t(t(QualiAct)/sqrt(prop))
-  QualiAct = data.frame(QualiAct, stringsAsFactors = TRUE)
+  QualiAct <- data.frame(QualiAct, stringsAsFactors = TRUE)
   for (i in 1:ncol(QualiAct)) 
     QualiAct[,i] = factor((QualiAct[,i]))
   
-  x <- cbind(QuantiAct, QualiAct) 
+  x <- data.frame(cbind(QuantiAct, QualiAct))
   xgood <- x
   if(!is.null(seed)) set.seed(seed)
   seed <- round(2^31 * runif(nboot, -1, 1))
@@ -70,13 +70,14 @@ boot_cluspcamix <- function(data, krange, nd = NULL,alpha=NULL, scale = TRUE, ce
         if (!is.null(nd)) {
           if ((length(nd) >1) & (l==1))  {
             cat('\n')
-            print('Warning: the number of dimensions (nd) must be a single number. Automatically set to the first value in the range.')
+            print('Warning: the number of dimensions (ndim) must be a single number. Automatically set to the first value in the range.')
           }
           ndim = nd[1]
         }
         else
           ndim = krange[l]-1
         cat('\n')
+        
         print(paste0("Running for ",krange[l]," clusters and ",ndim[1]," dimensions."))
         cl1 <- cluspcamix(x[index1[,b],,drop=FALSE],nclus=krange[l],ndim=ndim,nstart=nstart, scale = scale, center = center, seed = seed, inboot = TRUE)
         cl2 <- cluspcamix(x[index2[,b],,drop=FALSE],nclus=krange[l],ndim=ndim,nstart=nstart, scale = scale, center = center, seed = seed, inboot = TRUE)
@@ -84,7 +85,7 @@ boot_cluspcamix <- function(data, krange, nd = NULL,alpha=NULL, scale = TRUE, ce
         if (!is.null(nd)) {
           if ((length(nd) >1) & (l==1))  {
             cat('\n')
-            print('Warning: the number of dimensions (nd) must be a single number. Automatically set to the first value in the range.')
+            print('Warning: the number of dimensions (ndim) must be a single number. Automatically set to the first value in the range.')
           }
           ndim = nd[1]
         }

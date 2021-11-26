@@ -37,7 +37,7 @@ boot_clusmca <- function(data, krange, nd=NULL, method = "clusCA", nstart=100, n
         if (!is.null(nd)) {
           if ((length(nd) >1) & (l==1))  {
             cat('\n')
-            print('Warning: the number of dimensions (nd) must be a single number. Automatically set to the first value in the range.')
+            print('Warning: the number of dimensions (ndim) must be a single number. Automatically set to the first value in the range.')
           }
         ndim = nd[1]
       }
@@ -56,7 +56,7 @@ boot_clusmca <- function(data, krange, nd=NULL, method = "clusCA", nstart=100, n
       if (!is.null(nd)) {
         if ((length(nd) >1) & (l==1))  {
           cat('\n')
-          print('Warning: the number of dimensions must be a single number, not a range. Automatically set to the first value.')
+          print('Warning: the number of dimensions (ndim) must be a single number, not a range. Automatically set to the first value.')
         }
         ndim = nd[1]
       }

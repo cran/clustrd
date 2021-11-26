@@ -91,7 +91,7 @@ cluspca <- function(data, nclus, ndim, alpha=NULL, method=c("RKM","FKM"), center
         pseudoinvU = chol2inv(chol(t(U)%*%U))
         P = U%*%pseudoinvU%*%t(U)
         #   R = t(data)%*%((1-alpha)*P-(1-2*alpha)*diag(n))%*%data
-        #A = suppressWarnings(eigs_sym(R,ndim)$vectors)
+        #A = suppressMessages(eigs_sym(R,ndim)$vectors)
         A = eigen(t(data)%*%((1-alpha)*P-(1-2*alpha)*diag(n))%*%data)$vectors[,1:ndim]
         #update Y
         G = data%*%A
@@ -117,7 +117,7 @@ cluspca <- function(data, nclus, ndim, alpha=NULL, method=c("RKM","FKM"), center
           # update A
           P = U%*%pseudoinvU%*%t(U)
           #R = t(data)%*%((1-alpha)*P-(1-2*alpha)*diag(n))%*%data
-          #A = suppressWarnings(eigs_sym(R,ndim)$vectors)
+          #A = suppressMessages(eigs_sym(R,ndim)$vectors)
           A = eigen(t(data)%*%((1-alpha)*P-(1-2*alpha)*diag(n))%*%data)$vectors
           A = A[,1:ndim]
           G = data %*% A
@@ -278,7 +278,7 @@ cluspca <- function(data, nclus, ndim, alpha=NULL, method=c("RKM","FKM"), center
         #    U = dummy(randVec)
         #    pseudoinvU = chol2inv(chol(crossprod(U)))
         
-        mydata = as_tibble(cbind(data,group = as.factor(randVec)))
+        mydata = suppressMessages(as_tibble(cbind(data,group = as.factor(randVec)),.name_repair = "unique"))
         all_groups=tibble(group=mydata$group,trueOrd=1:nrow(mydata))
         # mydata=as_tibble(mydata)
         
@@ -295,7 +295,7 @@ cluspca <- function(data, nclus, ndim, alpha=NULL, method=c("RKM","FKM"), center
           R2 = (1-2*alpha)*crossprod(data)
           R = R - R2
         }
-        #A = suppressWarnings(eigs(R)$vectors)
+        #A = suppressMessages(eigs(R)$vectors)
         
         #gets ndim + 20% of all dims 
         nd = ndim+round(m*0.2)
@@ -311,7 +311,7 @@ cluspca <- function(data, nclus, ndim, alpha=NULL, method=c("RKM","FKM"), center
         #  Y = pseudoinvU%*%t(U)%*%G
         all_groups=tibble(group=mydata$group,trueOrd=1:nrow(mydata))
         
-        G = as_tibble(cbind(G,group = as.factor(randVec)))
+        G = suppressMessages(as_tibble(cbind(G,group = as.factor(randVec)),.name_repair = "unique"))
         Y = G%>%
           group_by(group) %>%
           summarise_all(mean) #%>%
@@ -347,7 +347,7 @@ cluspca <- function(data, nclus, ndim, alpha=NULL, method=c("RKM","FKM"), center
           #  pseudoinvU = chol2inv(chol(t(U)%*%U))
           
           # update A
-          mydata = as_tibble(cbind(data,group = as.factor(outK$cluster)))
+          mydata = suppressMessages(as_tibble(cbind(data,group = as.factor(outK$cluster)),.name_repair = "unique"))
           all_groups=tibble(group=mydata$group,trueOrd=1:nrow(mydata))
           # mydata=as_tibble(mydata)
           
@@ -365,7 +365,7 @@ cluspca <- function(data, nclus, ndim, alpha=NULL, method=c("RKM","FKM"), center
             R = R - R2
           }
           
-          #  A = suppressWarnings(eigs(R,ncol(data))$vectors)
+          #  A = suppressMessages(eigs(R,ncol(data))$vectors)
           if (ncol(R) > 2) 
             A = eigs_sym(R,nd)$vectors
           else
@@ -379,7 +379,7 @@ cluspca <- function(data, nclus, ndim, alpha=NULL, method=c("RKM","FKM"), center
           
           #      all_groups=tibble(group=mydata$group,trueOrd=1:nrow(mydata))
           
-          G = as_tibble(cbind(G,group = as.factor(outK$cluster)))
+          G = suppressMessages(as_tibble(cbind(G,group = as.factor(outK$cluster)),.name_repair = "unique"))
           Y = G%>%
             group_by(group) %>%
             summarise_all(mean) #%>%

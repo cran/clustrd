@@ -73,10 +73,11 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
     anynum <- any(numvars)
     catvars <- sapply(data, is.factor)
     anyfact <- any(catvars)
-    if (!anynum) 
-      cat("\nNo continuous (numeric) variables in data! Use clusmca() \n")
-    if (!anyfact) 
-      cat("\nNo categorical (factor) variables in data! Use cluspca() \n")
+ #   if (!anynum) 
+#      cat("\nNo continuous (numeric) variables in data! Use clusmca() \n")
+  
+#    if (!anyfact) 
+#      cat("\nNo categorical (factor) variables in data! Use cluspca() \n")
     if (is.null(rownames(data))) 
       rownames(data) = 1:nrow(data)
     if (is.null(colnames(data))) 
@@ -165,7 +166,6 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
       
       method <- match.arg(method, c("MIXEDRKM", "MIXEDFKM"), several.ok = TRUE)[1]
       
-      
       if (is.null(alpha) == TRUE) {
         if (method == "MIXEDRKM") {
           alpha = 0.5
@@ -173,7 +173,7 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
         else if (method == "MIXEDFKM") 
           alpha = 0
       }
-      
+     
       # data = scale(data center = center, scale = scale)
       data = data.matrix(data)
       n = nrow(data) #dim(data)[1]
@@ -203,6 +203,12 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
         pseudoinvU = chol2inv(chol(t(U)%*%U))
         P = U%*%pseudoinvU%*%t(U)
         
+        #this is when inboot = TRUE and bootstrapping does not work
+        #due to categories with very low frequencies
+       if (sum(apply(data,2,is.nan)) != 0) 
+          stop('Cluster stability cannot be assessed due to categories with low frequency.')
+
+#        stopifnot(sum(apply(data,2,is.nan)) == 0)
         #P = U %*% pseudoinverse(t(U) %*% U) %*% t(U)
         df_res <- eigen(t(data) %*% ((1 - alpha) * P - (1 - 2 * 
                                                           alpha) * diag(n)) %*% data)
@@ -244,6 +250,7 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
         if (f < bestf) {
           bestf = f
           FF = G
+          A = data.frame(A)
           AA = A[1:length(numAct),]
           if (anyfact) {
             ind.quali <- c((length(numAct)+1):nrow(A))#which((rownames(A) %in% colnames(data)[numAct]))
@@ -388,7 +395,7 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
           randVec = smartStart
         }
         
-        mydata = as_tibble(cbind(data,group = as.factor(randVec)))
+        mydata = suppressMessages(as_tibble(cbind(data,group = as.factor(randVec)),.name_repair = "unique"))
         all_groups=tibble(group=mydata$group,trueOrd=1:nrow(mydata))
         # mydata=as_tibble(mydata)
         
@@ -425,7 +432,7 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
         #  Y = pseudoinvU%*%t(U)%*%G
         all_groups=tibble(group=mydata$group,trueOrd=1:nrow(mydata))
         
-        G = as_tibble(cbind(G,group = as.factor(randVec)))
+        G = suppressMessages(as_tibble(cbind(G,group = as.factor(randVec)),.name_repair = "unique"))
         Y = G%>%
           group_by(group) %>%
           summarise_all(mean) #%>%
@@ -459,8 +466,9 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
           #        pseudoinvU = chol2inv(chol(crossprod(U)))
           #  pseudoinvU = chol2inv(chol(t(U)%*%U))
           
-          # update A
-          mydata = as_tibble(cbind(data,group = as.factor(outK$cluster)))
+          # update Ax
+          
+          mydata = suppressMessages(as_tibble(cbind(data,group = as.factor(outK$cluster)),.name_repair = "unique")) #,.name_repair = 'unique'
           all_groups=tibble(group=mydata$group,trueOrd=1:nrow(mydata))
           # mydata=as_tibble(mydata)
           gmeans=mydata%>%
@@ -495,7 +503,7 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
           
           #      all_groups=tibble(group=mydata$group,trueOrd=1:nrow(mydata))
           
-          G = as_tibble(cbind(G,group = as.factor(outK$cluster)))
+          G = suppressMessages(as_tibble(cbind(G,group = as.factor(outK$cluster)),.name_repair = "unique"))
           Y = G%>%
             group_by(group) %>%
             summarise_all(mean) #%>%
@@ -516,6 +524,7 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
         if (f < bestf) {
           bestf = f
           FF = G
+          A = data.frame(A)
           AA = A[1:length(numAct),]
           if (anyfact) {
             ind.quali <- c((length(numAct)+1):nrow(A)) #which((rownames(A) %in% colnames(data)[numAct]))

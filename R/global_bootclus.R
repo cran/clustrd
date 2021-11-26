@@ -1,11 +1,11 @@
 global_bootclus <- function(data, nclusrange = 3:4, ndim = NULL, method = c("RKM","FKM","mixedRKM","mixedFKM","clusCA","MCAk","iFCB"), nboot = 10, alpha = NULL, alphak = NULL, center = TRUE, scale = TRUE, nstart = 100, smartStart = NULL, seed = NULL){
   #wrapper for functions boot_cluspca(), boot_clusmca()
-  method <- match.arg(method, c("mixedrkm","MIXEDRKM","mixedRKM","mixedfkm","MIXEDFKM","mixedFKM","RKM", "rkm","rKM","FKM", "fkm","fKM","clusCA", "clusca","CLUSCA","CLUSca", "ifcb","iFCB","IFCB","mcak", "MCAk", "MCAK","mcaK"), several.ok = T)[1]
+  method <- match.arg(method, c("mixedrkm","MIXEDRKM","mixedRKM","mixedfkm","MIXEDFKM","mixedFKM","RKM", "rkm","rKM","FKM", "fkm","fKM","clusCA", "clusca","CLUSCA","CLUSca", "ifcb","iFCB","IFCB","mcak", "MCAk", "MCAK","mcaK"), several.ok = TRUE)[1]
   method <- tolower(method)
   
   if (!is.null(ndim)) {
-    if(ndim >= nclusrange[1]) {
-      stop('The number of dimensions must be smaller than the number of clusters.')
+    if(min(ndim) > min(nclusrange)) {
+      stop('The number of dimensions cannot be larger than the number of clusters.')
     }
   }
 

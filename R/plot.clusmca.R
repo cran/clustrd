@@ -25,7 +25,6 @@ plot.clusmca<-function(x, dims = c(1,2), what = c(TRUE,TRUE), cludesc = FALSE, t
     attlabs=paste(lab1,lab2,sep=".")
   }
  
-  
   #do not show obs labels if more than 30
   if (objlabs == TRUE) {
     obslabs = row.names(x$odata)

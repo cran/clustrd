@@ -3,7 +3,7 @@
 \docType{data}
 \title{James Bond films}
 \description{
-The data set refers to 26 James Bond films produced up to 2021, based on 11 film characteristics: 7 continuous (year of release, production budget, box office gross in the USA and worldwide, running time, IMDB average rating, Rotten Tomatoes rating) and 3 categorical (Bond actor, native country of the actor playing the villain, native country of the actor playing the Bond girl). All figures in USD are adjusted for inflation. Most of the data was compiled from the Wikipedia page: \url{https://en.wikipedia.org/wiki/List_of_James_Bond_films}.}
+The data set refers to 26 James Bond films produced up to 2021, based on 10 film characteristics: 7 continuous (year of release, production budget, box office gross in the USA and worldwide, running time, IMDB average rating, Rotten Tomatoes rating) and 3 categorical (Bond actor, native country of the actor playing the villain, native country of the actor playing the Bond girl). All figures in USD are adjusted for inflation. Most of the data was compiled from the Wikipedia page: \url{https://en.wikipedia.org/wiki/List_of_James_Bond_films}.}
 
 \usage{data("mybond")}
 \format{

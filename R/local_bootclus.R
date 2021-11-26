@@ -22,7 +22,7 @@ local_bootclus <- function(data, nclus, ndim = NULL, method=c("RKM","FKM","mixed
   
   valname = as.character(1:k)
   
-  method <- match.arg(method, c("mixedRKM", "mixedrkm","mixedrKM","mixedFKM", "mixedfkm","mixedfKM", "RKM", "rkm","rKM","FKM", "fkm","fKM","clusCA", "clusca","CLUSCA","CLUSca", "ifcb","iFCB","IFCB","mcak", "MCAk", "MCAK","mcaK"), several.ok = T)[1]
+  method <- match.arg(method, c("mixedRKM", "mixedrkm","mixedrKM","mixedFKM", "mixedfkm","mixedfKM", "RKM", "rkm","rKM","FKM", "fkm","fKM","clusCA", "clusca","CLUSCA","CLUSca", "ifcb","iFCB","IFCB","mcak", "MCAk", "MCAK","mcaK"), several.ok = TRUE)[1]
   method <- toupper(method)
   
   if ((method == "CLUSCA") | (method == "IFCB") | (method == "MCAK")) {
@@ -31,7 +31,7 @@ local_bootclus <- function(data, nclus, ndim = NULL, method=c("RKM","FKM","mixed
   
   if (method %in% c("MIXEDRKM","MIXEDFKM")) {
     data = x
-    numvars <- sapply(data, is.numeric)
+   numvars <- sapply(data, is.numeric)
     anynum <- any(numvars)
     catvars <- sapply(data, is.factor)
     anyfact <- any(catvars)
@@ -41,21 +41,23 @@ local_bootclus <- function(data, nclus, ndim = NULL, method=c("RKM","FKM","mixed
       cat("\nNo categorical (factor) variables in data! \n")
     ind.sup = NULL
     row.w = NULL #weights of the individuals, could be passed as a parameter, as in FAMD()
+    
+    if (!anynum) 
+      cat("\nNo continuous (numeric) variables in data! Use clusmca() \n")
+    
+    if (!anyfact) 
+      cat("\nNo categorical (factor) variables in data! Use cluspca() \n")
     if (is.null(rownames(data))) 
       rownames(data) = 1:nrow(data)
     if (is.null(colnames(data))) 
-      colnames(data) = paste("V", 1:ncol(data), sep = "")
-    data <- as.data.frame(data)
+      colnames(data) = paste("v", 1:ncol(data), sep = "")
+    data <- data.frame(data, stringsAsFactors = TRUE)
     data <- droplevels(data)
-    row.w.init <- row.w
-    if (is.null(row.w)) {
-      row.w.init <- row.w <- rep(1, nrow(data))
-    }
-    row.w <- rep(0, nrow(data))
-    row.w[which(!((1:nrow(data)) %in% ind.sup))] <- row.w.init
     numAct <- which(sapply(data, is.numeric))
     facAct <- which(!sapply(data, is.numeric))
+    
     QuantiAct <- as.matrix(data[, numAct, drop = FALSE])
+    
 #    centre <- moy.ptab(QuantiAct, row.w)
 #    QuantiAct <- t(t(QuantiAct) - centre)
 #    ecart.type <- ec.tab(QuantiAct, row.w)

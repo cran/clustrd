@@ -1,19 +1,18 @@
 clu_means<-function(x, id, disp=TRUE, center=TRUE, scale=TRUE){
   
   clu = NULL
-  funs = NULL
+  #funs = NULL
   
   x = data.frame(scale(as.matrix(x), center = center, scale = scale), stringsAsFactors = TRUE)
   
   p=ncol(x)
   gm=apply(x,2,mean)
   
-  id=factor(id)
+  id<-factor(id)
   csize=as.vector(table(id)/sum(table(id)))
   
   x$clu=id
-  clum=(x %>% group_by(clu) %>% summarise_all(funs(mean)))
-  
+  clum=(x %>% group_by(clu) %>% summarise_all(list(mean)))
   am=rbind(clum[,-1],gm)
   bm=data.frame(t(am),stringsAsFactors = TRUE)
   names(bm)=c(paste("C",1:nrow(clum),sep=""),"all")

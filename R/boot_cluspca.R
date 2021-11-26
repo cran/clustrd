@@ -35,7 +35,7 @@ boot_cluspca <- function(data, krange, nd = NULL, method = "RKM", alpha=NULL,sca
         if (!is.null(nd)) {
           if ((length(nd) >1) & (l==1))  {
             cat('\n')
-            print('Warning: the number of dimensions (nd) must be a single number. Automatically set to the first value in the range.')
+            print('Warning: the number of dimensions (ndim) must be a single number. Automatically set to the first value in the range.')
           }
           ndim = nd[1]
         }
@@ -49,7 +49,7 @@ boot_cluspca <- function(data, krange, nd = NULL, method = "RKM", alpha=NULL,sca
         if (!is.null(nd)) {
           if ((length(nd) >1) & (l==1))  {
             cat('\n')
-            print('Warning: the number of dimensions (nd) must be a single number. Automatically set to the first value in the range.')
+            print('Warning: the number of dimensions (ndim) must be a single number. Automatically set to the first value in the range.')
           }
           ndim = nd[1]
         }
@@ -107,7 +107,7 @@ boot_cluspca <- function(data, krange, nd = NULL, method = "RKM", alpha=NULL,sca
       
       I = length(unique(clust1[,l]))
       J = length(unique(clust2[,l]))
-      chisq = chisq.test(table(clust1[,l],clust2[,l]))$statistic
+      chisq <- suppressWarnings(chisq.test(table(clust1[,l],clust2[,l]))$statistic)
       conc[l]<- chisq/(nx*(sqrt(I*J)-1))
       
       

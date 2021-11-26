@@ -7,7 +7,7 @@ plot.cluspcamix<-function(x, dims = c(1,2), cludesc = FALSE, topstdres = 20, obj
   attnam = NULL
   slp = NULL
   out=list()
-  
+    
   data <- as.data.frame(x$odata,stringsAsFactors = TRUE)
   data <- droplevels(data)
   numAct <- which(sapply(data, is.numeric))
@@ -29,7 +29,6 @@ plot.cluspcamix<-function(x, dims = c(1,2), cludesc = FALSE, topstdres = 20, obj
     attcatlabs=rownames(x$attcatcoord)#colnames(x$odata) #row.names(x$attcoord)
   }
   
-  #do not show obs labels if more than 30
   if (objlabs == TRUE) {
     obslabs = row.names(x$odata)
   } else
@@ -78,7 +77,6 @@ plot.cluspcamix<-function(x, dims = c(1,2), cludesc = FALSE, topstdres = 20, obj
   if(what[1]==TRUE && what[2]==FALSE ){
     a=ggplot(data=obs_df,aes(x=d1,y=d2))#+coord_cartesian(xlim = c(xallmin,xallmax), ylim = c(yallmin,yallmax))
     a=a+geom_point(aes(x=d1,y=d2,colour=gr,shape=gr,alpha=.4),size=1)+theme_bw()
-    #do not show obs labels if more than 30
     if (objlabs == TRUE) {
       a=a+geom_text_repel(data=obs_df,aes(label=olab), max.overlaps = max.overlaps)
     }
@@ -180,9 +178,10 @@ plot.cluspcamix<-function(x, dims = c(1,2), cludesc = FALSE, topstdres = 20, obj
       attquali_plot=attquali_plot+geom_text_repel(data=group_df,aes(label=glab), max.overlaps = max.overlaps)
     }
     out$catmap <- attquali_plot
+    out$map <- a
     print(attquali_plot)
     print(a)
-   
+    
     #  }
   }
   if(what[1]==TRUE && what[2]==TRUE ){
@@ -265,9 +264,9 @@ plot.cluspcamix<-function(x, dims = c(1,2), cludesc = FALSE, topstdres = 20, obj
       theme_bw() +
       theme(legend.title=element_blank(),legend.position="none",axis.text.x = element_blank(),axis.text.y = element_blank())
     
-    if (objlabs == TRUE) {
-      a=a+geom_text_repel(data=obs_df,aes(label=olab), max.overlaps = max.overlaps)
-    }
+    #   if (objlabs == TRUE) {
+    #      a=a+geom_text_repel(data=obs_df,aes(label=olab), max.overlaps = max.overlaps)
+    #    }
     
     if (length(x$size) != 1)
     {
@@ -276,6 +275,7 @@ plot.cluspcamix<-function(x, dims = c(1,2), cludesc = FALSE, topstdres = 20, obj
     }
     
     out$catmap <- attquali_plot
+    out$map <- a
     print(attquali_plot)
     print(a)
   }
@@ -301,7 +301,7 @@ plot.cluspcamix<-function(x, dims = c(1,2), cludesc = FALSE, topstdres = 20, obj
       X = QuantiAct
       cdsc = clu_means(X, x$cluster, center=FALSE, scale=FALSE)
       
-      # out$map = a
+      out$map = a
       print(cdsc)
       out$parcoord = cdsc
     }
