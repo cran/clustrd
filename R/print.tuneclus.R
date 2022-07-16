@@ -5,7 +5,7 @@ print.tuneclus <- function(x, ...) {
   d = x$ndimbest
   x$clusobjbest$centroid = data.frame(x$clusobjbest$centroid, stringsAsFactors = TRUE)
   cluspca = FALSE
-  try(if (class(x$clusobjbest)=="cluspca") { cluspca = TRUE }, silent = TRUE)
+  try(if (inherits(x$clusobjbest,"cluspca")) { cluspca = TRUE }, silent = TRUE)
   
   if (cluspca == TRUE) {  
     if (x$clusobjbest$center == TRUE) {

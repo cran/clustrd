@@ -178,6 +178,8 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
       data = data.matrix(data)
       n = nrow(data) #dim(data)[1]
       m = ncol(data) #dim(data)[2]
+      I = diag(nclus)
+      
       conv = 1e-06
       bestf = 10^12
       pb <- txtProgressBar(style = 3)
@@ -199,9 +201,9 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
           randVec = smartStart
         }
         #U = dummy(randVec)
-        U = tab.disjonctif(randVec)
-        pseudoinvU = chol2inv(chol(t(U)%*%U))
-        P = U%*%pseudoinvU%*%t(U)
+   #     U = tab.disjonctif(randVec)
+  #      pseudoinvU = chol2inv(chol(t(U)%*%U))
+  #      P = U%*%pseudoinvU%*%t(U)
         
         #this is when inboot = TRUE and bootstrapping does not work
         #due to categories with very low frequencies
@@ -210,12 +212,29 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
 
 #        stopifnot(sum(apply(data,2,is.nan)) == 0)
         #P = U %*% pseudoinverse(t(U) %*% U) %*% t(U)
-        df_res <- eigen(t(data) %*% ((1 - alpha) * P - (1 - 2 * 
-                                                          alpha) * diag(n)) %*% data)
-        A = df_res$vectors[,1:ndim]
-        G = data %*% A
+  #      df_res <- eigen(t(data) %*% ((1 - alpha) * P - (1 - 2 * 
+  #                                                        alpha) * diag(n)) %*% data)
+    #    A = df_res$vectors[,1:ndim]
+    #    G = data %*% A
         #  Y = pseudoinverse(t(U) %*% U) %*% t(U) %*% G
-        Y = pseudoinvU%*%t(U)%*%G
+    #    Y = pseudoinvU%*%t(U)%*%G
+        
+        # starting values fixed for FKM 16 July 2022
+        U = data.matrix(I[randVec,])
+        A = data.matrix(orth(matrix(runif(m*ndim),m)))# random start for A
+        G = data%*%A
+        
+        if (alpha == 0.5) { #RKM
+          sumClasses = colSums(U)
+          index=which(sumClasses>0)
+          sumClasses[index] = sumClasses[index]^(-1)#sumClasses(index).^-1;
+          D=diag(sumClasses)
+          DU = D%*%t(U)
+          Y=DU%*%data%*%A%*%pseudoinverse(t(A)%*%A)	# optimal Y
+        } else #FKM and everything else
+          Y = pseudoinverse(U)%*%G  #U\X*A;	  			# optimal Y
+        
+        
         f = alpha * ssq(data - G %*% t(A)) + (1 - alpha) * 
           ssq(data %*% A - U %*% Y)
         f = as.numeric(f)
@@ -377,6 +396,8 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
       data = data.matrix(data)
       n = nrow(data) #dim(data)[1]
       m = ncol(data) #dim(data)[2]
+      I = diag(nclus)
+      
       conv = 1e-06
       bestf = 10^12
       pb <- txtProgressBar(style = 3)
@@ -395,57 +416,72 @@ cluspcamix <- function(data, nclus, ndim, method=c("mixedRKM","mixedFKM"), cente
           randVec = smartStart
         }
         
-        mydata = suppressMessages(as_tibble(cbind(data,group = as.factor(randVec)),.name_repair = "unique"))
-        all_groups=tibble(group=mydata$group,trueOrd=1:nrow(mydata))
-        # mydata=as_tibble(mydata)
+   #     mydata = suppressMessages(as_tibble(cbind(data,group = as.factor(randVec)),.name_repair = "unique"))
+  #      all_groups=tibble(group=mydata$group,trueOrd=1:nrow(mydata))
         
-        gmeans=mydata%>%
-          group_by(group) %>%
-          summarise_all(mean)%>%
-          full_join(all_groups,gmeans,by="group")%>%
-          arrange(trueOrd)%>%
-          select(-group,-trueOrd)%>%
-          t(.)
+    #    gmeans=mydata%>%
+    #      group_by(group) %>%
+    #      summarise_all(mean)%>%
+    #      full_join(all_groups,gmeans,by="group")%>%
+    #      arrange(trueOrd)%>%
+    #      select(-group,-trueOrd)%>%
+    #      t(.)
         
-        R = (1-alpha)*(gmeans)%*%as.matrix(data)
-        if (alpha != 0.5) {
-          R2 = (1-2*alpha)*crossprod(data)
-          R = R - R2
-        }
+    #    R = (1-alpha)*(gmeans)%*%as.matrix(data)
+    #    if (alpha != 0.5) {
+    #      R2 = (1-2*alpha)*crossprod(data)
+    #      R = R - R2
+    #    }
         #A = suppressWarnings(eigs(R)$vectors)
         
         #gets ndim + 20% of all dims 
         nd = ndim+round(m*0.2)
         if (nd > ndim) nd = ndim
-        if (ncol(R) > 2)  {
-          df_res = eigs_sym(R,nd)
-          A = df_res$vectors
-        }
-        else {
-          df_res = eigen(R)
-          A = df_res$vectors
-        }
+    #    if (ncol(R) > 2)  {
+    #      df_res = eigs_sym(R,nd)
+    #      A = df_res$vectors
+    #    }
+    #    else {
+    #      df_res = eigen(R)
+    #      A = df_res$vectors
+    #    }
         #    A = eigen(R,symmetric = TRUE)$vectors
-        A = A[,1:ndim]
+    #    A = A[,1:ndim]
         #update Y
-        G = data%*%A
+    #    G = data%*%A
         #  Y = pseudoinvU%*%t(U)%*%G
-        all_groups=tibble(group=mydata$group,trueOrd=1:nrow(mydata))
+    #    all_groups=tibble(group=mydata$group,trueOrd=1:nrow(mydata))
         
-        G = suppressMessages(as_tibble(cbind(G,group = as.factor(randVec)),.name_repair = "unique"))
-        Y = G%>%
-          group_by(group) %>%
-          summarise_all(mean) #%>%
+    #    G = suppressMessages(as_tibble(cbind(G,group = as.factor(randVec)),.name_repair = "unique"))
+    #    Y = G%>%
+    #      group_by(group) %>%
+    #      summarise_all(mean) #%>%
         
-        UY = Y %>%
-          full_join(all_groups,Y,by="group")%>%
-          arrange(trueOrd)%>%
-          select(-group,-trueOrd) #%>%
+     #   UY = Y %>%
+      #    full_join(all_groups,Y,by="group")%>%
+      #    arrange(trueOrd)%>%
+      #    select(-group,-trueOrd) #%>%
         
-        G = as.matrix(select(G,-group))
-        Y = as.matrix(select(Y,-group))
+      #  G = as.matrix(select(G,-group))
+      #  Y = as.matrix(select(Y,-group))
         
-        f = alpha*ssq(data - G%*%t(A))+(1-alpha)*ssq(G-UY)
+        # starting values fixed for FKM 16 July 2022
+        U = data.matrix(I[randVec,])
+        A = data.matrix(orth(matrix(runif(m*ndim),m)))# random start for A
+        G = data%*%A
+        
+        if (alpha == 0.5) { #RKM
+          sumClasses = colSums(U)
+          index=which(sumClasses>0)
+          sumClasses[index] = sumClasses[index]^(-1)#sumClasses(index).^-1;
+          D=diag(sumClasses)
+          DU = D%*%t(U)
+          Y=DU%*%data%*%A%*%pseudoinverse(t(A)%*%A)	# optimal Y
+        } else #FKM and everything else
+          Y = pseudoinverse(U)%*%G  #U\X*A;	  			# optimal Y
+        
+        
+        f = alpha*ssq(data - G%*%t(A))+(1-alpha)*ssq(data%*%A-U%*%Y)
         f = as.numeric(f) #fixes convergence issue 01 Nov 2016
         
         fold = f + 2 * conv * f
@@ -636,6 +672,21 @@ ssq = function(a) {
   t(as.vector(c(as.matrix(a))))%*%as.vector(c(as.matrix(a)))
 }
 
+orth <- function(M) 
+{
+  if (length(M) == 0) 
+    return(c())
+  if (!is.numeric(M)) 
+    stop("Argument 'M' must be a numeric matrix.")
+  if (is.vector(M)) 
+    M <- matrix(c(M), nrow = length(M), ncol = 1)
+  svdM <- svd(M)
+  U <- svdM$u
+  s <- svdM$d
+  tol <- max(dim(M)) * max(s) * .Machine$double.eps
+  r <- sum(s > tol)
+  U[, 1:r, drop = FALSE]
+}
 
 txtProgressBar <- function(min = 0, max = 1, initial = 0, char = "=", width = NA, 
                            title, label, style = 1, file = "") 
